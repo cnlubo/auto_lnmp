@@ -1,0 +1,11 @@
+[Unit]
+Description=MariaDB Server
+After=network.target
+[Service]
+PIDFile=
+ExecStart=@MysqlBasePath/bin/mysqld_safe --defaults-file=@defaults-file
+LimitNOFILE=infinity
+TimeoutSec=3000
+Restart=always
+[Install]
+WantedBy=multi-user.target
