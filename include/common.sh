@@ -82,7 +82,7 @@ CHECK_ROOT(){
 
 INSTALL_BASE_PACKAGES(){
     case   $OS in
-        "centos")
+        "CentOS")
             {
                 # echo '[yum-fastestmirror Installing] ************************************************** >>';
                 # [[ -z $SysCount ]] && yum -y install yum-fastestmirror && SysCount="1"

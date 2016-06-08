@@ -26,6 +26,12 @@ MySQL_Var(){
                 MysqlBasePath="${MysqlBasePath:=/u01/MariaDB}"
             }
         ;;
+        "MySql")
+           {
+               read -p "Please input MySQL BaseDirectory(default:/u01/Mysql)" MysqlBasePath
+               MysqlBasePath="${MysqlBasePath:=/u01/Mysql}"
+           }
+        ;;
         *)
         echo "unknow Dbtype";;
     esac
@@ -39,9 +45,8 @@ MySQL_Var(){
     MysqlRunPath="$MysqlOptPath/run"
 }
 MYSQL_BASE_PACKAGES_INSTALL(){
-
     case  $OS in
-        "centos")
+        "CentOS")
             {
                 echo '[remove old mysql] **************************************************>>';
                 yum -y remove mysql-server mysql;
@@ -59,7 +64,7 @@ MYSQL_BASE_PACKAGES_INSTALL(){
         *)
         echo "not supported System";;
     esac
-
+echo $BasePackages
     INSTALL_BASE_PACKAGES $BasePackages
 
     if [ -f "/usr/local/lib/libjemalloc.so" ];then
@@ -100,6 +105,7 @@ MYSQL_BASE_PACKAGES_INSTALL(){
 }
 SELECT_MYSQL_INSTALL(){
 
+
     SYSTEM_CHECK
     echo "${CMSG}----------------------------------------------------------------------------------${CEND}"
     PS3="${CBLUE}Which version MySql are you want to install:${CEND}"
@@ -125,8 +131,8 @@ SELECT_MYSQL_INSTALL(){
             ${VarLists[4]})
                 DbType="MySql"
                 DbVersion="5.6"
-                SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
-            MariaDB_Install_Main;;
+                SOURCE_SCRIPT $FunctionPath/install/Mysql-5.6.sh
+            MysqlDB_Install_Main;;
             ${VarLists[5]})
                 DbType="MySql"
                 DbVersion="5.7"

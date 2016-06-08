@@ -13,6 +13,12 @@ if [ -n "`grep 'Aliyun Linux release' /etc/issue`" -o -e /etc/redhat-release ];t
     [ -n "`grep ' 7\.' /etc/redhat-release`" ] && CentOS_RHEL_version=7
     [ -n "`grep ' 6\.' /etc/redhat-release`" -o -n "`grep 'Aliyun Linux release6 15' /etc/issue`" ] && CentOS_RHEL_version=6
     [ -n "`grep ' 5\.' /etc/redhat-release`" -o -n "`grep 'Aliyun Linux release5' /etc/issue`" ] && CentOS_RHEL_version=5
+elif [ -n "` grep 'CentOS release' /etc/issue`" -o -e /etc/redhait-release ];then
+    
+    OS=CentOS
+    [ -n "`grep ' 7\.' /etc/redhat-release`" ] && CentOS_RHEL_version=7
+    [ -n "`grep ' 6\.' /etc/redhat-release`" ] && CentOS_RHEL_version=6
+    [ -n "`grep ' 5\.' /etc/redhat-release`" ] && CentOS_RHEL_version=5
 elif [ -n "`grep bian /etc/issue`" ];then
     OS=Debian
     [ ! -e "`which lsb_release`" ] && apt-get -y install lsb-release
@@ -25,7 +31,7 @@ else
     echo "${CFAILURE}Does not support this OS, Please contact the author! ${CEND}"
     kill -9 $$
 fi
-
+echo $CentOS_RHEL_version
 if [ `getconf WORD_BIT` == 32 ] && [ `getconf LONG_BIT` == 64 ];then
     OS_BIT=64
     SYS_BIG_FLAG=x64 #jdk
