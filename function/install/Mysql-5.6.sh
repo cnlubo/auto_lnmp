@@ -146,18 +146,21 @@ INSTALL_MysqlDB()
     cmake -DCMAKE_INSTALL_PREFIX=$MysqlBasePath \
     -DDEFAULT_CHARSET=utf8 \
     -DDEFAULT_COLLATION=utf8_general_ci \
-    -DWITH_EXTRA_CHARSETS=all \
     -DWITH_MYISAM_STORAGE_ENGINE=1 \
     -DWITH_INNOBASE_STORAGE_ENGINE=1 \
     -DWITH_MEMORY_STORAGE_ENGINE=1 \
-    -DENABLED_LOCAL_INFILE=1 \
     -DBUILD_CONFIG=mysql_release \
     -DWITH_INNODB_MEMCACHED=ON \
-    -DENABLE_GPROF=1 \
-    -DWITH_SSL=bundled \
     -DWITH_EMBEDDED_SERVER=1 \
-    -DCMAKE_EXE_LINKER_FLAGS="-ljemalloc" \
-    -DWITH_SAFEMALLOC=OFF
+    -DWITH_MYSQLD_LDFLAGS='-ljemalloc'
+
+    #-DCMAKE_EXE_LINKER_FLAGS="-ljemalloc" \
+    #-DWITH_SAFEMALLOC=OFF
+
+    #-DWITH_SSL=bundled \
+    #-DWITH_EXTRA_CHARSETS=all \
+    #-DENABLE_GPROF=1 \
+    #-DENABLED_LOCAL_INFILE=1 \
     #make -j$CpuCores;
     make;
     make install;
