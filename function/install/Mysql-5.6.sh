@@ -92,7 +92,8 @@ sync_master_info                   = 1
 sync_relay_log                     = 1
 sync_relay_log_info                = 1
 relay_log_recovery                 = 1
-
+master-info-repository             = TABLE
+replay-log-info-repository         = TABLE
 ############## CACHES AND LIMITS ##########
 query_cache_type                   = 0
 query_cache_size                   = 0

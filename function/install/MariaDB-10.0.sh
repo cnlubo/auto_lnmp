@@ -90,7 +90,9 @@ sync_master_info                   = 1
 sync_relay_log                     = 1
 sync_relay_log_info                = 1
 relay_log_recovery                 = 1
-
+slave_parallel_threads             = 2
+master_verify_checksum             = 1
+slave_sql_verify_checksum          = 1
 ############## CACHES AND LIMITS ##########
 query_cache_type                   = 0
 query_cache_size                   = 0

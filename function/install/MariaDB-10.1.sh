@@ -85,11 +85,14 @@ binlog_format                      = row
 read_only                          = 1
 skip_slave_start                   = 1
 log_slave_updates                  = 1
-slave_sql_verify_checksum          = 1     # for 5.6
 sync_master_info                   = 1
 sync_relay_log                     = 1
 sync_relay_log_info                = 1
 relay_log_recovery                 = 1
+slave-parallel-threads             = 8
+master_verify_checksum             = 1
+binlog-commit-wait-count           = 4
+binlog-commit-wait-usec            = 10000
 
 ############## CACHES AND LIMITS ##########
 query_cache_type                   = 0
@@ -106,7 +109,7 @@ innodb_data_file_path              = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                = O_DIRECT
 innodb_log_files_in_group          = 4
 innodb_log_file_size               = 512M
-innodb_buffer_pool_size            =`expr $RamTotalG \* 50 / 102400 `G
+innodb_buffer_pool_size            =`expr $RamTotalG \* 70 / 102400 `G
 innodb_file_format                 = Barracuda
 innodb_log_buffer_size             = 64M
 innodb_lru_scan_depth              = 2048
@@ -133,9 +136,6 @@ EOF
 INSTALL_MariaDB()
 {
     echo "${CMSG}[mariadb${mariadb_10_1_version} Installing] **************************************************>>${CEND}";
-#downloads.mariadb.org/mariadb/10.1.14/
-#https://mirrors.tuna.tsinghua.edu.cn/mariadb//mariadb-10.1.14/source/mariadb-10.1.14.tar.gz
-#src_url=http://mirrors.opencas.cn/mariadb//mariadb-$mariadb_10_1_version/source/mariadb-$mariadb_10_1_version.tar.gz
     src_url=https://mirrors.tuna.tsinghua.edu.cn/mariadb//mariadb-$mariadb_10_1_version/source/mariadb-$mariadb_10_1_version.tar.gz
     Download_src
     cd $script_dir/src
