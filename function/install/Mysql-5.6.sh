@@ -82,7 +82,7 @@ expire_logs_days                   = 7
 sync_binlog                        = 1
 binlog_checksum                    = CRC32
 binlog_format                      = row
-binlog-rows-query-log_events       = 1
+binlog_rows_query_log_events       = 1
 
 ############### REPLICATION ###############
 read_only                          = 1
@@ -93,11 +93,11 @@ sync_master_info                   = 1
 sync_relay_log                     = 1
 sync_relay_log_info                = 1
 relay_log_recovery                 = 1
-master-info-repository             = TABLE
-replay-log-info-repository         = TABLE
-slave-parallel-workers             = 8
-master-verify-checksum             = 1
-slave-sql-verify-checksum          = 1
+master_info_repository             = TABLE
+relay_log_info_repository          = TABLE
+slave_parallel_workers             = 8
+master_verify_checksum             = 1
+slave_sql_verify_checksum          = 1
 
 #rpl_semi_sync_master_enabled       = 1   #open semi_sync
 

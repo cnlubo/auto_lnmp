@@ -124,7 +124,7 @@ case "$mode" in
     # Safeguard (relative paths, core dumps..)
     cd $basedir
 
-    echo $echo_n "Starting MySQL (Percona Server)"
+    echo $echo_n "Starting MySQL"
     if test -x $bindir/mysqld_safe
     then
 
@@ -169,7 +169,7 @@ case "$mode" in
       fi
       exit $return_value
     else
-      log_failure_msg "MySQL (Percona Server) PID file could not be found!"
+      log_failure_msg "MySQL  PID file could not be found!"
     fi
     ;;
 
@@ -190,7 +190,7 @@ case "$mode" in
       kill -HUP $mysqld_pid && log_success_msg "Reloading service MySQL (Percona Server)"
       touch "$mysqld_pid_file_path"
     else
-      log_failure_msg "MySQL (Percona Server) PID file could not be found!"
+      log_failure_msg "MySQL PID file could not be found!"
       exit 1
     fi
     ;;
@@ -199,10 +199,10 @@ case "$mode" in
     if test -s "$mysqld_pid_file_path" ; then 
       read mysqld_pid < "$mysqld_pid_file_path"
       if kill -0 $mysqld_pid 2>/dev/null ; then 
-        log_success_msg "MySQL (Percona Server) running ($mysqld_pid)"
+        log_success_msg "MySQL running ($mysqld_pid)"
         exit 0
       else
-        log_failure_msg "MySQL (Percona Server) is not running, but PID file exists"
+        log_failure_msg "MySQL is not running, but PID file exists"
         exit 1
       fi
     else
@@ -216,13 +216,13 @@ case "$mode" in
         exit 5
       elif test -z $mysqld_pid ; then 
         if test -f "$lock_file_path" ; then 
-          log_failure_msg "MySQL (Percona Server) is not running, but lock file ($lock_file_path) exists"
+          log_failure_msg "MySQL is not running, but lock file ($lock_file_path) exists"
           exit 2
         fi 
-        log_failure_msg "MySQL (Percona Server) is not running"
+        log_failure_msg "MySQL is not running"
         exit 3
       else
-        log_failure_msg "MySQL (Percona Server) is running but PID file could not be found"
+        log_failure_msg "MySQL is running but PID file could not be found"
         exit 4
       fi
     fi
