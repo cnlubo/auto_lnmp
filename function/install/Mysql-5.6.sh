@@ -80,7 +80,7 @@ safe_user_create                   = 1
 ################  BINARY LOGGING##########
 expire_logs_days                   = 7
 sync_binlog                        = 1
-binlog_checksum                    = CRC32
+#binlog_checksum                    = CRC32 #>=5.6.6 default crc32
 binlog_format                      = row
 binlog_rows_query_log_events       = 1
 
@@ -97,9 +97,10 @@ master_info_repository             = TABLE
 relay_log_info_repository          = TABLE
 slave_parallel_workers             = 8
 master_verify_checksum             = 1
-slave_sql_verify_checksum          = 1
 
 #rpl_semi_sync_master_enabled       = 1   #open semi_sync
+#rpl_semi_sync_master_timeout       = 1000 # 1 second
+#rpl_semi_sync_slave_enabled        = 1
 
 ############## CACHES AND LIMITS ##########
 query_cache_type                   = 0
