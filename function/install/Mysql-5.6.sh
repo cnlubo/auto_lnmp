@@ -93,6 +93,7 @@ sync_master_info                   = 1
 sync_relay_log                     = 1
 sync_relay_log_info                = 1
 relay_log_recovery                 = 1
+relay_log_purge                    = 1
 master_info_repository             = TABLE
 relay_log_info_repository          = TABLE
 slave_parallel_workers             = 8
