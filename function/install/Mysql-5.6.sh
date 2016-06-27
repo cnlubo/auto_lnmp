@@ -116,9 +116,9 @@ thread_stack                       = 512K
 
 innodb_data_file_path              = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                = O_DIRECT
-innodb_log_files_in_group          = 4
+innodb_log_files_in_group          = 2
 innodb_log_file_size               = 512M
-innodb_buffer_pool_size            =`expr $RamTotalG \* 60 / 102400 `G
+innodb_buffer_pool_size            =`expr $RamTotalG \* 80 / 102400 `G
 innodb_file_format                 = Barracuda
 innodb_log_buffer_size             = 64M
 innodb_lru_scan_depth              = 2048
