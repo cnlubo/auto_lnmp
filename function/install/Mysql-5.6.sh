@@ -2,10 +2,10 @@
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
 # @Date:                                   2016-01-25 13:38:17
-# @file_name:                              MariaDB-10.0.sh
+# @file_name:                              Mysql-5.6.sh
 # @Last Modified by:                       ak47
 # @Last Modified time:                     2016-02-18 11:23:53
-# @Desc                                    mariadb-10.0 install scripts
+# @Desc                                    mysql-5.6 install scripts
 #----------------------------------------------------------------------------
 
 Create_Conf() {
@@ -96,7 +96,7 @@ relay_log_recovery                 = 1
 relay_log_purge                    = 1
 master_info_repository             = TABLE
 relay_log_info_repository          = TABLE
-slave_parallel_workers             = 8
+slave_parallel_workers             = 3
 master_verify_checksum             = 1
 
 #rpl_semi_sync_master_enabled       = 1   #open semi_sync
