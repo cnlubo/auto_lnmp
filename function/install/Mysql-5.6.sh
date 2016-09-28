@@ -212,13 +212,13 @@ INIT_MySQL_DB(){
  if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version == 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version == 7 ] );then
      #-o [$OS="CentOS" -a CentOS_RHEL_version=7];then
         #support Systemd
-        [ -L /lib/systemd/system/mariadb.service ] && rm -f /lib/systemd/system/mariadb.service;
-        cp $script_dir/template/mariadb.service /lib/systemd/system/mariadb.service;
-        sed  -i ':a;$!{N;ba};s#PIDFile=#PIDFile='''$MysqlOptPath/run/mysql$MysqlPort.pid'''#' /lib/systemd/system/mariadb.service
+        [ -L /lib/systemd/system/mysql$MysqlPort.service ] && rm -f /lib/systemd/system/mysql$MysqlPort.service;
+        cp $script_dir/template/mysql.service /lib/systemd/system/mysql$MysqlPort.service;
+        sed  -i ':a;$!{N;ba};s#PIDFile=#PIDFile='''$MysqlOptPath/run/mysql$MysqlPort.pid'''#' /lib/systemd/system/mysql$MysqlPort.service
         mycnf=''$MysqlOptPath/etc/my$MysqlPort.cnf''
-        sed -i ''s#@MysqlBasePath#$MysqlBasePath#g'' /lib/systemd/system/mariadb.service
-        sed -i ''s#@defaults-file#$mycnf#g'' /lib/systemd/system/mariadb.service
-        systemctl enable mariadb.service
+        sed -i ''s#@MysqlBasePath#$MysqlBasePath#g'' /lib/systemd/system/mysql$MysqlPort.service
+        sed -i ''s#@defaults-file#$mycnf#g'' /lib/systemd/system/mysql$MysqlPort.service
+        systemctl enable mysql$MysqlPort.service
     else
         [ -L /etc/init.d/mysql$MysqlPort ] && rm -f /etc/init.d/mysql$MysqlPort;
         ln -s $MysqlOptPath/init.d/mysql$MysqlPort /etc/init.d/mysql$MysqlPort;

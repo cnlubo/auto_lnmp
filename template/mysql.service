@@ -1,0 +1,12 @@
+[Unit]
+Description=MySQL Community Server
+After=network.target
+After=syslong.target
+[Service]
+PIDFile=
+ExecStart=@MysqlBasePath/bin/mysqld_safe --defaults-file=@defaults-file
+LimitNOFILE=infinity
+TimeoutSec=3000
+Restart=always
+[Install]
+WantedBy=multi-user.target
