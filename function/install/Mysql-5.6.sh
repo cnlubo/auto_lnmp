@@ -69,7 +69,7 @@ general_log_file                   = $MysqlLogPath/general.log
 ################ SAFETY############
 
 max_allowed_packet                 = 16M
-max_connect_errors                 = 65536
+max_connect_errors                 = 6000
 skip_name_resolve
 sql_mode                           = STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY
 sysdate_is_now                     = 1
@@ -83,7 +83,7 @@ sync_binlog                        = 1
 #binlog_checksum                    = CRC32 #>=5.6.6 default crc32
 binlog_format                      = row
 binlog_rows_query_log_events       = 1
-
+binlog_error_action                = ABORT_SERVER
 ############### REPLICATION ###############
 read_only                          = 1
 skip_slave_start                   = 1
@@ -110,7 +110,7 @@ max_connections                    = 8192
 max_user_connections               = 8000
 open_files_limit                   = 65535
 table_definition_cache             = 65536
-slave_net_timeout                  = 5
+slave_net_timeout                  = 60
 thread_stack                       = 512K
 ##################INNODB####################################### #
 
