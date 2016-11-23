@@ -20,122 +20,120 @@ Create_Conf() {
     cat > $MysqlConfigPath/my$MysqlPort.cnf << EOF
 [mysql]
 ############## CLIENT #############
-port                               = $MysqlPort
-socket                             = $MysqlRunPath/mysql$MysqlPort.sock
-default_character_set              = UTF8
+port                                = $MysqlPort
+socket                              = $MysqlRunPath/mysql$MysqlPort.sock
+default_character_set               = UTF8
 no_auto_rehash
-password=$dbrootpwd
+password                            =$dbrootpwd
 
 [mysqld]
 ############### GENERAL############
-user                               = $mysql_user
-port                               = $MysqlPort
-default_storage_engine             = InnoDB
-bind_address                       = 0.0.0.0
-character_set_server               = UTF8
-old_passwords                      = 0
-performance_schema                 = 1
-connect_timeout                    = 8
-lower_case_table_names             = 1
-join_buffer_size                   = 8M
-sort_buffer_size                   = 8M
-server_id                          = $server_id
-metadata_locks_cache_size          = 10240
-metadata_locks_hash_instances      = 16
-gtid_mode                          = ON
-enforce_gtid_consistency           = ON
-max_sp_recursion_depth             = 255
-log_bin_trust_function_creators    = ON
+user                                = $mysql_user
+port                                = $MysqlPort
+bind_address                        = 0.0.0.0
+character_set_server                = UTF8
+lower_case_table_names              = 1
+join_buffer_size                    = 8M
+sort_buffer_size                    = 8M
+server_id                           = $server_id
+metadata_locks_cache_size           = 2048
+metadata_locks_hash_instances       = 16
+gtid_mode                           = ON
+enforce_gtid_consistency            = ON
+max_sp_recursion_depth              = 255
+log_bin_trust_function_creators     = ON
 explicit_defaults_for_timestamp
 ################DIR################
-basedir                            = $MysqlBasePath
-pid_file                           = $MysqlRunPath/mysql$MysqlPort.pid
-socket                             = $MysqlRunPath/mysql$MysqlPort.sock
-datadir                            = $MysqlDataPath
-tmpdir                             = $MysqlTmpPath
-slave_load_tmpdir                  = $MysqlTmpPath
-innodb_data_home_dir               = $MysqlDataPath
-innodb_log_group_home_dir          = $MysqlLogPath
-log_bin                            = $MysqlLogPath/mysql_bin
-log_bin_index                      = $MysqlLogPath/mysql_bin.index
-relay_log_index                    = $MysqlLogPath/relay_log.index
-relay_log                          = $MysqlLogPath/relay_bin
-log_error                          = $MysqlLogPath/alert.log
-slow_query_log_file                = $MysqlLogPath/slow.log
-general_log_file                   = $MysqlLogPath/general.log
+basedir                             = $MysqlBasePath
+pid_file                            = $MysqlRunPath/mysql$MysqlPort.pid
+socket                              = $MysqlRunPath/mysql$MysqlPort.sock
+datadir                             = $MysqlDataPath
+tmpdir                              = $MysqlTmpPath
+slave_load_tmpdir                   = $MysqlTmpPath
+innodb_data_home_dir                = $MysqlDataPath
+innodb_log_group_home_dir           = $MysqlLogPath
+log_bin                             = $MysqlLogPath/mysql_bin
+log_bin_index                       = $MysqlLogPath/mysql_bin.index
+relay_log_index                     = $MysqlLogPath/relay_log.index
+relay_log                           = $MysqlLogPath/relay_bin
+log_error                           = $MysqlLogPath/alert.log
+slow_query_log_file                 = $MysqlLogPath/slow.log
+general_log_file                    = $MysqlLogPath/general.log
 
 ################MyISAM#############
 
 ################ SAFETY############
 
-max_allowed_packet                 = 16M
-max_connect_errors                 = 6000
+max_allowed_packet                  = 16M
+max_connect_errors                  = 6000
 skip_name_resolve
-sql_mode                           = STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY
-sysdate_is_now                     = 1
-innodb_strict_mode                 = 1
+sql_mode                            = STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY
+sysdate_is_now                      = 1
+innodb_strict_mode                  = 1
 skip_ssl
-safe_user_create                   = 1
+safe_user_create                    = 1
 
 ################  BINARY LOGGING##########
-expire_logs_days                   = 7
-sync_binlog                        = 1
-#binlog_checksum                    = CRC32 #>=5.6.6 default crc32
-binlog_format                      = row
-binlog_rows_query_log_events       = 1
-binlog_error_action                = ABORT_SERVER
+expire_logs_days                    = 7
+sync_binlog                         = 1
+binlog_format                       = row
+binlog_rows_query_log_events        = 1
+binlog_error_action                 = ABORT_SERVER
 ############### REPLICATION ###############
-read_only                          = 1
-skip_slave_start                   = 1
-log_slave_updates                  = 1
-slave_sql_verify_checksum          = 1     # for 5.6
-sync_master_info                   = 1
-sync_relay_log                     = 1
-sync_relay_log_info                = 1
-relay_log_recovery                 = 1
-relay_log_purge                    = 1
-master_info_repository             = TABLE
-relay_log_info_repository          = TABLE
-slave_parallel_workers             = 3
-master_verify_checksum             = 1
+read_only                           = 1
+skip_slave_start                    = 1
+log_slave_updates                   = 1
+relay_log_recovery                  = 1
+relay_log_purge                     = 1
+master_info_repository              = TABLE
+relay_log_info_repository           = TABLE
+slave_parallel_workers              = 3
+master_verify_checksum              = 1
+slave_skip_errors                   = ddl_exist_errors
+binlog_gtid_simple_recovery         = 1
+plugin_load                         = "validate_password.so;rpl_semi_sync_master=semisync_master.so;rpl_semi_sync_slave=semisync_slave.so"
+loose_rpl_semi_sync_master_enabled  = 1
+loose_rpl_semi_sync_master_timeout  = 3000 # 5 second
+loose_rpl_semi_sync_slave_enabled   = 1
 
-#rpl_semi_sync_master_enabled       = 1   #open semi_sync
-#rpl_semi_sync_master_timeout       = 1000 # 1 second
-#rpl_semi_sync_slave_enabled        = 1
+
+############## PASSWORD PLUGIN   ##########
+validate_password_policy            = MEDIUM
+validate-password                   = FORCE_PLUS_PERMANENT
 
 ############## CACHES AND LIMITS ##########
-query_cache_type                   = 0
-query_cache_size                   = 0
-max_connections                    = 8192
-max_user_connections               = 8000
+max_connections                    = 1000
+max_user_connections               = 998
 open_files_limit                   = 65535
-table_definition_cache             = 65536
 slave_net_timeout                  = 60
 thread_stack                       = 512K
+
 ##################INNODB####################################### #
 
-innodb_data_file_path              = ibdata1:1G;ibdata2:512M:autoextend
-innodb_flush_method                = O_DIRECT
-innodb_log_files_in_group          = 2
-innodb_log_file_size               = 512M
-innodb_buffer_pool_size            =`expr $RamTotalG \* 80 / 102400 `G
-innodb_file_format                 = Barracuda
-innodb_log_buffer_size             = 64M
-innodb_lru_scan_depth              = 2048
-innodb_online_alter_log_max_size   = 2G
-innodb_purge_threads               = 4
-innodb_sort_buffer_size            = 2M
-innodb_thread_concurrency          = 10    #A recommended value is 2 times the number of CPUs plus the number of disk
-innodb_use_native_aio              = 0
-innodb_write_io_threads            = $CpuProNum
-
+innodb_data_file_path               = ibdata1:1G;ibdata2:512M:autoextend
+innodb_flush_method                 = O_DIRECT
+innodb_log_file_size                = 512M
+innodb_buffer_pool_size             =`expr $RamTotalG \* 80 / 102400 `G
+innodb_file_format                  = Barracuda
+innodb_file_format_max              = Barracuda
+innodb_log_buffer_size              = 64M
+innodb_lru_scan_depth               = 2048
+innodb_purge_threads                = 4
+innodb_sort_buffer_size             = 2M
+innodb_write_io_threads             = $CpuProNum
+innodb_buffer_pool_load_at_startup  = 1
+innodb_buffer_pool_dump_at_shutdown = 1
+innodb_lock_wait_timeout            = 5
+innodb_io_capacity                  = 200
+innodb_undo_tablespaces             = 3
+#innodb_print_all_deadlocks          = 1
+#innodb_strict_mode                  = 1
 ################# LOGGING####################### #
-log_queries_not_using_indexes      = 1
-slow_query_log                     = 1
-general_log                        = 0
-log_slow_admin_statements          = 1
-long_query_time                    = 1
-transaction_isolation              = READ-COMMITTED
+slow_query_log                         = 1
+general_log                            = 0
+long_query_time                        = 3
+min_examined_row_limit                 = 100
+transaction_isolation                  = READ-COMMITTED
 
 
 EOF
