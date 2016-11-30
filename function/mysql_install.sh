@@ -70,7 +70,9 @@ echo $BasePackages
     if [ -f "/usr/local/lib/libjemalloc.so" ];then
         echo -e "\033[31mjemalloc having install! \033[0m"
     else
-        src_url=http://www.canonware.com/download/jemalloc/jemalloc-$jemalloc_version.tar.bz2
+        #src_url=http://www.canonware.com/download/jemalloc/jemalloc-$jemalloc_version.tar.bz2
+        #https://github.com/jemalloc/jemalloc/releases/download/4.3.1/jemalloc-4.3.1.tar.bz2
+        src_url=https://github.com/jemalloc/jemalloc/releases/download/$jemalloc_version/jemalloc-$jemalloc_version.tar.bz2
         Download_src
         cd $script_dir/src
         tar xvf jemalloc-$jemalloc_version.tar.bz2
