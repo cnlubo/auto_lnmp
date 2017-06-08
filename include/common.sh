@@ -77,7 +77,7 @@ INPUT_CHOOSE(){
 }
 #检测是否root账号
 CHECK_ROOT(){
-    [[ $(id -u) != '0' ]] && ${CFAILURE} EXIT_MSG "Please use root to run this script." ${CEND}
+    [[ $(id -u) != '0' ]] && EXIT_MSG "Please use root to run this script." 
     # [ $(id -u) != "0" ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
 }
 
