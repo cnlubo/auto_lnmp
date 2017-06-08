@@ -10,12 +10,16 @@
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 #get scriptpath
 ScriptPath=$(cd $(dirname "$0") && pwd)
-sed -i "s@^script_dir.*@script_dir=`(cd $(dirname "$0") && pwd)`@" ./options.conf
+#sed -i "s@^script_dir.*@script_dir=`(cd $(dirname "$0") && pwd)`@" ./options.conf
+sed -i "s@^script_dir.*@script_dir=`(cd $(dirname "$BASH_SOURCE[0]") && pwd)`@" ./options.conf
+# mac 需要在sed -i 后增加一个"" 不能忽略否则报错
+#sed -i "" "s@^script_dir.*@script_dir=`(cd $(dirname "$BASH_SOURCE[0]") && pwd)`@" ./options.conf
 #加载配置内容
+source $ScriptPath/include/color.sh
 source $ScriptPath/include/common.sh
 SOURCE_SCRIPT $ScriptPath/options.conf
 SOURCE_SCRIPT $script_dir/apps.conf
-SOURCE_SCRIPT $script_dir/include/color.sh
+#SOURCE_SCRIPT $script_dir/include/color.sh
 SOURCE_SCRIPT $script_dir/include/check_os.sh
 SOURCE_SCRIPT $script_dir/include/check_db.sh
 SOURCE_SCRIPT $script_dir/include/check_web.sh
@@ -59,25 +63,25 @@ CHECK_ROOT
 # fi
 #main
 SELECT_RUN_SCRIPT(){
-     PS3="${CBLUE}Which function you want to run:${CEND}"
+    PS3="${CBLUE}Which function you want to run:${CEND}"
     VarLists=("Exit" "Init_System" "Tomcat" "nginx" "MySql" "redis")
     select var in ${VarLists[@]} ;do
         case $var in
             ${VarLists[1]})
-              SOURCE_SCRIPT $FunctionPath/init_system.sh
-              SELECT_SYSTEM_SETUP_FUNCTION;;
+                SOURCE_SCRIPT $FunctionPath/init_system.sh
+            SELECT_SYSTEM_SETUP_FUNCTION;;
             ${VarLists[2]})
-              SOURCE_SCRIPT $FunctionPath/tomcat_install.sh
-              SELECT_TOMCAT_INSTALL;;
-              ${VarLists[3]})
-              SOURCE_SCRIPT $FunctionPath/tomcat_install.sh
-              SELECT_TOMCAT_INSTALL;;
-              ${VarLists[4]})
-              SOURCE_SCRIPT $FunctionPath/mysql_install.sh
-              SELECT_MYSQL_INSTALL;;
-               ${VarLists[5]})
-              SOURCE_SCRIPT $FunctionPath/tomcat_install.sh
-              SELECT_TOMCAT_INSTALL;;
+                SOURCE_SCRIPT $FunctionPath/tomcat_install.sh
+            SELECT_TOMCAT_INSTALL;;
+            ${VarLists[3]})
+                SOURCE_SCRIPT $FunctionPath/tomcat_install.sh
+            SELECT_TOMCAT_INSTALL;;
+            ${VarLists[4]})
+                SOURCE_SCRIPT $FunctionPath/mysql_install.sh
+            SELECT_MYSQL_INSTALL;;
+            ${VarLists[5]})
+                SOURCE_SCRIPT $FunctionPath/tomcat_install.sh
+            SELECT_TOMCAT_INSTALL;;
             ${VarLists[0]})
             exit 0;;
             *)

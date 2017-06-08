@@ -7,10 +7,10 @@
 # @desc    : common functions
 #--------------------------------------------
 
-#################error-message##############################
+#################error-message#######
 EXIT_MSG(){
     ExitMsg="$1"
-    echo -e "$(date +%Y-%m-%d-%H:%M) -ERR $ExitMsg " |tee -a $ErrLog && exit 1
+    echo -e "$(date +%Y-%m-%d-%H:%M) -Error $ExitMsg " |tee -a $ErrLog && exit 1
 }
 #########normal-message##########
 INFO_MSG(){
@@ -77,7 +77,8 @@ INPUT_CHOOSE(){
 }
 #检测是否root账号
 CHECK_ROOT(){
-    [[ $(id -u) != '0' ]] && EXIT_MSG "Please use root to run this script."
+    [[ $(id -u) != '0' ]] && ${CFAILURE} EXIT_MSG "Please use root to run this script." ${CEND}
+    # [ $(id -u) != "0" ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
 }
 
 INSTALL_BASE_PACKAGES(){
@@ -168,4 +169,3 @@ Download_src() {
 #     [[ "$(grep $TimeCron /etc/crontab)" == "" ]] && echo "$TimeCron" >> /etc/crontab
 #     [ "$SysName" == 'centos' ] && /etc/init.d/crond restart || /etc/init.d/cron restart
 # }
-
