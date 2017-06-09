@@ -27,10 +27,10 @@ MySQL_Var(){
             }
         ;;
         "MySql")
-           {
-               read -p "Please input MySQL BaseDirectory(default:/u01/Mysql)" MysqlBasePath
-               MysqlBasePath="${MysqlBasePath:=/u01/Mysql}"
-           }
+            {
+                read -p "Please input MySQL BaseDirectory(default:/u01/Mysql)" MysqlBasePath
+                MysqlBasePath="${MysqlBasePath:=/u01/Mysql}"
+            }
         ;;
         *)
         echo "unknow Dbtype";;
@@ -64,7 +64,7 @@ MYSQL_BASE_PACKAGES_INSTALL(){
         *)
         echo "not supported System";;
     esac
-echo $BasePackages
+    echo $BasePackages
     INSTALL_BASE_PACKAGES $BasePackages
 
     if [ -f "/usr/local/lib/libjemalloc.so" ];then
@@ -112,19 +112,19 @@ SELECT_MYSQL_INSTALL(){
     echo "${CMSG}----------------------------------------------------------------------------------${CEND}"
     PS3="${CBLUE}Which version MySql are you want to install:${CEND}"
     declare -a VarLists
-    VarLists=("Back" "MariaDB-10.0" "MariaDB-10.1" "Percona-5.6" "MySQL-5.6" "MySQL-5.7")
+    VarLists=("Back" "MySQL-5.6" "MySQL-5.7" "MariaDB-10.1" "MariaDB-10.2" "Percona-5.6")
     select var in ${VarLists[@]} ;do
         case $var in
             ${VarLists[1]})
-                DbType="MariaDB"
-                DbVersion="10.0"
-                SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.0.sh
-            MariaDB_Install_Main;;
+                DbType="MySql"
+                DbVersion="5.6"
+                SOURCE_SCRIPT $FunctionPath/install/Mysql-5.6.sh
+            MysqlDB_Install_Main;;
             ${VarLists[2]})
-                DbType="MariaDB"
-                DbVersion="10.1"
-                SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
-            MariaDB_Install_Main;;
+                DbType="MySql"
+                DbVersion="5.7"
+                SOURCE_SCRIPT $FunctionPath/install/Mysql-5.7.sh
+            MysqlDB_Install_Main;;
             ${VarLists[3]})
                 DbType="Percona"
                 DbVersion="5.6"
@@ -136,8 +136,8 @@ SELECT_MYSQL_INSTALL(){
                 SOURCE_SCRIPT $FunctionPath/install/Mysql-5.6.sh
             MysqlDB_Install_Main;;
             ${VarLists[5]})
-                DbType="MySql"
-                DbVersion="5.7"
+                DbType="Percona"
+                DbVersion="5.6"
                 SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
             MariaDB_Install_Main;;
             ${VarLists[0]})
@@ -148,4 +148,3 @@ SELECT_MYSQL_INSTALL(){
         break
     done
 }
-
