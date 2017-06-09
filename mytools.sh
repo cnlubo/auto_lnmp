@@ -35,9 +35,12 @@ printf "${CGREEN}
 # Check if user is root
 CHECK_ROOT
 # get the IP information
-#IPADDR=`./py2/get_ipaddr.py`
-#PUBLIC_IPADDR=`./py2/get_public_ipaddr.py`
-#[ "`./py2/get_ipaddr_state.py $PUBLIC_IPADDR`" == '\u4e2d\u56fd' ] && IPADDR_STATE=CN
+IPADDR=`./py2/get_ipaddr.py`
+PUBLIC_IPADDR=`./py2/get_public_ipaddr.py`
+IPADDR_COUNTRY_ISP=`./py2/get_ipaddr_state.py $PUBLIC_IPADDR`
+IPADDR_COUNTRY=`echo $IPADDR_COUNTRY_ISP | awk '{print $1}'`
+[ "`echo $IPADDR_COUNTRY_ISP | awk '{print $2}'`"x == '1000323'x ] && IPADDR_ISP=aliyun
+echo $IPADDR_ISP
 
 # Use default SSH port 22. If you use another SSH port on your server
 # if [ -e "/etc/ssh/sshd_config" ];then
