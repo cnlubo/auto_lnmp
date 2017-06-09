@@ -19,7 +19,6 @@ source $ScriptPath/include/color.sh
 source $ScriptPath/include/common.sh
 SOURCE_SCRIPT $ScriptPath/options.conf
 SOURCE_SCRIPT $script_dir/apps.conf
-#SOURCE_SCRIPT $script_dir/include/color.sh
 SOURCE_SCRIPT $script_dir/include/check_os.sh
 SOURCE_SCRIPT $script_dir/include/check_db.sh
 SOURCE_SCRIPT $script_dir/include/check_web.sh
@@ -30,7 +29,7 @@ printf "${CGREEN}
 ###############################################################################
 # A tool to auto-compile & install  tomcat&&jdk&&nginx&&mysql&&redis          #
 #                                                                             #
-# Author:  lubo           project: https://github.com/cnlubo/scripts.git      #
+# Author:  lubo           project:  https://github.com/cnlubo/auto_lnmp       #
 ###############################################################################${CEND}
 "
 # Check if user is root
