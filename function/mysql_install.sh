@@ -126,15 +126,15 @@ SELECT_MYSQL_INSTALL(){
                 SOURCE_SCRIPT $FunctionPath/install/Mysql-5.7.sh
             MysqlDB_Install_Main;;
             ${VarLists[3]})
-                DbType="Percona"
-                DbVersion="5.6"
+                DbType="MariaDB"
+                DbVersion="10.1"
                 SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
             MariaDB_Install_Main;;
             ${VarLists[4]})
-                DbType="MySql"
-                DbVersion="5.6"
-                SOURCE_SCRIPT $FunctionPath/install/Mysql-5.6.sh
-            MysqlDB_Install_Main;;
+                DbType="MariaDB"
+                DbVersion="10.2"
+                SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.2.sh
+            MariaDB_Install_Main;;
             ${VarLists[5]})
                 DbType="Percona"
                 DbVersion="5.6"
