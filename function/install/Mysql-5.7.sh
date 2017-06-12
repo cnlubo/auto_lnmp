@@ -142,35 +142,25 @@ EOF
 
 INSTALL_MysqlDB()
 {
-    echo "${CMSG}[Mysql${mysql_5_6_version} Installing] **************************************************>>${CEND}";
-    #src_url=http://mirrors.opencas.cn/mariadb//mariadb-$mariadb_10_0_version/source/mariadb-$mariadb_10_0_version.tar.gz
-    src_url=http://cdn.mysql.com//Downloads/MySQL-5.6/mysql-$mysql_5_6_version.tar.gz
+    echo "${CMSG}[Mysql${mysql_5_7_version} Installing] **************************************************>>${CEND}";
+    src_url=http://cdn.mysql.com//Downloads/MySQL-5.7/mysql-$mysql_5_7_version.tar.gz
     Download_src
     cd $script_dir/src
-    [ -d mysql-$mysql_5_6_version ] && rm -rf mysql-$mysql_5_6_version
-    tar -zxf mysql-$mysql_5_6_version.tar.gz;
-    cd mysql-$mysql_5_6_version;
+    [ -d mysql-$mysql_5_7_version ] && rm -rf mysql-$mysql_5_7_version
+    tar -zxf mysql-$mysql_5_7_version.tar.gz;
+    cd mysql-$mysql_5_7_version;
 
     cmake -DCMAKE_INSTALL_PREFIX=$MysqlBasePath \
-    -DDEFAULT_CHARSET=utf8 \
-    -DDEFAULT_COLLATION=utf8_general_ci \
-    -DWITH_MYISAM_STORAGE_ENGINE=1 \
-    -DWITH_INNOBASE_STORAGE_ENGINE=1 \
-    -DWITH_MEMORY_STORAGE_ENGINE=1 \
+    -DDEFAULT_CHARSET=utf8mb4 \
+    -DDEFAULT_COLLATION=utf8mb4_general_ci \
+    -DDOWNLOAD_BOOST=1
+    -DWITH_BOOST=$script_dir/src/boost_1_59_0 \
     -DBUILD_CONFIG=mysql_release \
     -DWITH_INNODB_MEMCACHED=ON \
-    -DWITH_EMBEDDED_SERVER=1 \
     -DWITH_MYSQLD_LDFLAGS='-ljemalloc'
+    -DENABLED_LOCAL_INFILE=1
 
-    #-DCMAKE_EXE_LINKER_FLAGS="-ljemalloc" \
-    #-DWITH_SAFEMALLOC=OFF
-
-    #-DWITH_SSL=bundled \
-    #-DWITH_EXTRA_CHARSETS=all \
-    #-DENABLE_GPROF=1 \
-    #-DENABLED_LOCAL_INFILE=1 \
     make -j$CpuProNum;
-    #make;
     make install;
 
     chown -R mysql:mysql $MysqlBasePath;
@@ -207,8 +197,8 @@ INIT_MySQL_DB(){
     sed  -i ':a;$!{N;ba};s#conf=#conf='''$MysqlConfigPath/my$MysqlPort.cnf'''#' $MysqlOptPath/init.d/mysql$MysqlPort
     sed  -i ':a;$!{N;ba};s#mysql_user=#mysql_user='''$mysql_user'''#' $MysqlOptPath/init.d/mysql$MysqlPort
     sed  -i ':a;$!{N;ba};s#mysqld_pid_file_path=#mysqld_pid_file_path='''$MysqlRunPath/mysql$MysqlPort\.pid'''#' $MysqlOptPath/init.d/mysql$MysqlPort
- if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version == 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version == 7 ] );then
-     #-o [$OS="CentOS" -a CentOS_RHEL_version=7];then
+    if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version == 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version == 7 ] );then
+        #-o [$OS="CentOS" -a CentOS_RHEL_version=7];then
         #support Systemd
         [ -L /lib/systemd/system/mysql$MysqlPort.service ] && rm -f /lib/systemd/system/mysql$MysqlPort.service;
         cp $script_dir/template/mysql.service /lib/systemd/system/mysql$MysqlPort.service;
@@ -244,7 +234,8 @@ EOF
 
 MysqlDB_Install_Main(){
 
-    MySQL_Var&&MYSQL_BASE_PACKAGES_INSTALL&&INSTALL_MysqlDB&&Create_Conf&&INIT_MySQL_DB
+    MySQL_Var&&MYSQL_BASE_PACKAGES_INSTALL
+    #&&INSTALL_MysqlDB&&Create_Conf&&INIT_MySQL_DB
 
 
 }

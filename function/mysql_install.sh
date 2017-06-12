@@ -89,6 +89,14 @@ MYSQL_BASE_PACKAGES_INSTALL(){
         rm -rf jemalloc-$jemalloc_version
         cd $script_dir
     fi
+    #下载boost 源码
+    if [$DbType -eq "MySql" -a $DbVersion="5.7"];then
+        src_url=https://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz
+        Download_src
+        cd $script_dir/src
+        tar xvf boost_1_59_0.tar.gz
+        cd $script_dir
+    fi
     #create group and user
     grep $mysql_user /etc/group >/dev/null 2>&1
     if [ ! $? -eq 0 ]; then
@@ -112,7 +120,7 @@ SELECT_MYSQL_INSTALL(){
     echo "${CMSG}----------------------------------------------------------------------------------${CEND}"
     PS3="${CBLUE}Which version MySql are you want to install:${CEND}"
     declare -a VarLists
-    VarLists=("Back" "MySQL-5.6" "MySQL-5.7" "MariaDB-10.1" "MariaDB-10.2" "Percona-5.6")
+    VarLists=("Back" "MySQL-5.6" "MySQL-5.7" "MariaDB-10.1" "MariaDB-10.2")
     select var in ${VarLists[@]} ;do
         case $var in
             ${VarLists[1]})
@@ -134,11 +142,6 @@ SELECT_MYSQL_INSTALL(){
                 DbType="MariaDB"
                 DbVersion="10.2"
                 SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.2.sh
-            MariaDB_Install_Main;;
-            ${VarLists[5]})
-                DbType="Percona"
-                DbVersion="5.6"
-                SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
             MariaDB_Install_Main;;
             ${VarLists[0]})
             SELECT_RUN_SCRIPT;;
