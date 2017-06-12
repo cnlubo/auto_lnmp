@@ -90,7 +90,7 @@ MYSQL_BASE_PACKAGES_INSTALL(){
         cd $script_dir
     fi
     #下载boost 源码
-    if ([ $DbType -eq "MySql" ] -a [$DbVersion -eq "5.7" ]);then
+    if ([ $DbType == 'MySql' ] -a [$DbVersion == '5.7' ]);then
         src_url=https://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz
         Download_src
         cd $script_dir/src
