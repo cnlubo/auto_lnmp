@@ -153,12 +153,12 @@ INSTALL_MysqlDB()
     cmake -DCMAKE_INSTALL_PREFIX=$MysqlBasePath \
     -DDEFAULT_CHARSET=utf8mb4 \
     -DDEFAULT_COLLATION=utf8mb4_general_ci \
-    -DDOWNLOAD_BOOST=1
+    -DENABLED_LOCAL_INFILE=1 \
     -DWITH_BOOST=$script_dir/src/boost_1_59_0 \
     -DBUILD_CONFIG=mysql_release \
     -DWITH_INNODB_MEMCACHED=ON \
     -DWITH_MYSQLD_LDFLAGS='-ljemalloc'
-    -DENABLED_LOCAL_INFILE=1
+
 
     make -j$CpuProNum;
     make install;
