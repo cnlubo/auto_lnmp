@@ -234,8 +234,8 @@ EOF
 
 MysqlDB_Install_Main(){
 
-    MySQL_Var&&MYSQL_BASE_PACKAGES_INSTALL
-    #&&INSTALL_MysqlDB&&Create_Conf&&INIT_MySQL_DB
+    MySQL_Var&&MYSQL_BASE_PACKAGES_INSTALL&&INSTALL_MysqlDB
+    #&&Create_Conf&&INIT_MySQL_DB
 
 
 }
