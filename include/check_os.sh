@@ -50,11 +50,11 @@ if  [ $sysOS == "Linux" ]; then
         debian|ubuntu|devuan)
             sudo apt-get install lsb-release
             if [ $ID == ubuntu ];then
-                $Ubuntu_version=`lsb_release -sr | awk -F. '{print $1}'`
-                $OS=Ubuntu
+                Ubuntu_version=`lsb_release -sr | awk -F. '{print $1}'`
+                OS=Ubuntu
                 elif [ $ID == debian ]; then
-                $Debian_version=`lsb_release -sr | awk -F. '{print $1}'`
-                $OS=Debian
+                Debian_version=`lsb_release -sr | awk -F. '{print $1}'`
+                OS=Debian
             fi
         ;;
         centos|fedora|rhel)
@@ -65,13 +65,12 @@ if  [ $sysOS == "Linux" ]; then
             if ! [ -f "/usr/bin/lsb_release" ];then
                 $yumdnf install -y redhat-lsb-core
             fi
-            # OS=$ID
             if [ $ID == centos ];then
-                $CentOS_RHEL_version =`lsb_release -sr | awk -F. '{print $1}'`
-                $OS=CentOS
+                CentOS_RHEL_version =`lsb_release -sr | awk -F. '{print $1}'`
+                OS=CentOS
                 elif [ $ID == fedora ]; then
-                $Fedora_version =`lsb_release -sr | awk -F. '{print $1}'`
-                $OS=fedora
+                Fedora_version =`lsb_release -sr | awk -F. '{print $1}'`
+                OS=fedora
             fi
         ;;
         *)
