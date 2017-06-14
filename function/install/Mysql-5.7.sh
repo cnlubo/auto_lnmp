@@ -40,7 +40,7 @@ gtid_mode                           = ON
 enforce_gtid_consistency            = ON
 max_sp_recursion_depth              = 255
 log_bin_trust_function_creators     = ON
-explicit_defaults_for_timestamp
+#explicit_defaults_for_timestamp
 ################DIR################
 basedir                             = $MysqlBasePath
 pid_file                            = $MysqlRunPath/mysql$MysqlPort.pid
@@ -193,7 +193,8 @@ INIT_MySQL_DB(){
     echo "${CMSG}[Initialization Database] **************************************************>>${CEND}"
     #$MysqlBasePath/scripts/mysql_install_db --user=mysql --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --basedir=$MysqlBasePath --datadir=$MysqlDataPath;
     # 初始化数据库不生成密码    --initialize：root用户生成随机密码 --initialize-insecure：root用户不生成随机密码
-    $MysqlBasePath/bin/mysqld --user=mysql --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --initialize-insecure
+    $MysqlBasePath/bin/mysqld --user=mysql --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --basedir=$MysqlBasePath --datadir=$MysqlDataPath --initialize-insecure
+     echo $OS
     if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -gt 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -gt 7 ] );then
         #support Systemd
         [ -L /lib/systemd/system/mysql$MysqlPort.service ] && rm -f /lib/systemd/system/mysql$MysqlPort.service;
@@ -244,7 +245,8 @@ INIT_MySQL_DB(){
 
 MysqlDB_Install_Main(){
 
-    MySQL_Var&&MYSQL_BASE_PACKAGES_INSTALL&&INSTALL_MysqlDB&&Create_Conf&&INIT_MySQL_DB
+    MySQL_Var&&INIT_MySQL_DB
+    #&&MYSQL_BASE_PACKAGES_INSTALL&&INSTALL_MysqlDB&&Create_Conf
 
 
 }
