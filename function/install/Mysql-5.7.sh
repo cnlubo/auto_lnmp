@@ -193,7 +193,7 @@ INIT_MySQL_DB(){
     echo "${CMSG}[Initialization Database] **************************************************>>${CEND}"
     #$MysqlBasePath/scripts/mysql_install_db --user=mysql --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --basedir=$MysqlBasePath --datadir=$MysqlDataPath;
     # 初始化数据库不生成密码    --initialize：root用户生成随机密码 --initialize-insecure：root用户不生成随机密码
-    $MysqlBasePath/bin/mysqld --user=mysql --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --basedir=$MysqlBasePath --datadir=$MysqlDataPath --initialize-insecure
+    $MysqlBasePath/bin/mysqld --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --user=mysql  --basedir=$MysqlBasePath --datadir=$MysqlDataPath --initialize-insecure
      echo $OS
     if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -gt 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -gt 7 ] );then
         #support Systemd
