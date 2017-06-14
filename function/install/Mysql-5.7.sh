@@ -247,7 +247,7 @@ INIT_MySQL_DB(){
 
 MysqlDB_Install_Main(){
 
-    MySQL_Var&&INIT_MySQL_DB
+    MySQL_Var&&Create_Conf&&INIT_MySQL_DB
     #&&MYSQL_BASE_PACKAGES_INSTALL&&INSTALL_MysqlDB&&Create_Conf
 
 
