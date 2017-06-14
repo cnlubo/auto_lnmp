@@ -66,10 +66,10 @@ if  [ $sysOS == "Linux" ]; then
                 $yumdnf install -y redhat-lsb-core
             fi
             if [ $ID == centos ];then
-                CentOS_RHEL_version =`lsb_release -sr | awk -F. '{print $1}'`
+                CentOS_RHEL_version=`lsb_release -sr | awk -F. '{print $1}'`
                 OS=CentOS
                 elif [ $ID == fedora ]; then
-                Fedora_version =`lsb_release -sr | awk -F. '{print $1}'`
+                Fedora_version=`lsb_release -sr | awk -F. '{print $1}'`
                 OS=fedora
             fi
         ;;
