@@ -2,10 +2,8 @@
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
 # @Date:                                   2016-01-25 13:38:17
-# @file_name:                              Mysql-5.6.sh
-# @Last Modified by:                       ak47
-# @Last Modified time:                     2016-02-18 11:23:53
-# @Desc                                    mysql-5.6 install scripts
+# @file_name:                              Mysql-5.7.sh
+# @Desc                                    mysql-5.7 install scripts
 #----------------------------------------------------------------------------
 
 Create_Conf() {
@@ -91,15 +89,15 @@ slave_parallel_workers              = 3
 master_verify_checksum              = 1
 slave_skip_errors                   = ddl_exist_errors
 binlog_gtid_simple_recovery         = 1
-plugin_load                         = "validate_password.so;rpl_semi_sync_master=semisync_master.so;rpl_semi_sync_slave=semisync_slave.so"
+#plugin_load                         = "validate_password.so;rpl_semi_sync_master=semisync_master.so;rpl_semi_sync_slave=semisync_slave.so"
 loose_rpl_semi_sync_master_enabled  = 1
 loose_rpl_semi_sync_master_timeout  = 3000 # 5 second
 loose_rpl_semi_sync_slave_enabled   = 1
 
 
 ############## PASSWORD PLUGIN   ##########
-validate_password_policy            = MEDIUM
-validate-password                   = FORCE_PLUS_PERMANENT
+#validate_password_policy            = MEDIUM
+#validate-password                   = FORCE_PLUS_PERMANENT
 
 ############## CACHES AND LIMITS ##########
 max_connections                    = 1000
@@ -159,6 +157,12 @@ INSTALL_MysqlDB()
     -DWITH_INNODB_MEMCACHED=ON \
     -DWITH_MYSQLD_LDFLAGS='-ljemalloc'
 
+    #-DWITH_ARCHIVE_STORAGE_ENGINE=1
+    #-DWITH_BLACKHOLE_STORAGE_ENGINE=1
+    #-DWITH_INNOBASE_STORAGE_ENGINE=1 \
+    #-DWITH_PARTITION_STORAGE_ENGINE=1 \
+    #-DWITH_FEDERATED_STORAGE_ENGINE=1 \
+    #-DWITH_MYISAM_STORAGE_ENGINE=1 \
 
     make -j$CpuProNum;
     make install;
@@ -169,6 +173,7 @@ INSTALL_MysqlDB()
     ln -s $MysqlBasePath/bin/mysql /usr/bin/mysql;
     [ -L /usr/bin/mysqladmin ] && rm -f /usr/bin/mysqladmin;
     ln -s $MysqlBasePath/bin/mysqladmin /usr/bin/mysqladmin;
+
     echo PATH='$PATH:'$MysqlBasePath/bin >>/etc/profile
     echo export PATH >>/etc/profile
     echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/etc/profile
@@ -184,21 +189,12 @@ INIT_MySQL_DB(){
         chown -R mysql:mysql $path;
     done
     chown -R mysql.mysql $MysqlConfigPath/
-    chmod 777 $MysqlBasePath/scripts/mysql_install_db
+    # chmod 777 $MysqlBasePath/scripts/mysql_install_db
     echo "${CMSG}[Initialization Database] **************************************************>>${CEND}"
-    $MysqlBasePath/scripts/mysql_install_db --user=mysql --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --basedir=$MysqlBasePath --datadir=$MysqlDataPath;
-    mkdir -p $MysqlOptPath/init.d
-    chown -R mysql.mysql $MysqlOptPath/
-    cp $script_dir/template/mysql_start $MysqlOptPath/init.d/mysql$MysqlPort;
-    chmod 775 $MysqlOptPath/init.d/mysql$MysqlPort;
-    chown -R mysql.mysql $MysqlOptPath/init.d/
-    sed  -i ':a;$!{N;ba};s#basedir=#basedir='''$MysqlBasePath'''#' $MysqlOptPath/init.d/mysql$MysqlPort
-    sed  -i ':a;$!{N;ba};s#datadir=#datadir='''$MysqlDataPath'''#' $MysqlOptPath/init.d/mysql$MysqlPort
-    sed  -i ':a;$!{N;ba};s#conf=#conf='''$MysqlConfigPath/my$MysqlPort.cnf'''#' $MysqlOptPath/init.d/mysql$MysqlPort
-    sed  -i ':a;$!{N;ba};s#mysql_user=#mysql_user='''$mysql_user'''#' $MysqlOptPath/init.d/mysql$MysqlPort
-    sed  -i ':a;$!{N;ba};s#mysqld_pid_file_path=#mysqld_pid_file_path='''$MysqlRunPath/mysql$MysqlPort\.pid'''#' $MysqlOptPath/init.d/mysql$MysqlPort
-    if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version == 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version == 7 ] );then
-        #-o [$OS="CentOS" -a CentOS_RHEL_version=7];then
+    #$MysqlBasePath/scripts/mysql_install_db --user=mysql --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --basedir=$MysqlBasePath --datadir=$MysqlDataPath;
+    # 初始化数据库不生成密码    --initialize：root用户生成随机密码 --initialize-insecure：root用户不生成随机密码
+    $MysqlBasePath/bin/mysqld --user=mysql --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --initialize-insecure
+    if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -gt 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -gt 7 ] );then
         #support Systemd
         [ -L /lib/systemd/system/mysql$MysqlPort.service ] && rm -f /lib/systemd/system/mysql$MysqlPort.service;
         cp $script_dir/template/mysql.service /lib/systemd/system/mysql$MysqlPort.service;
@@ -208,34 +204,47 @@ INIT_MySQL_DB(){
         sed -i ''s#@defaults-file#$mycnf#g'' /lib/systemd/system/mysql$MysqlPort.service
         systemctl enable mysql$MysqlPort.service
     else
+        mkdir -p $MysqlOptPath/init.d
+        chown -R mysql.mysql $MysqlOptPath/
+        cp $script_dir/template/mysql_start $MysqlOptPath/init.d/mysql$MysqlPort;
+        chmod 775 $MysqlOptPath/init.d/mysql$MysqlPort;
+        chown -R mysql.mysql $MysqlOptPath/init.d/
+        sed  -i ':a;$!{N;ba};s#basedir=#basedir='''$MysqlBasePath'''#' $MysqlOptPath/init.d/mysql$MysqlPort
+        sed  -i ':a;$!{N;ba};s#datadir=#datadir='''$MysqlDataPath'''#' $MysqlOptPath/init.d/mysql$MysqlPort
+        sed  -i ':a;$!{N;ba};s#conf=#conf='''$MysqlConfigPath/my$MysqlPort.cnf'''#' $MysqlOptPath/init.d/mysql$MysqlPort
+        sed  -i ':a;$!{N;ba};s#mysql_user=#mysql_user='''$mysql_user'''#' $MysqlOptPath/init.d/mysql$MysqlPort
+        sed  -i ':a;$!{N;ba};s#mysqld_pid_file_path=#mysqld_pid_file_path='''$MysqlRunPath/mysql$MysqlPort\.pid'''#' $MysqlOptPath/init.d/mysql$MysqlPort
+
         [ -L /etc/init.d/mysql$MysqlPort ] && rm -f /etc/init.d/mysql$MysqlPort;
         ln -s $MysqlOptPath/init.d/mysql$MysqlPort /etc/init.d/mysql$MysqlPort;
-    fi;
-    echo "${CMSG}[config db ] **************************************************>>${CEND}";
-    $MysqlOptPath/init.d/mysql$MysqlPort start;
-    $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'127.0.0.1' identified by \"$dbrootpwd\" with grant option;"
-    $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'localhost' identified by \"$dbrootpwd\" with grant option;"
-mysql -uroot -S $MysqlRunPath/mysql$MysqlPort.sock -p$dbrootpwd <<EOF
-    USE mysql;
-    delete from user where Password='';
-    DELETE FROM user WHERE user='';
-    delete from proxies_priv where Host!='localhost';
-    drop database test;
-    DROP USER ''@'%';
-    reset master;
-    FLUSH PRIVILEGES;
-EOF
-    $MysqlOptPath/init.d/mysql$MysqlPort stop;
-    echo "${CMSG}[config db ] **************************************************>>${CEND}";
-    service mysql$MysqlPort start;
-    rm -rf $script_dir/src/mysql-$mysql_5_6_version;
+    fi
+
+
+
+    #     echo "${CMSG}[config db ] **************************************************>>${CEND}";
+    #     $MysqlOptPath/init.d/mysql$MysqlPort start;
+    #     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'127.0.0.1' identified by \"$dbrootpwd\" with grant option;"
+    #     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'localhost' identified by \"$dbrootpwd\" with grant option;"
+    # mysql -uroot -S $MysqlRunPath/mysql$MysqlPort.sock -p$dbrootpwd <<EOF
+    #     USE mysql;
+    #     delete from user where Password='';
+    #     DELETE FROM user WHERE user='';
+    #     delete from proxies_priv where Host!='localhost';
+    #     drop database test;
+    #     DROP USER ''@'%';
+    #     reset master;
+    #     FLUSH PRIVILEGES;
+    # EOF
+    #     $MysqlOptPath/init.d/mysql$MysqlPort stop;
+    #     echo "${CMSG}[config db ] **************************************************>>${CEND}";
+    #     service mysql$MysqlPort start;
+    #     rm -rf $script_dir/src/mysql-$mysql_5_6_version;
 
 }
 
 MysqlDB_Install_Main(){
 
-    MySQL_Var&&MYSQL_BASE_PACKAGES_INSTALL&&INSTALL_MysqlDB
-    #&&Create_Conf&&INIT_MySQL_DB
+    MySQL_Var&&MYSQL_BASE_PACKAGES_INSTALL&&INSTALL_MysqlDB&&Create_Conf&&INIT_MySQL_DB
 
 
 }
