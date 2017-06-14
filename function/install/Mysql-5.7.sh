@@ -34,13 +34,13 @@ lower_case_table_names              = 1
 join_buffer_size                    = 8M
 sort_buffer_size                    = 8M
 server_id                           = $server_id
-metadata_locks_cache_size           = 2048
-metadata_locks_hash_instances       = 16
+#metadata_locks_cache_size           = 2048
+#metadata_locks_hash_instances       = 16
 gtid_mode                           = ON
 enforce_gtid_consistency            = ON
 max_sp_recursion_depth              = 255
 log_bin_trust_function_creators     = ON
-#explicit_defaults_for_timestamp
+explicit_defaults_for_timestamp
 ################DIR################
 basedir                             = $MysqlBasePath
 pid_file                            = $MysqlRunPath/mysql$MysqlPort.pid
@@ -65,7 +65,7 @@ general_log_file                    = $MysqlLogPath/general.log
 max_allowed_packet                  = 16M
 max_connect_errors                  = 6000
 skip_name_resolve
-sql_mode                            = STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY
+sql_mode                            = STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,ONLY_FULL_GROUP_BY
 sysdate_is_now                      = 1
 innodb_strict_mode                  = 1
 skip_ssl
@@ -90,6 +90,7 @@ master_verify_checksum              = 1
 slave_skip_errors                   = ddl_exist_errors
 binlog_gtid_simple_recovery         = 1
 #plugin_load                         = "validate_password.so;rpl_semi_sync_master=semisync_master.so;rpl_semi_sync_slave=semisync_slave.so"
+plugin_load                         = "rpl_semi_sync_master=semisync_master.so;rpl_semi_sync_slave=semisync_slave.so"
 loose_rpl_semi_sync_master_enabled  = 1
 loose_rpl_semi_sync_master_timeout  = 3000 # 5 second
 loose_rpl_semi_sync_slave_enabled   = 1
@@ -112,8 +113,8 @@ innodb_data_file_path               = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                 = O_DIRECT
 innodb_log_file_size                = 512M
 innodb_buffer_pool_size             =`expr $RamTotalG \* 80 / 102400 `G
-innodb_file_format                  = Barracuda
-innodb_file_format_max              = Barracuda
+#innodb_file_format                  = Barracuda
+#innodb_file_format_max              = Barracuda
 innodb_log_buffer_size              = 64M
 innodb_lru_scan_depth               = 2048
 innodb_purge_threads                = 4
@@ -195,6 +196,7 @@ INIT_MySQL_DB(){
     # 初始化数据库不生成密码    --initialize：root用户生成随机密码 --initialize-insecure：root用户不生成随机密码
     $MysqlBasePath/bin/mysqld --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --user=mysql  --basedir=$MysqlBasePath --datadir=$MysqlDataPath --initialize-insecure
      echo $OS
+     echo $CentOS_RHEL_version
     if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -gt 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -gt 7 ] );then
         #support Systemd
         [ -L /lib/systemd/system/mysql$MysqlPort.service ] && rm -f /lib/systemd/system/mysql$MysqlPort.service;
