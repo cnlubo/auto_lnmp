@@ -33,8 +33,6 @@ lower_case_table_names              = 1
 join_buffer_size                    = 8M
 sort_buffer_size                    = 8M
 server_id                           = $server_id
-#metadata_locks_cache_size           = 2048
-#metadata_locks_hash_instances       = 16
 gtid_mode                           = ON
 enforce_gtid_consistency            = ON
 max_sp_recursion_depth              = 255
@@ -47,7 +45,7 @@ socket                              = $MysqlRunPath/mysql$MysqlPort.sock
 datadir                             = $MysqlDataPath
 tmpdir                              = $MysqlTmpPath
 slave_load_tmpdir                   = $MysqlTmpPath
-innodb_data_home_dir                = $MysqlDataPath
+innodb_data_home_dir                = $MysqlDataPath/
 innodb_log_group_home_dir           = $MysqlLogPath
 log_bin                             = $MysqlLogPath/mysql_bin
 log_bin_index                       = $MysqlLogPath/mysql_bin.index
@@ -69,7 +67,7 @@ sysdate_is_now                      = 1
 innodb_strict_mode                  = 1
 skip_ssl
 safe_user_create                    = 1
-#sql_safe_updates                    = 1
+sql_safe_updates                    = 1
 ################  BINARY LOGGING##########
 expire_logs_days                    = 7
 sync_binlog                         = 1
@@ -88,16 +86,15 @@ slave_parallel_workers              = 3
 master_verify_checksum              = 1
 slave_skip_errors                   = ddl_exist_errors
 binlog_gtid_simple_recovery         = 1
-#plugin_load                         = "validate_password.so;rpl_semi_sync_master=semisync_master.so;rpl_semi_sync_slave=semisync_slave.so"
-plugin_load                         = "rpl_semi_sync_master=semisync_master.so;rpl_semi_sync_slave=semisync_slave.so"
+plugin_load                         = "validate_password.so;rpl_semi_sync_master=semisync_master.so;rpl_semi_sync_slave=semisync_slave.so"
 loose_rpl_semi_sync_master_enabled  = 1
 loose_rpl_semi_sync_master_timeout  = 3000 # 5 second
 loose_rpl_semi_sync_slave_enabled   = 1
 
 
 ############## PASSWORD PLUGIN   ##########
-#validate_password_policy            = MEDIUM
-#validate-password                   = FORCE_PLUS_PERMANENT
+validate_password_policy            = MEDIUM
+validate-password                   = FORCE_PLUS_PERMANENT
 
 ############## CACHES AND LIMITS ##########
 max_connections                    = 1000
@@ -112,8 +109,6 @@ innodb_data_file_path               = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                 = O_DIRECT
 innodb_log_file_size                = 512M
 innodb_buffer_pool_size             =`expr $RamTotalG \* 80 / 102400 `G
-#innodb_file_format                  = Barracuda
-#innodb_file_format_max              = Barracuda
 innodb_log_buffer_size              = 64M
 innodb_lru_scan_depth               = 2048
 innodb_purge_threads                = 4
@@ -124,8 +119,7 @@ innodb_buffer_pool_dump_at_shutdown = 1
 innodb_lock_wait_timeout            = 5
 innodb_io_capacity                  = 200
 innodb_undo_tablespaces             = 3
-#innodb_print_all_deadlocks          = 1
-#innodb_strict_mode                  = 1
+innodb_strict_mode                  = 1     #>= 5.7.7 default ON
 ################# LOGGING####################### #
 slow_query_log                         = 1
 general_log                            = 0
