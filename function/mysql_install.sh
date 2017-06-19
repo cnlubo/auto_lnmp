@@ -36,7 +36,7 @@ MySQL_Var(){
         echo "unknow Dbtype";;
     esac
     read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort)" MysqlOptPath
-    echo $MysqlBasePath
+    #echo $MysqlBasePath
     MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort}"
     MysqlDataPath="$MysqlOptPath/data"
     MysqlLogPath="$MysqlOptPath/log"
@@ -45,9 +45,9 @@ MySQL_Var(){
     MysqlRunPath="$MysqlOptPath/run"
     # setting innodb_buffer_pool_size
     innodb_buffer_pool_size=`expr $RamTotalG \* 80 / 102400`
-    echo $innodb_buffer_pool_size
-    read -p "Please input innodb_buffer_pool_size (default:$innodb_buffer_pool_size)" innodb_buffer_pool_size
-    echo $innodb_buffer_pool_size
+    #echo $innodb_buffer_pool_size
+    read -p "Please input innodb_buffer_pool_size (default:$innodb_buffer_pool_size G)" innodb_buffer_pool_size
+    #echo $innodb_buffer_pool_size
 
 }
 MYSQL_BASE_PACKAGES_INSTALL(){

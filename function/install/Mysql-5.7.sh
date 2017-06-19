@@ -63,11 +63,10 @@ max_allowed_packet                  = 16M
 max_connect_errors                  = 6000
 skip_name_resolve
 sql_mode                            = STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,ONLY_FULL_GROUP_BY
-sysdate_is_now                      = 1
 innodb_strict_mode                  = 1
+innodb_strict_mode                  = 1     #>= 5.7.7 default ON
 skip_ssl
 safe_user_create                    = 1
-sql_safe_updates                    = 1
 ################  BINARY LOGGING##########
 expire_logs_days                    = 7
 sync_binlog                         = 1
@@ -108,7 +107,9 @@ thread_stack                       = 512K
 innodb_data_file_path               = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                 = O_DIRECT
 innodb_log_file_size                = 512M
-innodb_buffer_pool_size             =`expr $RamTotalG \* 80 / 102400 `G
+#innodb_buffer_pool_size             =`expr $RamTotalG \* 80 / 102400 `G
+innodb_buffer_pool_size             = $innodb_buffer_pool_size G
+
 innodb_log_buffer_size              = 64M
 innodb_lru_scan_depth               = 2048
 innodb_purge_threads                = 4
@@ -119,7 +120,6 @@ innodb_buffer_pool_dump_at_shutdown = 1
 innodb_lock_wait_timeout            = 5
 innodb_io_capacity                  = 200
 innodb_undo_tablespaces             = 3
-innodb_strict_mode                  = 1     #>= 5.7.7 default ON
 ################# LOGGING####################### #
 slow_query_log                         = 1
 general_log                            = 0

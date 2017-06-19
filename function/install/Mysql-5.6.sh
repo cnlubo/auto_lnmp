@@ -72,7 +72,6 @@ sysdate_is_now                      = 1
 innodb_strict_mode                  = 1
 skip_ssl
 safe_user_create                    = 1
-#sql_safe_updates                    = 1
 ################  BINARY LOGGING##########
 expire_logs_days                    = 7
 sync_binlog                         = 1
