@@ -63,7 +63,6 @@ max_allowed_packet                  = 16M
 max_connect_errors                  = 6000
 skip_name_resolve
 sql_mode                            = STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,ONLY_FULL_GROUP_BY
-innodb_strict_mode                  = 1
 innodb_strict_mode                  = 1     #>= 5.7.7 default ON
 skip_ssl
 safe_user_create                    = 1
@@ -107,7 +106,6 @@ thread_stack                       = 512K
 innodb_data_file_path               = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                 = O_DIRECT
 innodb_log_file_size                = 512M
-#innodb_buffer_pool_size             =`expr $RamTotalG \* 80 / 102400 `G
 innodb_buffer_pool_size             = ${innodb_buffer_pool_size}G
 innodb_log_buffer_size              = 64M
 innodb_lru_scan_depth               = 2048
@@ -187,8 +185,7 @@ INIT_MySQL_DB(){
     #$MysqlBasePath/scripts/mysql_install_db --user=mysql --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --basedir=$MysqlBasePath --datadir=$MysqlDataPath;
     # 初始化数据库不生成密码    --initialize：root用户生成随机密码 --initialize-insecure：root用户不生成随机密码
     $MysqlBasePath/bin/mysqld --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --user=mysql  --basedir=$MysqlBasePath --datadir=$MysqlDataPath --initialize-insecure
-     echo $OS
-     echo $CentOS_RHEL_version
+    
     if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
         #support Systemd
         [ -L /lib/systemd/system/mysql$MysqlPort.service ] && rm -f /lib/systemd/system/mysql$MysqlPort.service;
