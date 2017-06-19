@@ -46,7 +46,7 @@ MySQL_Var(){
     # setting innodb_buffer_pool_size
     innodb_buffer_pool_size=`expr $RamTotalG \* 80 / 102400`
     #echo $innodb_buffer_pool_size
-    read -p "Please input innodb_buffer_pool_size (default:$innodb_buffer_pool_size G)" innodb_buffer_pool_size
+    read -p "Please input innodb_buffer_pool_size (default:'$innodb_buffer_pool_size'G)" innodb_buffer_pool_size
     #echo $innodb_buffer_pool_size
 
 }
