@@ -108,8 +108,7 @@ innodb_data_file_path               = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                 = O_DIRECT
 innodb_log_file_size                = 512M
 #innodb_buffer_pool_size             =`expr $RamTotalG \* 80 / 102400 `G
-innodb_buffer_pool_size             = `$innodb_buffer_pool_size`G
-
+innodb_buffer_pool_size             = ${innodb_buffer_pool_size}G
 innodb_log_buffer_size              = 64M
 innodb_lru_scan_depth               = 2048
 innodb_purge_threads                = 4
