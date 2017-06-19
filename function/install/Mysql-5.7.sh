@@ -5,7 +5,6 @@
 # @file_name:                              Mysql-5.7.sh
 # @Desc                                    mysql-5.7 install scripts
 #----------------------------------------------------------------------------
-
 Create_Conf() {
 
     HostIP=`python $script_dir/py2/get_local_ip.py`
@@ -197,7 +196,7 @@ INIT_MySQL_DB(){
     $MysqlBasePath/bin/mysqld --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --user=mysql  --basedir=$MysqlBasePath --datadir=$MysqlDataPath --initialize-insecure
      echo $OS
      echo $CentOS_RHEL_version
-    if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -gt 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -gt 7 ] );then
+    if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
         #support Systemd
         [ -L /lib/systemd/system/mysql$MysqlPort.service ] && rm -f /lib/systemd/system/mysql$MysqlPort.service;
         cp $script_dir/template/mysql.service /lib/systemd/system/mysql$MysqlPort.service;
