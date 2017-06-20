@@ -195,6 +195,7 @@ INIT_MySQL_DB(){
         sed -i ''s#@MysqlBasePath#$MysqlBasePath#g'' /lib/systemd/system/mysql$MysqlPort.service
         sed -i ''s#@defaults-file#$mycnf#g'' /lib/systemd/system/mysql$MysqlPort.service
         systemctl enable mysql$MysqlPort.service
+        echo "${CMSG}[starting db ] **************************************************>>${CEND}";
         systemctl start mysql$MysqlPort.service #启动数据库
     else
         mkdir -p $MysqlOptPath/init.d
@@ -210,8 +211,14 @@ INIT_MySQL_DB(){
 
         [ -L /etc/init.d/mysql$MysqlPort ] && rm -f /etc/init.d/mysql$MysqlPort
         ln -s $MysqlOptPath/init.d/mysql$MysqlPort /etc/init.d/mysql$MysqlPort
+        echo "${CMSG}[starting db ] **************************************************>>${CEND}";
         service start mysql$MysqlPort
     fi
+
+
+}
+Config_MySQL_DB()
+{
     echo "${CMSG}[config db ] **************************************************>>${CEND}";
     #     $MysqlOptPath/init.d/mysql$MysqlPort start;
     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'127.0.0.1' identified by \"$dbrootpwd\" with grant option;"
@@ -227,15 +234,15 @@ INIT_MySQL_DB(){
     #     FLUSH PRIVILEGES;
     # EOF
     #     $MysqlOptPath/init.d/mysql$MysqlPort stop;
-    echo "${CMSG}[config db ] **************************************************>>${CEND}";
+    #echo "${CMSG}[config db ] **************************************************>>${CEND}";
     #     service mysql$MysqlPort start;
     #     rm -rf $script_dir/src/mysql-$mysql_5_6_version;
-
 }
 
 MysqlDB_Install_Main(){
 
-    MySQL_Var&&MYSQL_BASE_PACKAGES_INSTALL&&Create_Conf&&INIT_MySQL_DB
+    MySQL_Var&&Config_MySQL_DB
+    #MYSQL_BASE_PACKAGES_INSTALL&&Create_Conf&&INIT_MySQL_DB
     #&&MYSQL_BASE_PACKAGES_INSTALL&&INSTALL_MysqlDB&&Create_Conf
 
 
