@@ -55,24 +55,25 @@ log_error                           = $MysqlLogPath/alert.log
 slow_query_log_file                 = $MysqlLogPath/slow.log
 general_log_file                    = $MysqlLogPath/general.log
 
-################MyISAM#############
+################MyISAM##############################
 
-################ SAFETY############
+################ SAFETY##############################
 
 max_allowed_packet                  = 16M
 max_connect_errors                  = 6000
-skip_name_resolve
+skip_name_resolve                   #禁用DNS解析
+#skip-networking                     #设置MySQL不要监听网络，也就只能本机访问
 sql_mode                            = STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,ONLY_FULL_GROUP_BY
 innodb_strict_mode                  = 1     #>= 5.7.7 default ON
 skip_ssl
 safe_user_create                    = 1
-################  BINARY LOGGING##########
+################  BINARY LOGGING######################
 expire_logs_days                    = 7
 sync_binlog                         = 1
 binlog_format                       = row
 binlog_rows_query_log_events        = 1
 binlog_error_action                 = ABORT_SERVER
-############### REPLICATION ###############
+############### REPLICATION ############################
 read_only                           = 1
 skip_slave_start                    = 1
 log_slave_updates                   = 1
@@ -84,19 +85,18 @@ slave_parallel_workers              = 3
 master_verify_checksum              = 1
 slave_skip_errors                   = ddl_exist_errors
 binlog_gtid_simple_recovery         = 1
-#plugin_load                         = "validate_password.so;rpl_semi_sync_master=semisync_master.so;rpl_semi_sync_slave=semisync_slave.so"
 plugin_load                         = "rpl_semi_sync_master=semisync_master.so;rpl_semi_sync_slave=semisync_slave.so"
 loose_rpl_semi_sync_master_enabled  = 1
 loose_rpl_semi_sync_master_timeout  = 3000 # 5 second
 loose_rpl_semi_sync_slave_enabled   = 1
 
 
-############## PASSWORD PLUGIN   ##########
+############## PASSWORD PLUGIN   ############################
 #plugin-load-add                    =validate_password.so
 #validate_password_policy           = MEDIUM
 #validate-password                  = FORCE_PLUS_PERMANENT
 
-############## CACHES AND LIMITS ##########
+############## CACHES AND LIMITS #############################
 max_connections                    = 1000
 max_user_connections               = 998
 open_files_limit                   = 65535
@@ -119,7 +119,7 @@ innodb_buffer_pool_dump_at_shutdown = 1
 innodb_lock_wait_timeout            = 5
 innodb_io_capacity                  = 200
 innodb_undo_tablespaces             = 3
-################# LOGGING####################### #
+################# LOGGING#########################################
 slow_query_log                         = 1
 general_log                            = 0
 long_query_time                        = 3
@@ -228,21 +228,7 @@ Config_MySQL_DB()
     sed -i '/plugin-load-add/s/^#//' $MysqlConfigPath/my$MysqlPort.cnf
     sed -i '/validate_password_policy/s/^#//' $MysqlConfigPath/my$MysqlPort.cnf
     sed -i '/validate-password/s/^#//' $MysqlConfigPath/my$MysqlPort.cnf
-
-    # mysql -uroot -S $MysqlRunPath/mysql$MysqlPort.sock -p$dbrootpwd <<EOF
-    #     USE mysql;
-    #     delete from user where Password='';
-    #     DELETE FROM user WHERE user='';
-    #     delete from proxies_priv where Host!='localhost';
-    #     drop database test;
-    #     DROP USER ''@'%';
-    #     reset master;
-    #     FLUSH PRIVILEGES;
-    # EOF
     $MysqlOptPath/init.d/mysql$MysqlPort stop;
-    #echo "${CMSG}[config db ] **************************************************>>${CEND}";
-    #     service mysql$MysqlPort start;
-    #     rm -rf $script_dir/src/mysql-$mysql_5_6_version;
     #启动数据库
     if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
         echo "${CMSG}[starting db ] **************************************************>>${CEND}";
@@ -251,6 +237,7 @@ Config_MySQL_DB()
         echo "${CMSG}[starting db ] **************************************************>>${CEND}";
         service start mysql$MysqlPort
     fi
+    rm -rf $script_dir/src/mysql-$mysql_5_7_version;
 
 }
 
