@@ -2,8 +2,8 @@
 # ----------------------------------------------------------------
 #@Author          :              cnlubo (454331202@qq.com)
 #@CreateDate      :              2016-01-25 10:36:45
-# @Filename       :              mysql_install.sh
-# @desc           :              mysql install main
+#@Filename       :              mysql_install.sh
+#@desc           :              mysql install main
 #------------------------------------------------------------------
 SYSTEM_CHECK(){
     [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && exit;
@@ -46,7 +46,7 @@ MySQL_Var(){
     # setting innodb_buffer_pool_size
     innodb_buffer_pool_size=`expr $RamTotalG \* 80 / 102400`
     read -p "Please input innodb_buffer_pool_size (default:${innodb_buffer_pool_size}G)" innodb_buffer_pool_size
-    
+
 }
 MYSQL_BASE_PACKAGES_INSTALL(){
     case  $OS in
