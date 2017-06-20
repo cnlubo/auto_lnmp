@@ -92,8 +92,9 @@ loose_rpl_semi_sync_slave_enabled   = 1
 
 
 ############## PASSWORD PLUGIN   ##########
-#validate_password_policy            = MEDIUM
-#validate-password                   = FORCE_PLUS_PERMANENT
+#plugin-load-add                    =validate_password.so
+#validate_password_policy           = MEDIUM
+#validate-password                  = FORCE_PLUS_PERMANENT
 
 ############## CACHES AND LIMITS ##########
 max_connections                    = 1000
@@ -223,6 +224,11 @@ Config_MySQL_DB()
     $MysqlOptPath/init.d/mysql$MysqlPort start;
     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'127.0.0.1' identified by \"$dbrootpwd\" with grant option;"
     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'localhost' identified by \"$dbrootpwd\" with grant option;"
+    #打开注释生效validate_password 插件
+    sed -i '/plugin-load-add/s/^#//' $MysqlConfigPath/my$MysqlPort.cnf
+    sed -i '/validate_password_policy/s/^#//' $MysqlConfigPath/my$MysqlPort.cnf
+    sed -i '/validate-password/s/^#//' $MysqlConfigPath/my$MysqlPort.cnf
+
     # mysql -uroot -S $MysqlRunPath/mysql$MysqlPort.sock -p$dbrootpwd <<EOF
     #     USE mysql;
     #     delete from user where Password='';
@@ -237,11 +243,20 @@ Config_MySQL_DB()
     #echo "${CMSG}[config db ] **************************************************>>${CEND}";
     #     service mysql$MysqlPort start;
     #     rm -rf $script_dir/src/mysql-$mysql_5_6_version;
+    #启动数据库
+    if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
+        echo "${CMSG}[starting db ] **************************************************>>${CEND}";
+        systemctl start mysql$MysqlPort.service
+    else
+        echo "${CMSG}[starting db ] **************************************************>>${CEND}";
+        service start mysql$MysqlPort
+    fi
+
 }
 
 MysqlDB_Install_Main(){
 
-    MySQL_Var&&YSQL_BASE_PACKAGES_INSTALL&&Create_Conf&&INIT_MySQL_DB&&Config_MySQL_DB
+    MySQL_Var&&MYSQL_BASE_PACKAGES_INSTALL&&Create_Conf&&INIT_MySQL_DB&&Config_MySQL_DB
     #MYSQL_BASE_PACKAGES_INSTALL&&Create_Conf&&INIT_MySQL_DB
     #&&MYSQL_BASE_PACKAGES_INSTALL&&INSTALL_MysqlDB&&Create_Conf
 
