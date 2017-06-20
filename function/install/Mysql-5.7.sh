@@ -185,7 +185,18 @@ INIT_MySQL_DB(){
     # 初始化数据库不生成密码    --initialize：root用户生成随机密码 --initialize-insecure：root用户不生成随机密码
     $MysqlBasePath/bin/mysqld --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --user=mysql \
     --basedir=$MysqlBasePath --datadir=$MysqlDataPath --initialize-insecure
-
+    #启动脚本
+    mkdir -p $MysqlOptPath/init.d
+    chown -R mysql.mysql $MysqlOptPath/
+    cp $script_dir/template/mysql_start $MysqlOptPath/init.d/mysql$MysqlPort;
+    chmod 775 $MysqlOptPath/init.d/mysql$MysqlPort;
+    chown -R mysql.mysql $MysqlOptPath/init.d/
+    sed  -i ':a;$!{N;ba};s#basedir=#basedir='''$MysqlBasePath'''#' $MysqlOptPath/init.d/mysql$MysqlPort
+    sed  -i ':a;$!{N;ba};s#datadir=#datadir='''$MysqlDataPath'''#' $MysqlOptPath/init.d/mysql$MysqlPort
+    sed  -i ':a;$!{N;ba};s#conf=#conf='''$MysqlConfigPath/my$MysqlPort.cnf'''#' $MysqlOptPath/init.d/mysql$MysqlPort
+    sed  -i ':a;$!{N;ba};s#mysql_user=#mysql_user='''$mysql_user'''#' $MysqlOptPath/init.d/mysql$MysqlPort
+    sed  -i ':a;$!{N;ba};s#mysqld_pid_file_path=#mysqld_pid_file_path='''$MysqlRunPath/mysql$MysqlPort\.pid'''#' $MysqlOptPath/init.d/mysql$MysqlPort
+    #服务脚本
     if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
         #support Systemd
         [ -L /lib/systemd/system/mysql$MysqlPort.service ] && rm -f /lib/systemd/system/mysql$MysqlPort.service;
@@ -196,23 +207,12 @@ INIT_MySQL_DB(){
         sed -i ''s#@defaults-file#$mycnf#g'' /lib/systemd/system/mysql$MysqlPort.service
         systemctl enable mysql$MysqlPort.service
         echo "${CMSG}[starting db ] **************************************************>>${CEND}";
-        systemctl start mysql$MysqlPort.service #启动数据库
+        #systemctl start mysql$MysqlPort.service #启动数据库
     else
-        mkdir -p $MysqlOptPath/init.d
-        chown -R mysql.mysql $MysqlOptPath/
-        cp $script_dir/template/mysql_start $MysqlOptPath/init.d/mysql$MysqlPort;
-        chmod 775 $MysqlOptPath/init.d/mysql$MysqlPort;
-        chown -R mysql.mysql $MysqlOptPath/init.d/
-        sed  -i ':a;$!{N;ba};s#basedir=#basedir='''$MysqlBasePath'''#' $MysqlOptPath/init.d/mysql$MysqlPort
-        sed  -i ':a;$!{N;ba};s#datadir=#datadir='''$MysqlDataPath'''#' $MysqlOptPath/init.d/mysql$MysqlPort
-        sed  -i ':a;$!{N;ba};s#conf=#conf='''$MysqlConfigPath/my$MysqlPort.cnf'''#' $MysqlOptPath/init.d/mysql$MysqlPort
-        sed  -i ':a;$!{N;ba};s#mysql_user=#mysql_user='''$mysql_user'''#' $MysqlOptPath/init.d/mysql$MysqlPort
-        sed  -i ':a;$!{N;ba};s#mysqld_pid_file_path=#mysqld_pid_file_path='''$MysqlRunPath/mysql$MysqlPort\.pid'''#' $MysqlOptPath/init.d/mysql$MysqlPort
-
         [ -L /etc/init.d/mysql$MysqlPort ] && rm -f /etc/init.d/mysql$MysqlPort
         ln -s $MysqlOptPath/init.d/mysql$MysqlPort /etc/init.d/mysql$MysqlPort
         echo "${CMSG}[starting db ] **************************************************>>${CEND}";
-        service start mysql$MysqlPort
+        #service start mysql$MysqlPort
     fi
 
 
@@ -220,7 +220,7 @@ INIT_MySQL_DB(){
 Config_MySQL_DB()
 {
     echo "${CMSG}[config db ] **************************************************>>${CEND}";
-    #     $MysqlOptPath/init.d/mysql$MysqlPort start;
+    $MysqlOptPath/init.d/mysql$MysqlPort start;
     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'127.0.0.1' identified by \"$dbrootpwd\" with grant option;"
     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'localhost' identified by \"$dbrootpwd\" with grant option;"
     # mysql -uroot -S $MysqlRunPath/mysql$MysqlPort.sock -p$dbrootpwd <<EOF
@@ -233,7 +233,7 @@ Config_MySQL_DB()
     #     reset master;
     #     FLUSH PRIVILEGES;
     # EOF
-    #     $MysqlOptPath/init.d/mysql$MysqlPort stop;
+    $MysqlOptPath/init.d/mysql$MysqlPort stop;
     #echo "${CMSG}[config db ] **************************************************>>${CEND}";
     #     service mysql$MysqlPort start;
     #     rm -rf $script_dir/src/mysql-$mysql_5_6_version;
@@ -241,7 +241,7 @@ Config_MySQL_DB()
 
 MysqlDB_Install_Main(){
 
-    MySQL_Var&&Config_MySQL_DB
+    MySQL_Var&&YSQL_BASE_PACKAGES_INSTALL&&Create_Conf&&INIT_MySQL_DB&&Config_MySQL_DB
     #MYSQL_BASE_PACKAGES_INSTALL&&Create_Conf&&INIT_MySQL_DB
     #&&MYSQL_BASE_PACKAGES_INSTALL&&INSTALL_MysqlDB&&Create_Conf
 
