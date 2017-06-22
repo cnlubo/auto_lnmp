@@ -131,7 +131,7 @@ EOF
 
 }
 
-INSTALL_MysqlDB()
+Install_MySQLDB()
 {
     echo "${CMSG}[Mysql${mysql_5_7_version} Installing] **************************************************>>${CEND}";
     src_url=http://cdn.mysql.com//Downloads/MySQL-5.7/mysql-$mysql_5_7_version.tar.gz
@@ -171,7 +171,7 @@ INSTALL_MysqlDB()
     source /etc/profile
 
 }
-INIT_MySQL_DB(){
+Init_MySQLDB(){
 
     #初始化创建数据库
     for path in $MysqlLogPath $MysqlConfigPath $MysqlDataPath $MysqlTmpPath $MysqlRunPath;do
@@ -218,7 +218,7 @@ INIT_MySQL_DB(){
 
 
 }
-Config_MySQL_DB()
+Config_MySQLDB()
 {
     echo "${CMSG}[config db ] **************************************************>>${CEND}";
     $MysqlOptPath/init.d/mysql$MysqlPort start;
@@ -241,11 +241,10 @@ Config_MySQL_DB()
 
 }
 
-MysqlDB_Install_Main(){
+MySQLDB_Install_Main(){
 
-    MySQL_Var&&MYSQL_BASE_PACKAGES_INSTALL&&Create_Conf&&INIT_MySQL_DB&&Config_MySQL_DB
-    #MYSQL_BASE_PACKAGES_INSTALL&&Create_Conf&&INIT_MySQL_DB
-    #&&MYSQL_BASE_PACKAGES_INSTALL&&INSTALL_MysqlDB&&Create_Conf
+    MySQL_Var&&MySQL_Base_Packages_Install&&Install_MySQLDB&&Create_Conf&&Init_MySQLDB&&Config_MySQLDB
+
 
 
 }

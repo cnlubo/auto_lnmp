@@ -13,10 +13,13 @@ SYSTEM_CHECK(){
 MySQL_Var(){
 
     while :
-    do
-        read -p "Please input the root password of database: " dbrootpwd
-        (( ${#dbrootpwd} >= 5 )) &&dbrootpwd="${dbrootpwd:=""}"&& break || echo "${CWARNING}database root password least 5 characters! ${CEND}"
-    done
+    # do
+    #     read -p "Please input the root password of database: " dbrootpwd
+    #     (( ${#dbrootpwd} >= 8 )) &&dbrootpwd="${dbrootpwd:=""}"&& break || echo "${CWARNING}database root password least 8 characters! ${CEND}"
+    #
+    # done
+    dbrootpwd=`mkpasswd -l 8`
+    echo $dbrootpwd
     read -p "Please input Port(Default:3306):" MysqlPort
     MysqlPort="${MysqlPort:=3306}"
     case   $DbType in
@@ -48,27 +51,30 @@ MySQL_Var(){
     read -p "Please input innodb_buffer_pool_size (default:${innodb_buffer_pool_size}G)" innodb_buffer_pool_size
 
 }
-MYSQL_BASE_PACKAGES_INSTALL(){
+MySQL_Base_Packages_Install(){
     case  $OS in
         "CentOS")
             {
                 echo '[remove old mysql] **************************************************>>';
                 yum -y remove mysql-server mysql;
-                BasePackages="wget gcc gcc-c++ autoconf libxml2-devel zlib-devel libjpeg-devel libpng-devel glibc-devel glibc-static glib2-devel  bzip2-devel openssl-devel ncurses-devel bison cmake make libaio-devel";
+                BasePackages="wget gcc gcc-c++ autoconf libxml2-devel zlib-devel libjpeg-devel \
+                libpng-devel glibc-devel glibc-static glib2-devel  bzip2-devel openssl-devel \
+                ncurses-devel bison cmake make libaio-devel expect ";
             }
         ;;
         "Ubuntu")
             {
                 echo '[remove old mysql] **************************************************>>';
                 apt-get -y remove mysql-client mysql-server mysql-common mariadb-server ;
-                BasePackages="wget gcc g++ cmake libjpeg-dev libxml2 libxml2-dev libpng-dev autoconf make bison zlibc bzip2 libncurses5-dev libncurses5 libssl-dev axel libaio-dev";
+                BasePackages="wget gcc g++ cmake libjpeg-dev libxml2 libxml2-dev libpng-dev \
+                autoconf make bison zlibc bzip2 libncurses5-dev libncurses5 libssl-dev axel libaio-dev";
             }
         ;;
 
         *)
         echo "not supported System";;
     esac
-    echo $BasePackages
+    #echo $BasePackages
     INSTALL_BASE_PACKAGES $BasePackages
 
     if [ -f "/usr/local/lib/libjemalloc.so" ];then
@@ -135,7 +141,7 @@ SELECT_MYSQL_INSTALL(){
                 DbType="MySql"
                 DbVersion="5.7"
                 SOURCE_SCRIPT $FunctionPath/install/Mysql-5.7.sh
-            MysqlDB_Install_Main;;
+            MySQLDB_Install_Main;;
             ${VarLists[3]})
                 DbType="MariaDB"
                 DbVersion="10.1"
