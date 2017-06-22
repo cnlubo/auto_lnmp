@@ -238,6 +238,7 @@ Config_MySQLDB()
         service start mysql$MysqlPort
     fi
     rm -rf $script_dir/src/mysql-$mysql_5_7_version;
+    echo "${CRED}[db root user passwd:$dbrootpwd ] ************************************>>${CEND}";
 
 }
 

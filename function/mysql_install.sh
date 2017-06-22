@@ -12,14 +12,15 @@ SYSTEM_CHECK(){
 
 MySQL_Var(){
 
-    while :
+    #while :
     # do
     #     read -p "Please input the root password of database: " dbrootpwd
     #     (( ${#dbrootpwd} >= 8 )) &&dbrootpwd="${dbrootpwd:=""}"&& break || echo "${CWARNING}database root password least 8 characters! ${CEND}"
     #
     # done
+    # 生成数据库root用户随机密码
     dbrootpwd=`mkpasswd -l 8`
-    echo $dbrootpwd
+    #echo $dbrootpwd
     read -p "Please input Port(Default:3306):" MysqlPort
     MysqlPort="${MysqlPort:=3306}"
     case   $DbType in
