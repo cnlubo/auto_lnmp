@@ -12,17 +12,12 @@ SYSTEM_CHECK(){
 
 MySQL_Var(){
 
-    #while :
-    # do
-    #     read -p "Please input the root password of database: " dbrootpwd
-    #     (( ${#dbrootpwd} >= 8 )) &&dbrootpwd="${dbrootpwd:=""}"&& break || echo "${CWARNING}database root password least 8 characters! ${CEND}"
-    #
-    # done
-    # 生成数据库root用户随机密码
+    # 生成数据库root用户随机密码(8位长度包含字母数字和特殊字符)
     dbrootpwd=`mkpasswd -l 8`
-    #echo $dbrootpwd
     read -p "Please input Port(Default:3306):" MysqlPort
     MysqlPort="${MysqlPort:=3306}"
+    echo $MysqlPort
+
     case   $DbType in
         "MariaDB")
             {
@@ -130,29 +125,30 @@ SELECT_MYSQL_INSTALL(){
     echo "${CMSG}----------------------------------------------------------------------------------${CEND}"
     PS3="${CBLUE}Which version MySql are you want to install:${CEND}"
     declare -a VarLists
-    VarLists=("Back" "MySQL-5.6" "MySQL-5.7" "MariaDB-10.1" "MariaDB-10.2")
+    VarLists=("Back"  "MySQL-5.7" "MariaDB-10.2" "MySQL-5.6" "MariaDB-10.1")
     select var in ${VarLists[@]} ;do
         case $var in
             ${VarLists[1]})
                 DbType="MySql"
-                DbVersion="5.6"
-                SOURCE_SCRIPT $FunctionPath/install/Mysql-5.6.sh
-            MysqlDB_Install_Main;;
-            ${VarLists[2]})
-                DbType="MySql"
                 DbVersion="5.7"
                 SOURCE_SCRIPT $FunctionPath/install/Mysql-5.7.sh
             MySQLDB_Install_Main;;
-            ${VarLists[3]})
-                DbType="MariaDB"
-                DbVersion="10.1"
-                SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
-            MariaDB_Install_Main;;
-            ${VarLists[4]})
+            ${VarLists[2]})
                 DbType="MariaDB"
                 DbVersion="10.2"
                 SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.2.sh
             MariaDB_Install_Main;;
+            ${VarLists[3]})
+                DbType="MySql"
+                DbVersion="5.6"
+                SOURCE_SCRIPT $FunctionPath/install/Mysql-5.6.sh
+            MysqlDB_Install_Main;;
+            ${VarLists[4]})
+                DbType="MariaDB"
+                DbVersion="10.1"
+                SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
+            MariaDB_Install_Main;;
+
             ${VarLists[0]})
             SELECT_RUN_SCRIPT;;
             *)
