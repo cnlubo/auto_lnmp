@@ -16,8 +16,6 @@ MySQL_Var(){
     dbrootpwd=`mkpasswd -l 8`
     read -p "Please input Port(Default:3306):" MysqlPort
     MysqlPort="${MysqlPort:=3306}"
-    echo $MysqlPort
-
     case   $DbType in
         "MariaDB")
             {
@@ -51,11 +49,16 @@ MySQL_Base_Packages_Install(){
     case  $OS in
         "CentOS")
             {
-                echo '[remove old mysql] **************************************************>>';
-                yum -y remove mysql-server mysql;
+                echo '[remove old mysql] **************************************************>>'
+                yum -y remove mysql-server mysql
                 BasePackages="wget gcc gcc-c++ autoconf libxml2-devel zlib-devel libjpeg-devel \
                 libpng-devel glibc-devel glibc-static glib2-devel  bzip2-devel openssl-devel \
-                ncurses-devel bison cmake make libaio-devel expect ";
+                ncurses-devel bison cmake make libaio-devel expect gnutls-devel"
+                if [ $DbType == 'MariaDB' ];then
+                    BasePackages=${BasePackages}" gnutls-devel"
+                fi
+                #echo $BasePackages
+                # gnutls-devel only for mariadb10.2
             }
         ;;
         "Ubuntu")

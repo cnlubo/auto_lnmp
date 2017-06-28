@@ -141,24 +141,20 @@ Install_MariaDB()
     cd $script_dir/src
     [ -d mariadb-$mariadb_10_2_version ] && rm -rf mariadb-$mariadb_10_2_version
     tar -zxf mariadb-$mariadb_10_2_version.tar.gz;
-    cd mariadb-$mariadb_10_w_version;
-
+    cd mariadb-$mariadb_10_2_version;
+    #编译参数
     cmake -DCMAKE_INSTALL_PREFIX=$MysqlBasePath \
     -DDEFAULT_CHARSET=utf8mb4 \
     -DDEFAULT_COLLATION=utf8mb4_general_ci \
     -DWITH_EXTRA_CHARSETS=all \
-    -DWITH_INNOBASE_STORAGE_ENGINE=1 \
-    -DWITH_XTRADB_STORAGE_ENGINE=1 \
     -DENABLED_LOCAL_INFILE=1 \
-    -DBUILD_CONFIG=mysql_release \
-    -DWITH_INNODB_MEMCACHED=ON \
-    -DENABLE_GPROF=1 \
     -DWITH_SSL=bundled \
     -DWITH_EMBEDDED_SERVER=1 \
+    -DBUILD_CONFIG=mysql_release \
     -DCMAKE_EXE_LINKER_FLAGS="-ljemalloc" \
     -DWITH_SAFEMALLOC=OFF
-
-
+    #-DWITH_INNOBASE_STORAGE_ENGINE=1 \
+    #-DWITH_XTRADB_STORAGE_ENGINE=1 \
 #     ./configure --prefix=/usr/local/mysql --enable-assembler \
 # --with-extra-charsets=complex  --enable-thread-safe-client  --with-big-tables \
 # --with-plugin-maria --with-aria-tmp-tables --without-plugin-innodb_plugin \
@@ -166,17 +162,6 @@ Install_MariaDB()
 # --with-ssl --with-plugins=max-no-ndb --with-embedded-server --with-libevent \
 # --with-mysqld-ldflags=-all-static  --with-client-ldflags=-all-static \
 # --with-zlib-dir=bundled --enable-local-infile
-
-
-    # cmake -DCMAKE_INSTALL_PREFIX=$MysqlBasePath \
-    # -DDEFAULT_CHARSET=utf8mb4 \
-    # -DDEFAULT_COLLATION=utf8mb4_general_ci \
-    # -DENABLED_LOCAL_INFILE=1 \
-    # -DWITH_BOOST=$script_dir/src/boost_1_59_0 \
-    # -DBUILD_CONFIG=mysql_release \
-    # -DWITH_INNODB_MEMCACHED=ON \
-    # -DWITH_MYSQLD_LDFLAGS='-ljemalloc'
-
     make -j$CpuProNum
     make install;
 
