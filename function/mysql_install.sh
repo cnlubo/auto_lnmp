@@ -114,12 +114,12 @@ MySQL_Base_Packages_Install(){
     if [ ! $? -eq 0 ]; then
         useradd -g $mysql_user  -M -s /sbin/nologin $mysql_user;
     fi
-    #create dir
-    for path in $MysqlLogPath $MysqlConfigPath $MysqlDataPath $MysqlTmpPath $MysqlRunPath;do
-        [ ! -d $path ] && mkdir -p $path
-        chmod 755 $path;
-        chown -R mysql:mysql $path;
-    done
+    # #create dir
+    # for path in $MysqlLogPath $MysqlConfigPath $MysqlDataPath $MysqlTmpPath $MysqlRunPath;do
+    #     [ ! -d $path ] && mkdir -p $path
+    #     chmod 755 $path;
+    #     chown -R mysql:mysql $path;
+    # done
 }
 SELECT_MYSQL_INSTALL(){
 

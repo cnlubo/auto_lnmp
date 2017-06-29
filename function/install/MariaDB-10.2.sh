@@ -17,6 +17,13 @@ Create_Conf() {
     d=`echo $HostIP|cut -d\. -f4`
     pt=`echo $MysqlPort % 256 | bc`
     server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
+    # create dir
+    for path in $MysqlLogPath $MysqlConfigPath $MysqlDataPath $MysqlTmpPath $MysqlRunPath;do
+        [ ! -d $path ] && mkdir -p $path
+        chmod 755 $path;
+        chown -R mysql:mysql $path;
+    done
+    # create my.cnf
     cat > $MysqlConfigPath/my$MysqlPort.cnf << EOF
 [mysql]
 ############## CLIENT #############
@@ -155,13 +162,13 @@ Install_MariaDB()
     -DWITH_SAFEMALLOC=OFF
     #-DWITH_INNOBASE_STORAGE_ENGINE=1 \
     #-DWITH_XTRADB_STORAGE_ENGINE=1 \
-#     ./configure --prefix=/usr/local/mysql --enable-assembler \
-# --with-extra-charsets=complex  --enable-thread-safe-client  --with-big-tables \
-# --with-plugin-maria --with-aria-tmp-tables --without-plugin-innodb_plugin \
-# --with-mysqld-ldflags=-static --with-client-ldflags=-static --with-readline \
-# --with-ssl --with-plugins=max-no-ndb --with-embedded-server --with-libevent \
-# --with-mysqld-ldflags=-all-static  --with-client-ldflags=-all-static \
-# --with-zlib-dir=bundled --enable-local-infile
+    #     ./configure --prefix=/usr/local/mysql --enable-assembler \
+    # --with-extra-charsets=complex  --enable-thread-safe-client  --with-big-tables \
+    # --with-plugin-maria --with-aria-tmp-tables --without-plugin-innodb_plugin \
+    # --with-mysqld-ldflags=-static --with-client-ldflags=-static --with-readline \
+    # --with-ssl --with-plugins=max-no-ndb --with-embedded-server --with-libevent \
+    # --with-mysqld-ldflags=-all-static  --with-client-ldflags=-all-static \
+    # --with-zlib-dir=bundled --enable-local-infile
     make -j$CpuProNum
     make install;
 
@@ -179,16 +186,14 @@ Install_MariaDB()
 }
 Init_MariaDB(){
 
-    #初始化创建数据库
-    for path in $MysqlLogPath $MysqlConfigPath $MysqlDataPath $MysqlTmpPath $MysqlRunPath;do
-        [ ! -d $path ] && mkdir -p $path
-        chmod 755 $path;
-        chown -R mysql:mysql $path;
-    done
+    
     chown -R mysql.mysql $MysqlConfigPath/
     chmod 777 $MysqlBasePath/scripts/mysql_install_db
+    #初始化数据库
     echo "${CMSG}[Initialization Database] **************************************************>>${CEND}"
-    $MysqlBasePath/scripts/mysql_install_db --user=mysql --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --basedir=$MysqlBasePath --datadir=$MysqlDataPath;
+    $MysqlBasePath/scripts/mysql_install_db --user=mysql --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf \
+    --basedir=$MysqlBasePath --datadir=$MysqlDataPath;
+    # 启动脚本
     mkdir -p $MysqlOptPath/init.d
     chown -R mysql.mysql $MysqlOptPath/
     cp $script_dir/template/mysql_start $MysqlOptPath/init.d/mysql$MysqlPort;
@@ -199,20 +204,29 @@ Init_MariaDB(){
     sed  -i ':a;$!{N;ba};s#conf=#conf='''$MysqlConfigPath/my$MysqlPort.cnf'''#' $MysqlOptPath/init.d/mysql$MysqlPort
     sed  -i ':a;$!{N;ba};s#mysql_user=#mysql_user='''$mysql_user'''#' $MysqlOptPath/init.d/mysql$MysqlPort
     sed  -i ':a;$!{N;ba};s#mysqld_pid_file_path=#mysqld_pid_file_path='''$MysqlRunPath/mysql$MysqlPort\.pid'''#' $MysqlOptPath/init.d/mysql$MysqlPort
-    #if ([ $OS="Ubuntu" ]&&[ Ubuntu_version=15 ])||([ $OS="CentOS" ]&&[ CentOS_RHEL_version=7 ]);then
-    if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version == 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version == 7 ] );then
+
+    #启动服务脚本
+    if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
         #support Systemd
-        [ -L /lib/systemd/system/mariadb.service ] && rm -f /lib/systemd/system/mariadb.service;
-        cp $script_dir/template/mariadb.service /lib/systemd/system/mariadb.service;
-        sed  -i ':a;$!{N;ba};s#PIDFile=#PIDFile='''$MysqlOptPath/run/mysql$MysqlPort.pid'''#' /lib/systemd/system/mariadb.service
+        [ -L /lib/systemd/system/mariadb$MysqlPort.service ] && rm -f /lib/systemd/system/mariadb$MysqlPort.service
+        cp $script_dir/template/mariadb.service /lib/systemd/system/mariadb$MysqlPort.service
+        sed  -i ':a;$!{N;ba};s#PIDFile=#PIDFile='''$MysqlOptPath/run/mysql$MysqlPort.pid'''#' /lib/systemd/system/mariadb$MysqlPort.service
         mycnf=''$MysqlOptPath/etc/my$MysqlPort.cnf''
-        sed -i ''s#@MysqlBasePath#$MysqlBasePath#g'' /lib/systemd/system/mariadb.service
-        sed -i ''s#@defaults-file#$mycnf#g'' /lib/systemd/system/mariadb.service
-        systemctl enable mariadb.service
+        sed -i ''s#@MysqlBasePath#$MysqlBasePath#g'' /lib/systemd/system/mariadb$MysqlPort.service
+        sed -i ''s#@defaults-file#$mycnf#g'' /lib/systemd/system/mariadb$MysqlPort.service
+        systemctl enable mariadb$MysqlPort.service
+        echo "${CMSG}[starting db ] **************************************************>>${CEND}"
+        #systemctl start mysql$MysqlPort.service #启动数据库
     else
-        [ -L /etc/init.d/mysql$MysqlPort ] && rm -f /etc/init.d/mariadb;
-        ln -s $MysqlOptPath/init.d/mysql$MysqlPort /etc/init.d/mariadb;
-    fi;
+        [ -L /etc/init.d/mariadb$MysqlPort ] && rm -f /etc/init.d/mariadb$MysqlPort
+        ln -s $MysqlOptPath/init.d/mysql$MysqlPort /etc/init.d/mariadb$MysqlPort
+        echo "${CMSG}[starting db ] **************************************************>>${CEND}";
+        #service start mysql$MysqlPort
+    fi
+
+}
+Config_MariaDB(){
+
     echo "${CMSG}[config db ] **************************************************>>${CEND}";
     $MysqlOptPath/init.d/mysql$MysqlPort start;
     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'127.0.0.1' identified by \"$dbrootpwd\" with grant option;"
@@ -230,13 +244,14 @@ EOF
     $MysqlOptPath/init.d/mysql$MysqlPort stop;
     echo "${CMSG}[config db ] **************************************************>>${CEND}";
     service mariadb start;
-    rm -rf $script_dir/src/mariadb-$mariadb_10_0_version;
+    rm -rf $script_dir/src/mariadb-$mariadb_10_2_version;
 
 }
 
 MariaDB_Install_Main(){
 
-    MySQL_Var&&MySQL_Base_Packages_Install&&Install_MariaDB
+    MySQL_Var&&MySQL_Base_Packages_Install&&Create_Conf&&Init_MariaDB
+    #Install_MariaDB
     #&&Create_Conf&&INIT_MySQL_DB
 
 

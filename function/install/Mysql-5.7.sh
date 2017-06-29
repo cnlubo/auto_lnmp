@@ -14,6 +14,12 @@ Create_Conf() {
     d=`echo $HostIP|cut -d\. -f4`
     pt=`echo $MysqlPort % 256 | bc`
     server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
+    # create dir
+    for path in $MysqlLogPath $MysqlConfigPath $MysqlDataPath $MysqlTmpPath $MysqlRunPath;do
+        [ ! -d $path ] && mkdir -p $path
+        chmod 755 $path;
+        chown -R mysql:mysql $path;
+    done
     cat > $MysqlConfigPath/my$MysqlPort.cnf << EOF
 [mysql]
 ############## CLIENT #############
@@ -174,15 +180,13 @@ Install_MySQLDB()
 Init_MySQLDB(){
 
     #初始化创建数据库
-    for path in $MysqlLogPath $MysqlConfigPath $MysqlDataPath $MysqlTmpPath $MysqlRunPath;do
-        [ ! -d $path ] && mkdir -p $path
-        chmod 755 $path;
-        chown -R mysql:mysql $path;
-    done
+    # for path in $MysqlLogPath $MysqlConfigPath $MysqlDataPath $MysqlTmpPath $MysqlRunPath;do
+    #     [ ! -d $path ] && mkdir -p $path
+    #     chmod 755 $path;
+    #     chown -R mysql:mysql $path;
+    # done
     chown -R mysql.mysql $MysqlConfigPath/
-    # chmod 777 $MysqlBasePath/scripts/mysql_install_db
     echo "${CMSG}[Initialization Database] **************************************************>>${CEND}"
-    #$MysqlBasePath/scripts/mysql_install_db --user=mysql --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --basedir=$MysqlBasePath --datadir=$MysqlDataPath;
     # 初始化数据库不生成密码    --initialize：root用户生成随机密码 --initialize-insecure：root用户不生成随机密码
     $MysqlBasePath/bin/mysqld --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --user=mysql \
     --basedir=$MysqlBasePath --datadir=$MysqlDataPath --initialize-insecure
