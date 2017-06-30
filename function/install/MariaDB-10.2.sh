@@ -116,8 +116,7 @@ innodb_data_file_path              = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                = O_DIRECT
 innodb_log_files_in_group          = 4
 innodb_log_file_size               = 512M
-innodb_buffer_pool_size            =${innodb_buffer_pool_size}G
-innodb_file_format                 = Barracuda
+innodb_buffer_pool_size            = ${innodb_buffer_pool_size}G
 innodb_log_buffer_size             = 64M
 innodb_lru_scan_depth              = 2048
 innodb_online_alter_log_max_size   = 2G
@@ -186,7 +185,7 @@ Install_MariaDB()
 }
 Init_MariaDB(){
 
-    
+
     chown -R mysql.mysql $MysqlConfigPath/
     chmod 777 $MysqlBasePath/scripts/mysql_install_db
     #初始化数据库
@@ -243,16 +242,24 @@ mysql -uroot -S $MysqlRunPath/mysql$MysqlPort.sock -p$dbrootpwd <<EOF
 EOF
     $MysqlOptPath/init.d/mysql$MysqlPort stop;
     echo "${CMSG}[config db ] **************************************************>>${CEND}";
-    service mariadb start;
+    #启动数据库
+    if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
+        echo "${CMSG}[starting db ] **************************************************>>${CEND}";
+        systemctl start mariadb$MysqlPort.service
+    else
+        echo "${CMSG}[starting db ] **************************************************>>${CEND}";
+        service start mariadb$MysqlPort
+    fi
     rm -rf $script_dir/src/mariadb-$mariadb_10_2_version;
+    echo "${CRED}[db root user passwd:$dbrootpwd ] *******************************>>${CEND}";
 
 }
 
 MariaDB_Install_Main(){
 
-    MySQL_Var&&MySQL_Base_Packages_Install&&Create_Conf&&Init_MariaDB
+    MySQL_Var&&MySQL_Base_Packages_Install&&Create_Conf&&Init_MariaDB&&Config_MariaDB
     #Install_MariaDB
-    #&&Create_Conf&&INIT_MySQL_DB
+
 
 
 }
