@@ -185,7 +185,6 @@ Install_MariaDB()
 }
 Init_MariaDB(){
 
-
     chown -R mysql.mysql $MysqlConfigPath/
     chmod 777 $MysqlBasePath/scripts/mysql_install_db
     #初始化数据库
@@ -214,12 +213,12 @@ Init_MariaDB(){
         sed -i ''s#@MysqlBasePath#$MysqlBasePath#g'' /lib/systemd/system/mariadb$MysqlPort.service
         sed -i ''s#@defaults-file#$mycnf#g'' /lib/systemd/system/mariadb$MysqlPort.service
         systemctl enable mariadb$MysqlPort.service
-        echo "${CMSG}[starting db ] **************************************************>>${CEND}"
+        #echo "${CMSG}[starting db ] **************************************************>>${CEND}"
         #systemctl start mysql$MysqlPort.service #启动数据库
     else
         [ -L /etc/init.d/mariadb$MysqlPort ] && rm -f /etc/init.d/mariadb$MysqlPort
         ln -s $MysqlOptPath/init.d/mysql$MysqlPort /etc/init.d/mariadb$MysqlPort
-        echo "${CMSG}[starting db ] **************************************************>>${CEND}";
+        #echo "${CMSG}[starting db ] **************************************************>>${CEND}";
         #service start mysql$MysqlPort
     fi
 
@@ -257,8 +256,7 @@ EOF
 
 MariaDB_Install_Main(){
 
-    MySQL_Var&&MySQL_Base_Packages_Install&&Create_Conf&&Init_MariaDB&&Config_MariaDB
-    #Install_MariaDB
+    MySQL_Var&&MySQL_Base_Packages_Install&&nstall_MariaDB&&Create_Conf&&Init_MariaDB&&Config_MariaDB
 
 
 

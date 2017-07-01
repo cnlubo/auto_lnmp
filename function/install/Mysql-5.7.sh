@@ -180,11 +180,6 @@ Install_MySQLDB()
 Init_MySQLDB(){
 
     #初始化创建数据库
-    # for path in $MysqlLogPath $MysqlConfigPath $MysqlDataPath $MysqlTmpPath $MysqlRunPath;do
-    #     [ ! -d $path ] && mkdir -p $path
-    #     chmod 755 $path;
-    #     chown -R mysql:mysql $path;
-    # done
     chown -R mysql.mysql $MysqlConfigPath/
     echo "${CMSG}[Initialization Database] **************************************************>>${CEND}"
     # 初始化数据库不生成密码    --initialize：root用户生成随机密码 --initialize-insecure：root用户不生成随机密码
@@ -211,12 +206,12 @@ Init_MySQLDB(){
         sed -i ''s#@MysqlBasePath#$MysqlBasePath#g'' /lib/systemd/system/mysql$MysqlPort.service
         sed -i ''s#@defaults-file#$mycnf#g'' /lib/systemd/system/mysql$MysqlPort.service
         systemctl enable mysql$MysqlPort.service
-        echo "${CMSG}[starting db ] **************************************************>>${CEND}";
-        #systemctl start mysql$MysqlPort.service #启动数据库
+        #echo "${CMSG}[starting db ] **************************************************>>${CEND}";
+        #systemctl start mysql$MysqlPort.service #
     else
         [ -L /etc/init.d/mysql$MysqlPort ] && rm -f /etc/init.d/mysql$MysqlPort
         ln -s $MysqlOptPath/init.d/mysql$MysqlPort /etc/init.d/mysql$MysqlPort
-        echo "${CMSG}[starting db ] **************************************************>>${CEND}";
+        #echo "${CMSG}[starting db ] **************************************************>>${CEND}";
         #service start mysql$MysqlPort
     fi
 
