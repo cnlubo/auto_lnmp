@@ -1,45 +1,9 @@
 #!/bin/bash
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
-# @Date:                                   2016-01-25 14:27:13
-# @file_name:                              check_os.sh
 # @Desc
 #----------------------------------------------------------------------------
 #get OS name
-# if [ -n "`grep 'Aliyun Linux release' /etc/issue`" -o -e /etc/redhat-release ];then
-#     OS=CentOS
-#     [ -n "`grep ' 7\.' /etc/redhat-release`" ] && CentOS_RHEL_version=7
-#     [ -n "`grep ' 6\.' /etc/redhat-release`" -o -n "`grep 'Aliyun Linux release6 15' /etc/issue`" ] && CentOS_RHEL_version=6
-#     [ -n "`grep ' 5\.' /etc/redhat-release`" -o -n "`grep 'Aliyun Linux release5' /etc/issue`" ] && CentOS_RHEL_version=5
-#     elif [ -n "` grep 'CentOS release' /etc/issue`" -o -e /etc/redhait-release ];then
-#
-#     OS=CentOS
-#     [ -n "`grep ' 7\.' /etc/redhat-release`" ] && CentOS_RHEL_version=7
-#     [ -n "`grep ' 6\.' /etc/redhat-release`" ] && CentOS_RHEL_version=6
-#     [ -n "`grep ' 5\.' /etc/redhat-release`" ] && CentOS_RHEL_version=5
-#     elif [ -n "`grep bian /etc/issue`" ];then
-#     OS=Debian
-#     [ ! -e "`which lsb_release`" ] && apt-get -y install lsb-release
-#     Debian_version=`lsb_release -sr | awk -F. '{print $1}'`
-#     elif [ -n "`grep Ubuntu /etc/issue`" ];then
-#     OS=Ubuntu
-#     [ ! -e "`which lsb_release`" ] && apt-get -y install lsb-release
-#     Ubuntu_version=`lsb_release -sr | awk -F. '{print $1}'`
-# else
-#     echo "${CFAILURE}Does not support this OS, Please contact the author! ${CEND}"
-#     kill -9 $$
-# fi
-# echo $CentOS_RHEL_version
-#sysOS=`uname -s`
-#if [ $sysOS == "Darwin" ];then
-#	echo "I'm MacOS"
-#elif [ $sysOS == "Linux" ];then
-#	echo "I'm Linux"
-#else
-#	echo "Other OS: $sysOS"
-# fi
-#
-#
 sysOS=`uname -s`
 if  [ $sysOS == "Linux" ]; then
     source /etc/os-release
@@ -48,7 +12,7 @@ if  [ $sysOS == "Linux" ]; then
     # CentOS 和 OpenSUSE等Linux发行版也可以使用。
     case $ID in
         debian|ubuntu|devuan)
-            sudo apt-get install lsb-release
+            apt-get install lsb-release
             if [ $ID == ubuntu ];then
                 Ubuntu_version=`lsb_release -sr | awk -F. '{print $1}'`
                 OS=Ubuntu
@@ -82,7 +46,6 @@ else
     echo "${CFAILURE}Does not support this OS!! ${CEND}"
     kill -9 $$
 fi
-
 
 
 if [ `getconf WORD_BIT` == 32 ] && [ `getconf LONG_BIT` == 64 ];then

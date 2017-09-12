@@ -1,25 +1,22 @@
 #!/bin/bash
-# Author:  yeho <lj2007331 AT gmail.com>
-# BLOG:  https://blog.linuxeye.com
-#
-# Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
-#
-# Project home page:
-#       http://oneinstack.com
-#       https://github.com/lj2007331/oneinstack
-
-sed -i 's@^exclude@#exclude@' /etc/yum.conf
+#---------------------------------------------------------------------------
+# @Author:                                 ak47(454331202@qq.com)
+# @CreateDate:                             2016-02-18 12:01:28
+# @file_name:                              init_CentOS.sh
+# @Last Modified by:                       ak47
+# @Desc
+#----------------------------------------------------------------------------
+# sed -i 's@^exclude@#exclude@' /etc/yum.conf
 yum clean all
-
 yum makecache
 
 if [ "$CentOS_RHEL_version" == '7' ];then
     yum -y install iptables-services
     systemctl mask firewalld.service
     systemctl enable iptables.service
-elif [ "$CentOS_RHEL_version" == '6' ];then
+    elif [ "$CentOS_RHEL_version" == '6' ];then
     yum -y groupremove "FTP Server" "PostgreSQL Database client" "PostgreSQL Database server" "MySQL Database server" "MySQL Database client" "Web Server" "Office Suite and Productivity" "E-mail server" "Ruby Support" "Printing client"
-elif [ "$CentOS_RHEL_version" == '5' ];then
+    elif [ "$CentOS_RHEL_version" == '5' ];then
     yum -y groupremove "FTP Server" "Windows File Server" "PostgreSQL Database" "News Server" "MySQL Database" "DNS Name Server" "Web Server" "Dialup Networking Support" "Mail Server" "Ruby" "Office/Productivity" "Sound and Video" "Printing Support" "OpenFabrics Enterprise Distribution"
 fi
 
@@ -116,7 +113,7 @@ if [ "$CentOS_RHEL_version" == '5' ];then
     sed -i 's@^[3-6]:2345:respawn@#&@g' /etc/inittab
     sed -i 's@^ca::ctrlaltdel@#&@' /etc/inittab
     sed -i 's@LANG=.*$@LANG="en_US.UTF-8"@g' /etc/sysconfig/i18n
-elif [ "$CentOS_RHEL_version" == '6' ];then
+    elif [ "$CentOS_RHEL_version" == '6' ];then
     sed -i 's@^ACTIVE_CONSOLES.*@ACTIVE_CONSOLES=/dev/tty[1-2]@' /etc/sysconfig/init
     sed -i 's@^start@#start@' /etc/init/control-alt-delete.conf
 fi
