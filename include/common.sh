@@ -6,9 +6,10 @@
 #--------------------------------------------
 
 #################error-message#######
-EXIT_MSG(){
+#EXIT_MSG(){
     ExitMsg="$1"
-    echo -e "$(date +%Y-%m-%d-%H:%M) -Error $ExitMsg " |tee -a $ErrLog && exit 1
+    # echo -e "$(date +%Y-%m-%d-%H:%M) -Error $ExitMsg " |tee -a $ErrLog && exit 1
+    echo -e "${CFAILURE}(date +%Y-%m-%d-%H:%M) -Error $ExitMsg " |tee -a $ErrLog && exit 1
 }
 #########normal-message##########
 INFO_MSG(){
@@ -167,3 +168,12 @@ Download_src() {
 #     [[ "$(grep $TimeCron /etc/crontab)" == "" ]] && echo "$TimeCron" >> /etc/crontab
 #     [ "$SysName" == 'centos' ] && /etc/init.d/crond restart || /etc/init.d/cron restart
 # }
+get_char(){
+    SAVEDSTTY=`stty -g`
+    stty -echo
+    stty cbreak
+    dd if=/dev/tty bs=1 count=1 2> /dev/null
+    stty -raw
+    stty echo
+    stty $SAVEDSTTY
+}

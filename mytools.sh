@@ -19,10 +19,8 @@ source $ScriptPath/include/common.sh
 SOURCE_SCRIPT $ScriptPath/options.conf
 SOURCE_SCRIPT $script_dir/apps.conf
 SOURCE_SCRIPT $script_dir/include/check_os.sh
-SOURCE_SCRIPT $script_dir/include/check_db.sh
-SOURCE_SCRIPT $script_dir/include/check_web.sh
-SOURCE_SCRIPT $script_dir/include/get_char.sh
-SOURCE_SCRIPT $script_dir/include/memory.sh
+SOURCE_SCRIPT $script_dir/include/set_dir.sh
+# SOURCE_SCRIPT $script_dir/include/memory.sh
 clear;
 printf "${CGREEN}
 ###############################################################################
@@ -32,7 +30,9 @@ printf "${CGREEN}
 ###############################################################################${CEND}
 "
 # Check if user is root
-CHECK_ROOT
+# CHECK_ROOT
+[[ $(id -u) != '0' ]] && EXIT_MSG "Please use root to run this script."
+# [ $(id -u) != "0" ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
 # get the IP information
 IPADDR=`./py2/get_ipaddr.py`
 PUBLIC_IPADDR=`./py2/get_public_ipaddr.py`
