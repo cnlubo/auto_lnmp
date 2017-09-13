@@ -66,12 +66,13 @@ while true ;do
  read -p "##please Enter Your Choice:[1-6]" num1
  expr $num1 + 1 &>/dev/null   #这里加1，判断输入的是不是整数。
 
-# if [ $? -ne 0 ];then   #如果不等于零，代表输入不是整数。
-#    echo "----------------------------"
-#    echo "|      Waring!!!           |"
-#    echo "|Please Enter Right Choice!|"
-#    echo "----------------------------"
-#    sleep 1
+ if [ $? -ne 0 ];then   #如果不等于零，代表输入不是整数。
+    echo "----------------------------"
+    echo "|      Waring!!!           |"
+    echo "|Please Enter Right Choice!|"
+    echo "----------------------------"
+    sleep 1
+  fi
 
    case $num1 in
       1)
@@ -86,7 +87,7 @@ while true ;do
        clear
        break
        ;;
-      4)
+      6)
        clear
        menu
        ;;
@@ -94,7 +95,7 @@ while true ;do
        clear
        echo -e "\033[31mYour Enter a number Error,Please Enter again Choice:[1-4]
 : \033[0m"
-      menu
+      main_menu
    esac
 done
 

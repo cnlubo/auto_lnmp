@@ -19,8 +19,7 @@
 #}
 function main_menu(){
 cat << EOF
-----------------------------------------------------------------------
-*   `echo -e "\033[36m 1) Configure   \033[0m"`
+*   `echo -e "$CGREEN  1) Configure "`
 *   `echo -e "\033[36m 2) mysql       \033[0m"`
 *   `echo -e "\033[36m 3) postgresql  \033[0m"`
 *   `echo -e "\033[36m 4) nginx       \033[0m"`
