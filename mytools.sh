@@ -60,81 +60,81 @@ printf "${CGREEN}
 #####################################################################${CEND}
 "
 #echo -e "\n"
-main_menu
-
-while true ;do
- read -p "##please Enter Your Choice:[1-6]" num1
- expr $num1 + 1 &>/dev/null   #这里加1，判断输入的是不是整数。
-
- if [ $? -ne 0 ];then   #如果不等于零，代表输入不是整数。
-    echo "----------------------------"
-    echo "|      Waring!!!           |"
-    echo "|Please Enter Right Choice!|"
-    echo "----------------------------"
-    sleep 1
-  fi
-
-   case $num1 in
-      1)
-       clear
-       main_menu
-       ;;
-      2)
-       clear
-       main_menu
-       ;;
-      3)
-       clear
-       main_menu
-       ;;
-      4)
-       clear
-       main_menu
-       ;;
-      5)
-       clear
-       main_menu
-       ;;
-      6)
-       clear
-       break
-       ;;
-      *)
-       clear
-       echo -e "\033[31mYour Enter a number Error,Please Enter again Choice:[1-4]
-: \033[0m"
-      main_menu
-   esac
-done
+#main_menu
+#
+#while true ;do
+# read -p "##please Enter Your Choice:[1-6]" num1
+# expr $num1 + 1 &>/dev/null   #这里加1，判断输入的是不是整数。
+#
+# if [ $? -ne 0 ];then   #如果不等于零，代表输入不是整数。
+#    echo "----------------------------"
+#    echo "|      Waring!!!           |"
+#    echo "|Please Enter Right Choice!|"
+#    echo "----------------------------"
+#    sleep 1
+#  fi
+#
+#   case $num1 in
+#      1)
+#       clear
+#       main_menu
+#       ;;
+#      2)
+#       clear
+#       main_menu
+#       ;;
+#      3)
+#       clear
+#       main_menu
+#       ;;
+#      4)
+#       clear
+#       main_menu
+#       ;;
+#      5)
+#       clear
+#       main_menu
+#       ;;
+#      6)
+#       clear
+#       break
+#       ;;
+#      *)
+#       clear
+#       echo -e "\033[31mYour Enter a number Error,Please Enter again Choice:[1-4]
+#: \033[0m"
+#      main_menu
+#   esac
+#done
 
 #main
-#SELECT_RUN_SCRIPT(){
-#    PS3="${CBLUE}Which function you want to run:${CEND}"
-#    VarLists=("init_system" "nginx" "tomcat" "mysql" "postgresql" "redis" "exit_system")
-#    select var in ${VarLists[@]} ;do
-#        case $var in
-#            ${VarLists[1]})
-#                SOURCE_SCRIPT $FunctionPath/init_system.sh
-#                SELECT_SYSTEM_SETUP_FUNCTION;;
-#            ${VarLists[2]})
-#                SOURCE_SCRIPT $FunctionPath/tomcat_install.sh
-#                SELECT_TOMCAT_INSTALL;;
-#            ${VarLists[3]})
-#                SOURCE_SCRIPT $FunctionPath/mysql_install.sh
-#                SELECT_MYSQL_INSTALL;;
-#            # ${VarLists[4]})
-#                #     SOURCE_SCRIPT $FunctionPath/mysql_install.sh
-#                # SELECT_MYSQL_INSTALL;;
-#            # ${VarLists[5]})
-#                #     SOURCE_SCRIPT $FunctionPath/tomcat_install.sh
-#                # SELECT_TOMCAT_INSTALL;;
-#            ${VarLists[6]})
-#                exit 0;;
-#            *)
-#                SELECT_RUN_SCRIPT;;
-#        esac
-#        break
-#    done
-#    SELECT_RUN_SCRIPT
-#}
-#SELECT_RUN_SCRIPT
+SELECT_RUN_SCRIPT(){
+    PS3="${CBLUE}Which function you want to run:${CEND}"
+    VarLists=("init_system" "nginx" "tomcat" "mysql" "postgresql" "redis" "exit_system")
+    select var in ${VarLists[@]} ;do
+        case $var in
+            ${VarLists[1]})
+                SOURCE_SCRIPT $FunctionPath/init_system.sh
+                SELECT_SYSTEM_SETUP_FUNCTION;;
+            ${VarLists[2]})
+                SOURCE_SCRIPT $FunctionPath/tomcat_install.sh
+                SELECT_TOMCAT_INSTALL;;
+            ${VarLists[3]})
+                SOURCE_SCRIPT $FunctionPath/mysql_install.sh
+                SELECT_MYSQL_INSTALL;;
+            # ${VarLists[4]})
+                #     SOURCE_SCRIPT $FunctionPath/mysql_install.sh
+                # SELECT_MYSQL_INSTALL;;
+            # ${VarLists[5]})
+                #     SOURCE_SCRIPT $FunctionPath/tomcat_install.sh
+                # SELECT_TOMCAT_INSTALL;;
+            ${VarLists[6]})
+                exit 0;;
+            *)
+                SELECT_RUN_SCRIPT;;
+        esac
+        break
+    done
+    SELECT_RUN_SCRIPT
+}
+SELECT_RUN_SCRIPT
