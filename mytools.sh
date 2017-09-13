@@ -52,6 +52,7 @@ IPADDR_COUNTRY_ISP=`./py2/get_ipaddr_state.py $PUBLIC_IPADDR`
 IPADDR_COUNTRY=`echo $IPADDR_COUNTRY_ISP | awk '{print $1}'`
 [ "`echo $IPADDR_COUNTRY_ISP | awk '{print $2}'`"x == '1000323'x ] && IPADDR_ISP=aliyun
 clear;
+
 printf "${CGREEN}
 ######################################################################
 # A tool to auto-compile & install tomcat&&jdk&&nginx&&mysql&&redis  #
@@ -60,20 +61,10 @@ printf "${CGREEN}
 #####################################################################${CEND}
 "
 #echo -e "\n"
-#main_menu
-#
+SELECT_RUN_SCRIPT_NEW(){
+main_menu
 while true ;do
  read -p "##please Enter Your Choice:[1-6]" num1
- expr $num1 + 1 &>/dev/null   #这里加1，判断输入的是不是整数。
-
-# if [ $? -ne 0 ];then   #如果不等于零，代表输入不是整数。
-#    echo "----------------------------"
-#    echo "|      Waring!!!           |"
-#    echo "|Please Enter Right Choice!|"
-#    echo "----------------------------"
-#    sleep 1
-#  fi
-
    case $num1 in
       1)
        clear
@@ -81,7 +72,8 @@ while true ;do
        ;;
       2)
        clear
-       main_menu
+       SOURCE_SCRIPT $FunctionPath/mysql_install.sh
+       SELECT_MYSQL_INSTALL
        ;;
       3)
        clear
@@ -103,7 +95,7 @@ while true ;do
       main_menu
    esac
 done
-
+}
 
 SELECT_RUN_SCRIPT(){
     PS3="${CBLUE}Which function you want to run:${CEND}"
@@ -134,4 +126,4 @@ SELECT_RUN_SCRIPT(){
     done
     SELECT_RUN_SCRIPT
 }
-# SELECT_RUN_SCRIPT
+SELECT_RUN_SCRIPT
