@@ -6,10 +6,9 @@
 #--------------------------------------------
 
 #################error-message#######
-#EXIT_MSG(){
+EXIT_MSG(){
     ExitMsg="$1"
-    # echo -e "$(date +%Y-%m-%d-%H:%M) -Error $ExitMsg " |tee -a $ErrLog && exit 1
-    echo -e "${CFAILURE}(date +%Y-%m-%d-%H:%M) -Error $ExitMsg " |tee -a $ErrLog && exit 1
+    echo -e "${CFAILURE}$(date +%Y-%m-%d-%H:%M) -Error $ExitMsg " |tee -a $ErrLog && exit 1
 }
 #########normal-message##########
 INFO_MSG(){
@@ -69,16 +68,12 @@ INPUT_CHOOSE(){
         case $vars in
             $vars)
                 [[ "$vars" == "exit" ]] && VarTmp="" || VarTmp="$vars"
-            break;;
+                break;;
         esac
         INFO_MSG "Input again"
     done
 }
-#检测是否root账号
-CHECK_ROOT(){
-    [[ $(id -u) != '0' ]] && EXIT_MSG "Please use root to run this script."
 
-}
 
 INSTALL_BASE_PACKAGES(){
     case   $OS in
@@ -98,7 +93,7 @@ INSTALL_BASE_PACKAGES(){
                 done;
                 mv -f /etc/yum.conf.back /etc/yum.conf;
             }
-        ;;
+            ;;
         "Ubuntu")
             {
                 [[ -z $SysCount ]] && apt-get update && SysCount="1"
@@ -109,10 +104,10 @@ INSTALL_BASE_PACKAGES(){
                     apt-get install -y $arg --force-yes;
                 done;
             }
-        ;;
+            ;;
 
         *)
-        echo "unknow System";;
+            echo "unknow System";;
     esac
     return 1
 }
