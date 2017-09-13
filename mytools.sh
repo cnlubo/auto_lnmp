@@ -53,14 +53,48 @@ IPADDR_COUNTRY=`echo $IPADDR_COUNTRY_ISP | awk '{print $1}'`
 [ "`echo $IPADDR_COUNTRY_ISP | awk '{print $2}'`"x == '1000323'x ] && IPADDR_ISP=aliyun
 clear;
 printf "${CGREEN}
-###############################################################################
-# A tool to auto-compile & install  tomcat&&jdk&&nginx&&mysql&&redis          #
-#                                                                             #
-# Author:  lubo           project:  https://github.com/cnlubo/auto_lnmp       #
-###############################################################################${CEND}
+######################################################################
+# A tool to auto-compile & install tomcat&&jdk&&nginx&&mysql&&redis  #
+#                                                                    #
+# Author:  lubo  project:  https://github.com/cnlubo/auto_lnmp       #
+#####################################################################${CEND}
 "
-echo -e "\n"
+#echo -e "\n"
 main_menu
+
+while true ;do
+ read -p "##please Enter Your Choice:[1-6]" num1
+  expr $num1 + 1 &>/dev/null   #这里加1，判断输入的是不是整数。
+  if [ $? -ne 0 ];then   #如果不等于零，代表输入不是整数。
+    echo "----------------------------"
+    echo "|      Waring!!!           |"
+    echo "|Please Enter Right Choice!|"
+    echo "----------------------------"
+    sleep 1
+   case $num1 in
+      1)
+       clear
+       lamp_menu
+       ;;
+      2)
+       clear
+       lnmp_menu
+       ;;
+      3)
+       clear
+       break
+       ;;
+      4)
+       clear
+       menu
+       ;;
+      *)
+       clear
+       echo -e "\033[31mYour Enter a number Error,Please Enter again Choice:[1-4]
+: \033[0m"
+      menu
+   esac
+done
 
 #main
 #SELECT_RUN_SCRIPT(){
