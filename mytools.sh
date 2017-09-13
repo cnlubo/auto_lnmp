@@ -63,7 +63,7 @@ while true ;do
       2)
        #clear
        SOURCE_SCRIPT $FunctionPath/mysql_install.sh
-       SELECT_MYSQL_INSTALL
+       select_mysql_install
        ;;
       3)
        clear
