@@ -121,43 +121,92 @@ MySQL_Base_Packages_Install(){
     #     chown -R mysql:mysql $path;
     # done
 }
+#SELECT_MYSQL_INSTALL(){
+#
+#
+#    SYSTEM_CHECK
+#
+#    echo "${CMSG}-----------------------------------------------------------------------${CEND}"
+#    PS3="${CBLUE}Which version MySql are you want to install:${CEND}"
+#    declare -a VarLists
+#    VarLists=("Back"  "MySQL-5.7" "MariaDB-10.2" "MySQL-5.6" "MariaDB-10.1")
+#    select var in ${VarLists[@]} ;do
+#        case $var in
+#            ${VarLists[1]})
+#                DbType="MySql"
+#                DbVersion="5.7"
+#                SOURCE_SCRIPT $FunctionPath/install/Mysql-5.7.sh
+#            MySQLDB_Install_Main;;
+#            ${VarLists[2]})
+#                DbType="MariaDB"
+#                DbVersion="10.2"
+#                SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.2.sh
+#            MariaDB_Install_Main;;
+#            ${VarLists[3]})
+#                DbType="MySql"
+#                DbVersion="5.6"
+#                SOURCE_SCRIPT $FunctionPath/install/Mysql-5.6.sh
+#            MysqlDB_Install_Main;;
+#            ${VarLists[4]})
+#                DbType="MariaDB"
+#                DbVersion="10.1"
+#                SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
+#            MariaDB_Install_Main;;
+#
+#            ${VarLists[0]})
+#            SELECT_RUN_SCRIPT;;
+#            *)
+#            SELECT_MYSQL_INSTALL;;
+#        esac
+#        break
+#    done
+#}
 SELECT_MYSQL_INSTALL(){
 
-
     SYSTEM_CHECK
-
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
-    PS3="${CBLUE}Which version MySql are you want to install:${CEND}"
-    declare -a VarLists
-    VarLists=("Back"  "MySQL-5.7" "MariaDB-10.2" "MySQL-5.6" "MariaDB-10.1")
-    select var in ${VarLists[@]} ;do
-        case $var in
-            ${VarLists[1]})
-                DbType="MySql"
-                DbVersion="5.7"
-                SOURCE_SCRIPT $FunctionPath/install/Mysql-5.7.sh
-            MySQLDB_Install_Main;;
-            ${VarLists[2]})
-                DbType="MariaDB"
-                DbVersion="10.2"
-                SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.2.sh
-            MariaDB_Install_Main;;
-            ${VarLists[3]})
-                DbType="MySql"
-                DbVersion="5.6"
-                SOURCE_SCRIPT $FunctionPath/install/Mysql-5.6.sh
-            MysqlDB_Install_Main;;
-            ${VarLists[4]})
-                DbType="MariaDB"
-                DbVersion="10.1"
-                SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
-            MariaDB_Install_Main;;
+    cat << EOF
+*  `echo -e "$CGREEN  1) MySQL-5.7        "`
+*  `echo -e "$CGREEN  2) MySQL-5.6        "`
+*  `echo -e "$CGREEN  3) MariaDB-10.2     "`
+*  `echo -e "$CGREEN  4) MariaDB-10.1     "`
+*  `echo -e "$CGREEN  5) return main-menu "`
+*  `echo -e "$CGREEN  6) Quit             "`
+EOF
+read -p "${CBLUE}Which Version MySQL are you want to install:${CEND}: " num3
 
-            ${VarLists[0]})
-            SELECT_RUN_SCRIPT;;
-            *)
-            SELECT_MYSQL_INSTALL;;
-        esac
-        break
-    done
+case $num3 in
+   1)
+     DbType="MySql"
+     DbVersion="5.7"
+     SOURCE_SCRIPT $FunctionPath/install/Mysql-5.7.sh
+     MySQLDB_Install_Main
+     ;;
+   2)
+     DbType="MySql"
+     DbVersion="5.6"
+     SOURCE_SCRIPT $FunctionPath/install/Mysql-5.6.sh
+     MySQLDB_Install_Main
+     ;;
+   3)
+     DbType="MariaDB"
+     DbVersion="10.2"
+     SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.2.sh
+     MariaDB_Install_Main
+     ;;
+   4)
+     DbType="MariaDB"
+     DbVersion="10.1"
+     SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
+     MariaDB_Install_Main
+     ;;
+   5)
+     SELECT_RUN_SCRIPT_NEW
+     ;;
+    6)
+     exit 0
+     ;;
+   *)
+    SELECT_MYSQL_INSTALL
+esac
 }
