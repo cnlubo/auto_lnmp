@@ -64,13 +64,15 @@ main_menu
 
 while true ;do
  read -p "##please Enter Your Choice:[1-6]" num1
-  expr $num1 + 1 &>/dev/null   #这里加1，判断输入的是不是整数。
-  if [ $? -ne 0 ];then   #如果不等于零，代表输入不是整数。
-    echo "----------------------------"
-    echo "|      Waring!!!           |"
-    echo "|Please Enter Right Choice!|"
-    echo "----------------------------"
-    sleep 1
+ expr $num1 + 1 &>/dev/null   #这里加1，判断输入的是不是整数。
+
+# if [ $? -ne 0 ];then   #如果不等于零，代表输入不是整数。
+#    echo "----------------------------"
+#    echo "|      Waring!!!           |"
+#    echo "|Please Enter Right Choice!|"
+#    echo "----------------------------"
+#    sleep 1
+
    case $num1 in
       1)
        clear
