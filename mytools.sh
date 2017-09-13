@@ -21,7 +21,6 @@ SOURCE_SCRIPT $script_dir/include/check_os.sh
 SOURCE_SCRIPT $script_dir/include/set_dir.sh
 SOURCE_SCRIPT $script_dir/include/set_menu.sh
 # SOURCE_SCRIPT $script_dir/include/memory.sh
-#clear;
 # Check if user is root
 [[ $(id -u) != '0' ]] && EXIT_MSG "Please use root to run this script."
 
@@ -51,17 +50,8 @@ PUBLIC_IPADDR=`./py2/get_public_ipaddr.py`
 IPADDR_COUNTRY_ISP=`./py2/get_ipaddr_state.py $PUBLIC_IPADDR`
 IPADDR_COUNTRY=`echo $IPADDR_COUNTRY_ISP | awk '{print $1}'`
 [ "`echo $IPADDR_COUNTRY_ISP | awk '{print $2}'`"x == '1000323'x ] && IPADDR_ISP=aliyun
-clear;
 
-#printf "${CGREEN}
-#######################################################################
-## A tool to auto-compile & install tomcat&&jdk&&nginx&&mysql&&redis  #
-##                                                                    #
-## Author:  lubo  project:  https://github.com/cnlubo/auto_lnmp       #
-######################################################################${CEND}
-#"
-#echo -e "\n"
-SELECT_RUN_SCRIPT_NEW(){
+select_main_menu(){
 main_menu
 while true ;do
  read -p "${CBLUE}Which function you want to run:${CEND}" num1
@@ -125,5 +115,4 @@ SELECT_RUN_SCRIPT(){
     done
     SELECT_RUN_SCRIPT
 }
-#SELECT_RUN_SCRIPT
-SELECT_RUN_SCRIPT_NEW
+select_main_menu

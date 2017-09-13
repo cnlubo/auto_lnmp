@@ -9,7 +9,7 @@ printf "${CGREEN}
 # A tool to auto-compile & install tomcat&&jdk&&nginx&&mysql&&redis  #
 #                                                                    #
 # Author:  lubo  project:  https://github.com/cnlubo/auto_lnmp       #
-#####################################################################${CEND}
+######################################################################${CEND}
 "
 cat << EOF
 *  `echo -e "$CGREEN  1) Configure  System  "`
