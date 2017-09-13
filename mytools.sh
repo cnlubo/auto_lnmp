@@ -64,14 +64,14 @@ printf "${CGREEN}
 SELECT_RUN_SCRIPT_NEW(){
 main_menu
 while true ;do
- read -p "##please Enter Your Choice:[1-6]" num1
+ read -p "${CBLUE}Which function you want to run:${CEND}" num1
    case $num1 in
       1)
        clear
        main_menu
        ;;
       2)
-       clear
+       #clear
        SOURCE_SCRIPT $FunctionPath/mysql_install.sh
        SELECT_MYSQL_INSTALL
        ;;
@@ -126,4 +126,5 @@ SELECT_RUN_SCRIPT(){
     done
     SELECT_RUN_SCRIPT
 }
-SELECT_RUN_SCRIPT
+#SELECT_RUN_SCRIPT
+SELECT_RUN_SCRIPT_NEW

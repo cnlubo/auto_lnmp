@@ -125,7 +125,8 @@ SELECT_MYSQL_INSTALL(){
 
 
     SYSTEM_CHECK
-    echo "${CMSG}----------------------------------------------------------------------------------${CEND}"
+
+    echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     PS3="${CBLUE}Which version MySql are you want to install:${CEND}"
     declare -a VarLists
     VarLists=("Back"  "MySQL-5.7" "MariaDB-10.2" "MySQL-5.6" "MariaDB-10.1")
