@@ -4,6 +4,13 @@
 # @Desc
 #----------------------------------------------------------------------------
 function main_menu(){
+printf "${CGREEN}
+######################################################################
+# A tool to auto-compile & install tomcat&&jdk&&nginx&&mysql&&redis  #
+#                                                                    #
+# Author:  lubo  project:  https://github.com/cnlubo/auto_lnmp       #
+#####################################################################${CEND}
+"
 cat << EOF
 *  `echo -e "$CGREEN  1) Configure  System  "`
 *  `echo -e "$CGREEN  2) MySql      Install "`

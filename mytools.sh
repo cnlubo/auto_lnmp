@@ -53,13 +53,13 @@ IPADDR_COUNTRY=`echo $IPADDR_COUNTRY_ISP | awk '{print $1}'`
 [ "`echo $IPADDR_COUNTRY_ISP | awk '{print $2}'`"x == '1000323'x ] && IPADDR_ISP=aliyun
 clear;
 
-printf "${CGREEN}
-######################################################################
-# A tool to auto-compile & install tomcat&&jdk&&nginx&&mysql&&redis  #
-#                                                                    #
-# Author:  lubo  project:  https://github.com/cnlubo/auto_lnmp       #
-#####################################################################${CEND}
-"
+#printf "${CGREEN}
+#######################################################################
+## A tool to auto-compile & install tomcat&&jdk&&nginx&&mysql&&redis  #
+##                                                                    #
+## Author:  lubo  project:  https://github.com/cnlubo/auto_lnmp       #
+######################################################################${CEND}
+#"
 #echo -e "\n"
 SELECT_RUN_SCRIPT_NEW(){
 main_menu
@@ -96,7 +96,6 @@ while true ;do
    esac
 done
 }
-
 SELECT_RUN_SCRIPT(){
     PS3="${CBLUE}Which function you want to run:${CEND}"
     VarLists=("init_system" "nginx" "tomcat" "mysql" "postgresql" "redis" "exit_system")

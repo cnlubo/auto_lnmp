@@ -166,14 +166,14 @@ SELECT_MYSQL_INSTALL(){
     SYSTEM_CHECK
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     cat << EOF
-*  `echo -e "$CGREEN  1) MySQL-5.7        "`
-*  `echo -e "$CGREEN  2) MySQL-5.6        "`
-*  `echo -e "$CGREEN  3) MariaDB-10.2     "`
-*  `echo -e "$CGREEN  4) MariaDB-10.1     "`
-*  `echo -e "$CGREEN  5) return main-menu "`
-*  `echo -e "$CGREEN  6) Quit             "`
+*  `echo -e "$CMAGENTA  1) MySQL-5.7        "`
+*  `echo -e "$CMAGENTA  2) MySQL-5.6        "`
+*  `echo -e "$CMAGENTA  3) MariaDB-10.2     "`
+*  `echo -e "$CMAGENTA  4) MariaDB-10.1     "`
+*  `echo -e "$CMAGENTA  5) Back             "`
+*  `echo -e "$CMAGENTA  6) Quit             "`
 EOF
-read -p "${CBLUE}Which Version MySQL are you want to install:${CEND}: " num3
+read -p "${CMAGENTA}Which Version MySQL are you want to install:${CEND} " num3
 
 case $num3 in
    1)
@@ -201,9 +201,11 @@ case $num3 in
      MariaDB_Install_Main
      ;;
    5)
+     clear
      SELECT_RUN_SCRIPT_NEW
      ;;
     6)
+    clear
      exit 0
      ;;
    *)
