@@ -57,11 +57,10 @@ while true ;do
  read -p "${CBLUE}Which function you want to run:${CEND}" num1
    case $num1 in
       1)
-       clear
-       main_menu
+      SOURCE_SCRIPT $FunctionPath/init_system.sh
+       select_mysql_install
        ;;
       2)
-       #clear
        SOURCE_SCRIPT $FunctionPath/mysql_install.sh
        select_mysql_install
        ;;
@@ -79,40 +78,41 @@ while true ;do
        ;;
       6)
        clear
-       break
+       exit 0
        ;;
       *)
-      main_menu
+      clear
+      select_main_menu
    esac
 done
 }
-SELECT_RUN_SCRIPT(){
-    PS3="${CBLUE}Which function you want to run:${CEND}"
-    VarLists=("init_system" "nginx" "tomcat" "mysql" "postgresql" "redis" "exit_system")
-    select var in ${VarLists[@]} ;do
-        case $var in
-            ${VarLists[1]})
-                SOURCE_SCRIPT $FunctionPath/init_system.sh
-                SELECT_SYSTEM_SETUP_FUNCTION;;
-            ${VarLists[2]})
-                SOURCE_SCRIPT $FunctionPath/tomcat_install.sh
-                SELECT_TOMCAT_INSTALL;;
-            ${VarLists[3]})
-                SOURCE_SCRIPT $FunctionPath/mysql_install.sh
-                SELECT_MYSQL_INSTALL;;
-            # ${VarLists[4]})
-                #     SOURCE_SCRIPT $FunctionPath/mysql_install.sh
-                # SELECT_MYSQL_INSTALL;;
-            # ${VarLists[5]})
-                #     SOURCE_SCRIPT $FunctionPath/tomcat_install.sh
-                # SELECT_TOMCAT_INSTALL;;
-            ${VarLists[6]})
-                exit 0;;
-            *)
-                SELECT_RUN_SCRIPT;;
-        esac
-        break
-    done
-    SELECT_RUN_SCRIPT
-}
+#SELECT_RUN_SCRIPT(){
+#    PS3="${CBLUE}Which function you want to run:${CEND}"
+#    VarLists=("init_system" "nginx" "tomcat" "mysql" "postgresql" "redis" "exit_system")
+#    select var in ${VarLists[@]} ;do
+#        case $var in
+#            ${VarLists[1]})
+#                SOURCE_SCRIPT $FunctionPath/init_system.sh
+#                SELECT_SYSTEM_SETUP_FUNCTION;;
+#            ${VarLists[2]})
+#                SOURCE_SCRIPT $FunctionPath/tomcat_install.sh
+#                SELECT_TOMCAT_INSTALL;;
+#            ${VarLists[3]})
+#                SOURCE_SCRIPT $FunctionPath/mysql_install.sh
+#                SELECT_MYSQL_INSTALL;;
+#            # ${VarLists[4]})
+#                #     SOURCE_SCRIPT $FunctionPath/mysql_install.sh
+#                # SELECT_MYSQL_INSTALL;;
+#            # ${VarLists[5]})
+#                #     SOURCE_SCRIPT $FunctionPath/tomcat_install.sh
+#                # SELECT_TOMCAT_INSTALL;;
+#            ${VarLists[6]})
+#                exit 0;;
+#            *)
+#                SELECT_RUN_SCRIPT;;
+#        esac
+#        break
+#    done
+#    SELECT_RUN_SCRIPT
+#}
 select_main_menu

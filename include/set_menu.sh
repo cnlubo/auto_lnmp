@@ -13,7 +13,7 @@ printf "${CGREEN}
 "
 cat << EOF
 *  `echo -e "$CGREEN  1) Configure  System  "`
-*  `echo -e "$CGREEN  2) MySql      Install "`
+*  `echo -e "$CGREEN  2) MySQL      Install "`
 *  `echo -e "$CGREEN  3) Postgresql Install "`
 *  `echo -e "$CGREEN  4) Nginx      Install "`
 *  `echo -e "$CGREEN  5) Tomcat     Install "`

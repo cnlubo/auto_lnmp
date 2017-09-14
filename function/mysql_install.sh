@@ -1,7 +1,6 @@
 #!/bin/bash
 # ----------------------------------------------------------------
 #@Author          :              cnlubo (454331202@qq.com)
-#@CreateDate      :              2016-01-25 10:36:45
 #@Filename       :              mysql_install.sh
 #@desc           :              mysql install main
 #------------------------------------------------------------------
@@ -166,14 +165,14 @@ select_mysql_install(){
     system_check
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     cat << EOF
-*  `echo -e "$CMAGENTA  1) MySQL-5.7        "`
-*  `echo -e "$CMAGENTA  2) MySQL-5.6        "`
-*  `echo -e "$CMAGENTA  3) MariaDB-10.2     "`
-*  `echo -e "$CMAGENTA  4) MariaDB-10.1     "`
-*  `echo -e "$CMAGENTA  5) Back             "`
-*  `echo -e "$CMAGENTA  6) Quit             "`
+*  `echo -e "$CBLUE  1) MySQL-5.7        "`
+*  `echo -e "$CBLUE  2) MySQL-5.6        "`
+*  `echo -e "$CBLUE  3) MariaDB-10.2     "`
+*  `echo -e "$CBLUE  4) MariaDB-10.1     "`
+*  `echo -e "$CBLUE  5) Back             "`
+*  `echo -e "$CBLUE  6) Quit             "`
 EOF
-read -p "${CMAGENTA}Which Version MySQL are you want to install:${CEND} " num3
+read -p "${CBLUE}Which Version MySQL are you want to install:${CEND} " num3
 
 case $num3 in
    1)
