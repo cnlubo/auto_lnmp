@@ -16,7 +16,7 @@ if  [ $sysOS == "Linux" ]; then
             if [ $ID == ubuntu ];then
                 Ubuntu_version=`lsb_release -sr | awk -F. '{print $1}'`
                 OS=Ubuntu
-                elif [ $ID == debian ]; then
+            elif [ $ID == debian ]; then
                 Debian_version=`lsb_release -sr | awk -F. '{print $1}'`
                 OS=Debian
             fi
@@ -32,7 +32,7 @@ if  [ $sysOS == "Linux" ]; then
             if [ $ID == centos ];then
                 CentOS_RHEL_version=`lsb_release -sr | awk -F. '{print $1}'`
                 OS=CentOS
-                elif [ $ID == fedora ]; then
+            elif [ $ID == fedora ]; then
                 Fedora_version=`lsb_release -sr | awk -F. '{print $1}'`
                 OS=fedora
             fi
@@ -68,7 +68,7 @@ CpuCores=$(grep 'cpu cores' /proc/cpuinfo |uniq |awk -F : '{print $2}' |sed 's/^
 OS_command(){
     if [ $OS == 'CentOS' ];then
         echo -e $OS_CentOS | bash
-        elif [ $OS == 'Debian' -o $OS == 'Ubuntu' ];then
+    elif [ $OS == 'Debian' -o $OS == 'Ubuntu' ];then
         echo -e $OS_Debian_Ubuntu | bash
     else
         echo "${CFAILURE}Does not support this OS, Please contact the author! ${CEND}"

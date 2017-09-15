@@ -24,7 +24,7 @@ SOURCE_SCRIPT $script_dir/include/set_menu.sh
 # Check if user is root
 [[ $(id -u) != '0' ]] && EXIT_MSG "Please use root to run this script."
 
-# modify ssh port 
+# modify ssh port
 
 #if [ -e "/etc/ssh/sshd_config" ]; then
 #    [ -z "`grep ^Port /etc/ssh/sshd_config`" ] && ssh_port=22 || ssh_port=`grep ^Port /etc/ssh/sshd_config | awk '{print $2}'`
@@ -44,47 +44,47 @@ SOURCE_SCRIPT $script_dir/include/set_menu.sh
 #        sed -i "s@^Port.*@Port $SSH_PORT@" /etc/ssh/sshd_config
 #    fi
 #fi
-# get the IP information
-IPADDR=`./py2/get_ipaddr.py`
-PUBLIC_IPADDR=`./py2/get_public_ipaddr.py`
-IPADDR_COUNTRY_ISP=`./py2/get_ipaddr_state.py $PUBLIC_IPADDR`
-IPADDR_COUNTRY=`echo $IPADDR_COUNTRY_ISP | awk '{print $1}'`
-[ "`echo $IPADDR_COUNTRY_ISP | awk '{print $2}'`"x == '1000323'x ] && IPADDR_ISP=aliyun
+## get the IP information
+#IPADDR=`./py2/get_ipaddr.py`
+#PUBLIC_IPADDR=`./py2/get_public_ipaddr.py`
+#IPADDR_COUNTRY_ISP=`./py2/get_ipaddr_state.py $PUBLIC_IPADDR`
+#IPADDR_COUNTRY=`echo $IPADDR_COUNTRY_ISP | awk '{print $1}'`
+#[ "`echo $IPADDR_COUNTRY_ISP | awk '{print $2}'`"x == '1000323'x ] && IPADDR_ISP=aliyun
 
 select_main_menu(){
-main_menu
-while true ;do
- read -p "${CBLUE}Which function you want to run:${CEND}" num1
-   case $num1 in
-      1)
-      SOURCE_SCRIPT $FunctionPath/init_system.sh
-       select_mysql_install
-       ;;
-      2)
-       SOURCE_SCRIPT $FunctionPath/mysql_install.sh
-       select_mysql_install
-       ;;
-      3)
-       clear
-       main_menu
-       ;;
-      4)
-       clear
-       main_menu
-       ;;
-      5)
-       clear
-       main_menu
-       ;;
-      6)
-       clear
-       exit 0
-       ;;
-      *)
-      clear
-      select_main_menu
-   esac
-done
+    main_menu
+    while true ;do
+        read -p "${CBLUE}Which function you want to run:${CEND}" num1
+        case $num1 in
+            1)
+                SOURCE_SCRIPT $FunctionPath/init_system.sh
+                select_system_setup_function
+            ;;
+            2)
+                SOURCE_SCRIPT $FunctionPath/mysql_install.sh
+                select_mysql_install
+            ;;
+            3)
+                clear
+                main_menu
+            ;;
+            4)
+                clear
+                main_menu
+            ;;
+            5)
+                clear
+                main_menu
+            ;;
+            6)
+                clear
+                exit 0
+            ;;
+            *)
+                clear
+                select_main_menu
+        esac
+    done
 }
 #SELECT_RUN_SCRIPT(){
 #    PS3="${CBLUE}Which function you want to run:${CEND}"
