@@ -6,7 +6,7 @@
 
 installDepsCentOS() {
 
-    sed -i 's@^exclude@#exclude@' /etc/yum.conf #注释exclude
+    #sed -i 's@^exclude@#exclude@' /etc/yum.conf #注释exclude
     echo "${CMSG} install yum-fastestmirror epel-release...${CEND}"
     yum -y install yum-fastestmirror epel-release
     yum clean all
@@ -27,11 +27,12 @@ installDepsCentOS() {
     echo "${CMSG}Installing dependencies packages...${CEND}"
     yum check-update
     # Install needed packages
-    pkgList="deltarpm gcc gcc-c++ make cmake autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel ncurses ncurses-devel libaio numactl numactl-libs readline-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5-devel libidn libidn-devel openssl openssl-devel libxslt-devel libicu-devel libevent-devel libtool libtool-ltdl bison gd-devel vim-enhanced pcre-devel zip unzip ntpdate sqlite-devel sysstat patch bc expect expat-devel rsync rsyslog git lsof lrzsz wget"
+    pkgList="deltarpm gcc gcc-c++ make cmake autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel ncurses ncurses-devel libaio numactl numactl-libs readline-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5-devel libidn libidn-devel openssl openssl-devel libxslt-devel libicu-devel libevent-devel libtool libtool-ltdl bison gd-devel vim-enhanced pcre-devel zip unzip ntpdate sqlite-devel sysstat patch bc expect expat-devel rsync rsyslog git lsof lrzsz wget net-tools"
     for Package in ${pkgList}; do
         yum -y install ${Package}
     done
     yum -y update bash openssl glibc
+    yum -y upgrade
     # centos devtoolset
     # devtoolset-3(gcc-4.9.2)、devtoolset-4(gcc-5.2.1)
     echo "${CMSG}Installing centos devtoolset3(gcc-4.9.2)...${CEND}"
