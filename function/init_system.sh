@@ -21,6 +21,8 @@ select_system_setup_function(){
         ;;
     esac
 
+    # 初始化系统
+
     case "${OS}" in
         "CentOS")
 
@@ -33,6 +35,9 @@ select_system_setup_function(){
             $script_dir/include/init_Ubuntu.sh 2>&1 | tee -a $script_dir44/logs/install.log
         ;;
     esac
+
+    # 源代码安装软件
+    installDepsBySrc 2>&1 | tee -a ${oneinstack_dir}/install.log
 
     echo "${CMSG}[Initialization $OS OK please reboot] **************************************************>>${CEND}";
     select_main_menu;

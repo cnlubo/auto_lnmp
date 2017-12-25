@@ -26,8 +26,15 @@ installDepsCentOS() {
     fi
     echo "${CMSG}Installing dependencies packages...${CEND}"
     yum check-update
+
     # Install needed packages
-    pkgList="deltarpm gcc gcc-c++ make cmake autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel ncurses ncurses-devel libaio numactl numactl-libs readline-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5-devel libidn libidn-devel openssl openssl-devel libxslt-devel libicu-devel libevent-devel libtool libtool-ltdl bison gd-devel vim-enhanced pcre-devel zip unzip ntpdate sqlite-devel sysstat patch bc expect expat-devel rsync rsyslog git lsof lrzsz wget net-tools"
+    #pkgList="deltarpm gcc gcc-c++ make cmake autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel ncurses ncurses-devel libaio numactl numactl-libs readline-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5-devel libidn libidn-devel openssl openssl-devel libxslt-devel libicu-devel libevent-devel libtool libtool-ltdl bison gd-devel vim-enhanced pcre-devel zip unzip ntpdate sqlite-devel sysstat patch bc expect expat-devel rsync rsyslog git lsof lrzsz wget net-tools"
+
+    pkgList="deltarpm gcc gcc-c++ make cmake autoconf glibc glibc-devel glib2 glib2-devel \
+    bzip2-devel curl libcurl-devel e2fsprogs e2fsprogs-devel krb5-devel openssl openssl-devel \
+    libidn libidn-devel bison pcre pcre-devel zip unzip ntpdate sqlite-devel \
+    patch bc expect expat-devel rsyslog lsof wget net-tools"
+
     for Package in ${pkgList}; do
         yum -y install ${Package}
     done
@@ -122,43 +129,158 @@ installDepsDebian() {
 
 installDepsBySrc() {
 
-    pushd ${oneinstack_dir}/src
 
-    if [ "${OS}" == "Ubuntu" ]; then
-        if [[ "${Ubuntu_version}" =~ ^14$|^15$ ]]; then
-            # Install bison on ubt 14.x 15.x
-            tar xzf bison-${bison_version}.tar.gz
-            pushd bison-${bison_version}
-            ./configure
-            make -j ${THREAD} && make install
-            popd
-            rm -rf bison-${bison_version}
-        fi
-    elif [ "${OS}" == "CentOS" ]; then
-        # Install tmux
+    # pushd ${oneinstack_dir}/src
+    #
+    # if [ "${OS}" == "Ubuntu" ]; then
+    #     if [[ "${Ubuntu_version}" =~ ^14$|^15$ ]]; then
+    #         # Install bison on ubt 14.x 15.x
+    #         tar xzf bison-${bison_version}.tar.gz
+    #         pushd bison-${bison_version}
+    #         ./configure
+    #         make -j ${THREAD} && make install
+    #         popd
+    #         rm -rf bison-${bison_version}
+    #     fi
+    # elif [ "${OS}" == "CentOS" ]; then
+    #     # Install tmux
+    #     if [ ! -e "$(which tmux)" ]; then
+    #         # Install libevent first
+    #         tar xzf libevent-${libevent_version}.tar.gz
+    #         pushd libevent-${libevent_version}
+    #         ./configure
+    #         make -j ${THREAD} && make install
+    #         popd
+    #         rm -rf libevent-${libevent_version}
+    #
+    #         tar xzf tmux-${tmux_version}.tar.gz
+    #         pushd tmux-${tmux_version}
+    #         CFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib" ./configure
+    #         make -j ${THREAD} && make install
+    #         unset LDFLAGS
+    #         popd
+    #         rm -rf tmux-${tmux_version}
+    #
+    #         if [ "${OS_BIT}" == "64" ]; then
+    #             ln -s /usr/local/lib/libevent-2.0.so.5 /usr/lib64/libevent-2.0.so.5
+    #         else
+    #             ln -s /usr/local/lib/libevent-2.0.so.5 /usr/lib/libevent-2.0.so.5
+    #         fi
+    #     fi
+    #
+    #     # install htop
+    #     if [ ! -e "$(which htop)" ]; then
+    #         tar xzf htop-${htop_version}.tar.gz
+    #         pushd htop-${htop_version}
+    #         ./configure
+    #         make -j ${THREAD} && make install
+    #         popd
+    #         rm -rf htop-${htop_version}
+    #     fi
+    # else
+    #     echo "No need to install software from source packages."
+    # fi
+    # popd
+    #
+    #
+    if [ "${OS}" == "CentOS" ]; then
+        # git
+        yum -y remove git
+        src_url=https://www.kernel.org/pub/software/scm/git/git-$git_version.tar.gz
+        Download_src
+        cd $script_dir/src
+        tar xvf git-$git_version.tar.gz
+        cd git-$git_version
+        # 安装依赖
+        yum -y install gcc openssl-devel curl-devel expat-devel perl-devel
+        make prefix=/usr/local/git all
+        make prefix=/usr/local/git install
+        ln -s /usr/local/git/bin/* /usr/bin/
+        cd ..
+        rm -rf git-$git_version
+        # tmux
         if [ ! -e "$(which tmux)" ]; then
+            yum -y install ncurses-devel automake
             # Install libevent first
+            src_url=https://github.com/libevent/libevent/releases/download/release-$libevent_version/libevent-$libevent_version.tar.gz
+            Download_src
+            cd $script_dir/src
             tar xzf libevent-${libevent_version}.tar.gz
-            pushd libevent-${libevent_version}
+            cd  libevent-${libevent_version}
             ./configure
-            make -j ${THREAD} && make install
-            popd
+            make && make install
+            cd ..
             rm -rf libevent-${libevent_version}
-
-            tar xzf tmux-${tmux_version}.tar.gz
-            pushd tmux-${tmux_version}
+            #
+            git clone https://github.com/tmux/tmux.git
+            cd tmux
+            sh autogen.sh
             CFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib" ./configure
-            make -j ${THREAD} && make install
+            make && make install
             unset LDFLAGS
-            popd
-            rm -rf tmux-${tmux_version}
-
+            cd ..
+            rm -rf tmux
             if [ "${OS_BIT}" == "64" ]; then
-                ln -s /usr/local/lib/libevent-2.0.so.5 /usr/lib64/libevent-2.0.so.5
+                ln -s /usr/local/lib/libevent-2.1.so.6 /usr/lib64/libevent-2.1.so.6
             else
-                ln -s /usr/local/lib/libevent-2.0.so.5 /usr/lib/libevent-2.0.so.5
+                ln -s /usr/local/lib/libevent-2.1.so.6 /usr/lib/libevent-2.1.so.6
             fi
         fi
+        # update python
+        src_url=https://www.python.org/ftp/python/$python2_version/Python-$python2_version.tar.xz
+        Download_src
+        tar xvf Python-$python2_version.tar.xz&&cd Python-$python2_version
+        # 安装依赖
+        yum -y install  openssl-devel ncurses-devel  bzip2-devel sqlite-devel readline-devel zlib-devel  tk-devel gdbm-devel
+        mkdir -p /usr/local/python$python2_version/lib
+        ./configure --enable-shared  --enable-unicode=ucs4 --prefix=/usr/local/python$python2_version LDFLAGS="-Wl,-rpath /usr/local/python$python2_version/lib"
+        make&&make install
+        cd ..
+        rm -rf Python-$python2_version
+        # 替换默认python
+        mkdir -p /usr/bin/backup_python
+        if [ "${CentOS_RHEL_version}" == '7' ]; then
+            mv /usr/bin/python2.7 /usr/bin/python2.7.5
+            cp /usr/bin/python2.7.5 /usr/bin/backup_python
+            ln -s /usr/local/pythonpython2_version/bin/python2.7 /usr/bin/python2.7
+            # 修改 /usr/bin/yum和/usr/libexec/urlgrabber-ext-down的Python版本
+            sed -i "s@^#\!/usr/bin/python.*@#\!  /usr/bin/python2.7.5@" /usr/bin/yum
+            sed -i "s@^#\!/usr/bin/python.*@#\!  /usr/bin/python2.7.5@" /usr/libexec/urlgrabber-ext-down
+            # pip setuptools
+            src_url=https://github.com/pypa/setuptools/archive/v$setuptools_version.tar.gz&&Download_src
+            src_url=https://github.com/pypa/pip/archive/$pip_version.tar.gz&&Download_src
+            tar xvf $pip_version.tar.gz&&tar xvf v$setuptools_version.tar.gz
+            cd setuptools-$setuptools_version
+            python bootstrap.py&&python setup.py install&&cd ..
+            cd pip-$pip_version
+            python setup.py install
+            cd ..
+            rm -rf setuptools-$setuptools_version
+            rm -rf pip-$pip_version
+        fi
+        # zsh
+        yum -y install ncurses-devel
+        src_url=https://sourceforge.net/projects/zsh/files/zsh/$zsh_version/zsh-$zsh_version.tar.gz/download
+        Download_src&&mv download zsh-$zsh_version.tar.gz&&tar xvf zsh-$zsh_version.tar.gz
+        cd zsh-$zsh_version
+        ./configure&&make&&make install
+
+        # vim
+        cd $script_dir/src
+        yum install ncurses-devel perl-ExtUtils-Embed luajit luajit-devel lua-devel
+        git clone https://github.com/vim/vim.git
+        cd vim
+        ./configure --prefix=/usr/local/vim --with-features=huge --enable-gui=gtk2 \
+        --enable-fontset --enable-multibyte --enable-pythoninterp \
+        --with-python-config-dir=/usr/local/python$python2_version/lib/python2.7/config \
+        --enable-perlinterp --enable-rubyinterp --enable-luainterp --enable-cscope --enable-xim --with-x  --with-luajit
+
+
+
+
+    elif [ "${OS}" == "Ubuntu" ]; then
+        # Install tmux
+
 
         # install htop
         if [ ! -e "$(which htop)" ]; then
@@ -172,5 +294,6 @@ installDepsBySrc() {
     else
         echo "No need to install software from source packages."
     fi
-    popd
+
+
 }
