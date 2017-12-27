@@ -8,37 +8,72 @@ SOURCE_SCRIPT $script_dir/include/check_deps.sh
 select_system_setup_function(){
 
     echo "${CMSG}[Initialization $OS] **************************************************>>${CEND}";
-    # 安装必要的依赖
-    case "${OS}" in
-        "CentOS")
-            installDepsCentOS 2>&1 | tee $script_dir/logs/install.log
-        ;;
-        "Debian")
-            installDepsDebian 2>&1 | tee $script_dir/logs/install.log
-        ;;
-        "Ubuntu")
-            installDepsUbuntu 2>&1 | tee $script_dir//logs/install.log
-        ;;
-    esac
+    # modify ssh port
+    if [ -e "/etc/ssh/sshd_config" ]; then
+        [ -z "`grep ^Port /etc/ssh/sshd_config`" ] && ssh_port=22 || ssh_port=`grep ^Port /etc/ssh/sshd_config | awk '{print $2}'`
+        while :; do
+            echo
+            read -p "Please input SSH port(Default: $ssh_port): " SSH_PORT
+            [ -z "$SSH_PORT" ] && SSH_PORT=$ssh_port
+            if [ $SSH_PORT -eq 22 >/dev/null 2>&1 -o $SSH_PORT -gt 1024 >/dev/null 2>&1 -a $SSH_PORT -lt 65535 >/dev/null 2>&1 ]; then
+                break
+            else
+                echo "${CWARNING}input error! Input range: 22,1025~65534${CEND}"
+            fi
+        done
 
-    # 初始化系统
+        if [ -z "`grep ^Port /etc/ssh/sshd_config`" -a "$SSH_PORT" != '22' ]; then
+            sed -i "s@^#Port.*@&\nPort $SSH_PORT@" /etc/ssh/sshd_config
+        elif [ -n "`grep ^Port /etc/ssh/sshd_config`" ]; then
+            sed -i "s@^Port.*@Port $SSH_PORT@" /etc/ssh/sshd_config
+        fi
+    fi
+    # 创建普通用户
+    # counts=0
+    # while counts = 3 ; do
+    #     echo
+    #     read -p "Please input a typical user(default:$default_user)" Typical_User
+    #     Typical_User="${Typical_User:=$default_user}"
+    #     echo Typical_User
+    #     id $Typical_User >/dev/null 2>&1
+    #     if [ ! $? -eq 0 ]; then
+    #         break
+    #     else
+    #         echo "${CWARNING}Input user($Typical_User)exist${CEND}"
+    #     fi
+    #     counts=counts+1
+    # done
+    echo
+    read -p "Please input a typical user(default:$default_user)" Typical_User
+    Typical_User="${Typical_User:=$default_user}"
+    echo Typical_User
+    id $Typical_User >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "${CWARNING}Input user($Typical_User)exist${CEND}"
+    else
+        # 创建用户设置密码
+        useradd $Typical_User&&passwd
+    fi
+    
 
-    case "${OS}" in
-        "CentOS")
-
-            $script_dir/include/init_centos.sh 2>&1 | tee -a $script_dir/logs/install.log
-        ;;
-        "Debian")
-            $script_dir/include/init_Debian.sh 2>&1 | tee -a $script_dir/logs/install.log
-        ;;
-        "Ubuntu")
-            $script_dir/include/init_Ubuntu.sh 2>&1 | tee -a $script_dir44/logs/install.log
-        ;;
-    esac
-
-    # 源代码安装软件
-    installDepsBySrc 2>&1 | tee -a ${oneinstack_dir}/install.log
-
+    # 安装必要的依赖和初始化系统
+    # case "${OS}" in
+    #     "CentOS")
+    #         installDepsCentOS 2>&1 | tee $script_dir/logs/install.log
+    #         $script_dir/include/init_CentOS.sh 2>&1 | tee -a $script_dir/logs/install.log
+    #     ;;
+    #     "Debian")
+    #         installDepsDebian 2>&1 | tee $script_dir/logs/install.log
+    #          $script_dir/include/init_Debian.sh 2>&1 | tee -a $script_dir/logs/install.log
+    #     ;;
+    #     "Ubuntu")
+    #         installDepsUbuntu 2>&1 | tee $script_dir//logs/install.log
+    #         $script_dir/include/init_Ubuntu.sh 2>&1 | tee -a $script_dir44/logs/install.log
+    #     ;;
+    # esac
+    #
+    # # 源代码安装软件
+    # installDepsBySrc 2>&1 | tee -a ${oneinstack_dir}/install.log
     echo "${CMSG}[Initialization $OS OK please reboot] **************************************************>>${CEND}";
     select_main_menu;
 }

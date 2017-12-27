@@ -26,7 +26,6 @@ installDepsCentOS() {
     fi
     echo "${CMSG}Installing dependencies packages...${CEND}"
     yum check-update
-
     # Install needed packages
     #pkgList="deltarpm gcc gcc-c++ make cmake autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel ncurses ncurses-devel libaio numactl numactl-libs readline-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5-devel libidn libidn-devel openssl openssl-devel libxslt-devel libicu-devel libevent-devel libtool libtool-ltdl bison gd-devel vim-enhanced pcre-devel zip unzip ntpdate sqlite-devel sysstat patch bc expect expat-devel rsync rsyslog git lsof lrzsz wget net-tools"
 
@@ -242,7 +241,7 @@ installDepsBySrc() {
         if [ "${CentOS_RHEL_version}" == '7' ]; then
             mv /usr/bin/python2.7 /usr/bin/python2.7.5
             cp /usr/bin/python2.7.5 /usr/bin/backup_python
-            ln -s /usr/local/pythonpython2_version/bin/python2.7 /usr/bin/python2.7
+            ln -s /usr/local/python$python2_version/bin/python2.7 /usr/bin/python2.7
             # 修改 /usr/bin/yum和/usr/libexec/urlgrabber-ext-down的Python版本
             sed -i "s@^#\!/usr/bin/python.*@#\!  /usr/bin/python2.7.5@" /usr/bin/yum
             sed -i "s@^#\!/usr/bin/python.*@#\!  /usr/bin/python2.7.5@" /usr/libexec/urlgrabber-ext-down
@@ -259,24 +258,28 @@ installDepsBySrc() {
             rm -rf pip-$pip_version
         fi
         # zsh
-        yum -y install ncurses-devel
-        src_url=https://sourceforge.net/projects/zsh/files/zsh/$zsh_version/zsh-$zsh_version.tar.gz/download
-        Download_src&&mv download zsh-$zsh_version.tar.gz&&tar xvf zsh-$zsh_version.tar.gz
-        cd zsh-$zsh_version
-        ./configure&&make&&make install
-
+        if [ ! -e "$(which zsh)" ]; then
+            yum -y install ncurses-devel
+            src_url=https://sourceforge.net/projects/zsh/files/zsh/$zsh_version/zsh-$zsh_version.tar.gz/download
+            Download_src&&mv download zsh-$zsh_version.tar.gz&&tar xvf zsh-$zsh_version.tar.gz
+            cd zsh-$zsh_version
+            ./configure&&make&&make install
+            cd ..
+            rm -rf zsh-$zsh_version
+        fi
         # vim
         cd $script_dir/src
-        yum install ncurses-devel perl-ExtUtils-Embed luajit luajit-devel lua-devel
+        yum -y install ncurses-devel perl-ExtUtils-Embed luajit luajit-devel lua-devel
         git clone https://github.com/vim/vim.git
         cd vim
         ./configure --prefix=/usr/local/vim --with-features=huge --enable-gui=gtk2 \
         --enable-fontset --enable-multibyte --enable-pythoninterp \
         --with-python-config-dir=/usr/local/python$python2_version/lib/python2.7/config \
         --enable-perlinterp --enable-rubyinterp --enable-luainterp --enable-cscope --enable-xim --with-x  --with-luajit
-
-
-
+        make CFLAGS="-O2 -D_FORTIFY_SOURCE=1"&&make install
+        ln -s /usr/local/vim/bin/vim /usr/local/bin/vim
+        cd ..
+        rm -rf vim
 
     elif [ "${OS}" == "Ubuntu" ]; then
         # Install tmux
