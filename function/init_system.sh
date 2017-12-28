@@ -29,20 +29,6 @@ select_system_setup_function(){
         fi
     fi
     # 创建普通用户
-    # counts=0
-    # while counts = 3 ; do
-    #     echo
-    #     read -p "Please input a typical user(default:$default_user)" Typical_User
-    #     Typical_User="${Typical_User:=$default_user}"
-    #     echo Typical_User
-    #     id $Typical_User >/dev/null 2>&1
-    #     if [ ! $? -eq 0 ]; then
-    #         break
-    #     else
-    #         echo "${CWARNING}Input user($Typical_User)exist${CEND}"
-    #     fi
-    #     counts=counts+1
-    # done
     echo
     read -p "Please input a typical user(default:$default_user)" Typical_User
     Typical_User="${Typical_User:=$default_user}"
@@ -53,8 +39,9 @@ select_system_setup_function(){
     else
         # 创建用户设置密码
         useradd $Typical_User&&passwd
+        echo $default_pass | passwd $Typical_User --stdin  &>/dev/null
     fi
-    
+
 
     # 安装必要的依赖和初始化系统
     # case "${OS}" in
