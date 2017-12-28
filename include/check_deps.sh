@@ -225,37 +225,45 @@ installDepsBySrc() {
                 ln -s /usr/local/lib/libevent-2.1.so.6 /usr/lib/libevent-2.1.so.6
             fi
         fi
+
         # update python
-        src_url=https://www.python.org/ftp/python/$python2_version/Python-$python2_version.tar.xz
-        Download_src
-        tar xvf Python-$python2_version.tar.xz&&cd Python-$python2_version
-        # 安装依赖
-        yum -y install  openssl-devel ncurses-devel  bzip2-devel sqlite-devel readline-devel zlib-devel  tk-devel gdbm-devel
-        mkdir -p /usr/local/python$python2_version/lib
-        ./configure --enable-shared  --enable-unicode=ucs4 --prefix=/usr/local/python$python2_version LDFLAGS="-Wl,-rpath /usr/local/python$python2_version/lib"
-        make&&make install
-        cd ..
-        rm -rf Python-$python2_version
-        # 替换默认python
-        mkdir -p /usr/bin/backup_python
-        if [ "${CentOS_RHEL_version}" == '7' ]; then
-            mv /usr/bin/python2.7 /usr/bin/python2.7.5
-            cp /usr/bin/python2.7.5 /usr/bin/backup_python
-            ln -s /usr/local/python$python2_version/bin/python2.7 /usr/bin/python2.7
-            # 修改 /usr/bin/yum和/usr/libexec/urlgrabber-ext-down的Python版本
-            sed -i "s@^#\!/usr/bin/python.*@#\!  /usr/bin/python2.7.5@" /usr/bin/yum
-            sed -i "s@^#\!/usr/bin/python.*@#\!  /usr/bin/python2.7.5@" /usr/libexec/urlgrabber-ext-down
-            # pip setuptools
-            src_url=https://github.com/pypa/setuptools/archive/v$setuptools_version.tar.gz&&Download_src
-            src_url=https://github.com/pypa/pip/archive/$pip_version.tar.gz&&Download_src
-            tar xvf $pip_version.tar.gz&&tar xvf v$setuptools_version.tar.gz
-            cd setuptools-$setuptools_version
-            python bootstrap.py&&python setup.py install&&cd ..
-            cd pip-$pip_version
-            python setup.py install
+        # get current python_version
+        U_V1=`python -V 2>&1|awk '{print $2}'|awk -F '.' '{print $1}'`
+        U_V2=`python -V 2>&1|awk '{print $2}'|awk -F '.' '{print $2}'`
+        U_V3=`python -V 2>&1|awk '{print $2}'|awk -F '.' '{print $3}'`
+        Python_version=$U_V1.$U_V2.$U_V3
+        if [ $Python_version!=$python2_version ]; then
+            src_url=https://www.python.org/ftp/python/$python2_version/Python-$python2_version.tar.xz
+            Download_src
+            tar xvf Python-$python2_version.tar.xz&&cd Python-$python2_version
+            # 安装依赖
+            yum -y install  openssl-devel ncurses-devel  bzip2-devel sqlite-devel readline-devel zlib-devel  tk-devel gdbm-devel
+            mkdir -p /usr/local/python$python2_version/lib
+            ./configure --enable-shared  --enable-unicode=ucs4 --prefix=/usr/local/python$python2_version LDFLAGS="-Wl,-rpath /usr/local/python$python2_version/lib"
+            make&&make install
             cd ..
-            rm -rf setuptools-$setuptools_version
-            rm -rf pip-$pip_version
+            rm -rf Python-$python2_version
+            # 替换默认python
+            mkdir -p /usr/bin/backup_python
+            if [ "${CentOS_RHEL_version}" == '7' ]; then
+                mv /usr/bin/python2.7 /usr/bin/python2.7.5
+                cp /usr/bin/python2.7.5 /usr/bin/backup_python
+                ln -s /usr/local/python$python2_version/bin/python2.7 /usr/bin/python2.7
+                # 修改 /usr/bin/yum和/usr/libexec/urlgrabber-ext-down的Python版本
+                sed -i "s@^#\!/usr/bin/python.*@#\!  /usr/bin/python2.7.5@" /usr/bin/yum
+                sed -i "s@^#\!/usr/bin/python.*@#\!  /usr/bin/python2.7.5@" /usr/libexec/urlgrabber-ext-down
+                # pip setuptools
+                src_url=https://github.com/pypa/setuptools/archive/v$setuptools_version.tar.gz&&Download_src
+                src_url=https://github.com/pypa/pip/archive/$pip_version.tar.gz&&Download_src
+                tar xvf $pip_version.tar.gz&&tar xvf v$setuptools_version.tar.gz
+                cd setuptools-$setuptools_version
+                python bootstrap.py&&python setup.py install&&cd ..
+                cd pip-$pip_version
+                python setup.py install
+                cd ..
+                rm -rf setuptools-$setuptools_version
+                rm -rf pip-$pip_version
+            fi
         fi
         # zsh
         if [ ! -e "$(which zsh)" ]; then
@@ -269,7 +277,7 @@ installDepsBySrc() {
         fi
         # vim
         cd $script_dir/src
-        yum -y install ncurses-devel perl-ExtUtils-Embed luajit luajit-devel lua-devel
+        yum -y install ncurses-devel perl-ExtUtils-Embed lua-devel
         git clone https://github.com/vim/vim.git
         cd vim
         ./configure --prefix=/usr/local/vim --with-features=huge --enable-gui=gtk2 \

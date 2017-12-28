@@ -28,22 +28,20 @@ select_system_setup_function(){
             sed -i "s@^Port.*@Port $SSH_PORT@" /etc/ssh/sshd_config
         fi
     fi
-    # 创建普通用户
+    # 创建默认普通用户
     echo
     read -p "Please input a typical user(default:$default_user)" Typical_User
     Typical_User="${Typical_User:=$default_user}"
-    echo Typical_User
     id $Typical_User >/dev/null 2>&1
     if [ $? -eq 0 ]; then
         echo "${CWARNING}Input user($Typical_User)exist${CEND}"
     else
         # 创建用户设置密码
-        useradd $Typical_User&&passwd
+        useradd $Typical_User
         echo $default_pass | passwd $Typical_User --stdin  &>/dev/null
     fi
 
-
-    # 安装必要的依赖和初始化系统
+    #安装必要的依赖和初始化系统
     # case "${OS}" in
     #     "CentOS")
     #         installDepsCentOS 2>&1 | tee $script_dir/logs/install.log
@@ -60,7 +58,7 @@ select_system_setup_function(){
     # esac
     #
     # # 源代码安装软件
-    # installDepsBySrc 2>&1 | tee -a ${oneinstack_dir}/install.log
+    installDepsBySrc 2>&1 | tee -a ${oneinstack_dir}/install.log
     echo "${CMSG}[Initialization $OS OK please reboot] **************************************************>>${CEND}";
     select_main_menu;
 }
