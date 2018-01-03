@@ -185,13 +185,16 @@ installDepsBySrc() {
     if [ "${OS}" == "CentOS" ]; then
         # git
         yum -y remove git
-        U_V1=`git --version 2>&1|awk '{print $3}'|awk -F '.' '{print $1}'`
-        U_V2=`git --version 2>&1|awk '{print $3}'|awk -F '.' '{print $2}'`
-        U_V3=`git --version 2>&1|awk '{print $3}'|awk -F '.' '{print $3}'`
-        Git_version=$U_V1.$U_V2.$U_V3
-        echo $Git_version
-        echo $git_version
-        if [ $Git_version != $git_version ]; then
+        if [ -e "$( which git )" ]; then
+            U_V1=`git --version 2>&1|awk '{print $3}'|awk -F '.' '{print $1}'`
+            U_V2=`git --version 2>&1|awk '{print $3}'|awk -F '.' '{print $2}'`
+            U_V3=`git --version 2>&1|awk '{print $3}'|awk -F '.' '{print $3}'`
+            Git_version=$U_V1.$U_V2.$U_V3
+            echo $Git_version
+            echo $git_version
+        fi
+        if [ $Git_version != $git_version ] || [ ! -e "$(which tmux)" ]; then
+
             cd $script_dir/src
             src_url=https://www.kernel.org/pub/software/scm/git/git-$git_version.tar.gz
             [ ! -f git-$git_version.tar.gz ] && Download_src
