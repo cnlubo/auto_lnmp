@@ -185,37 +185,58 @@ installDepsBySrc() {
     if [ "${OS}" == "CentOS" ]; then
         # git
         yum -y remove git
-        src_url=https://www.kernel.org/pub/software/scm/git/git-$git_version.tar.gz
-        Download_src
-        cd $script_dir/src
-        tar xvf git-$git_version.tar.gz
-        cd git-$git_version
-        # 安装依赖
-        yum -y install gcc openssl-devel curl-devel expat-devel perl-devel
-        make prefix=/usr/local/git all
-        make prefix=/usr/local/git install
-        ln -s /usr/local/git/bin/* /usr/bin/
-        cd ..
-        rm -rf git-$git_version
+        U_V1=`git --version 2>&1|awk '{print $3}'|awk -F '.' '{print $1}'`
+        U_V2=`git --version 2>&1|awk '{print $3}'|awk -F '.' '{print $2}'`
+        U_V3=`git --version 2>&1|awk '{print $3}'|awk -F '.' '{print $3}'`
+        Git_version=$U_V1.$U_V2.$U_V3
+        if [ $Git_version!=$git_version ]; then
+            cd $script_dir/src
+            src_url=https://www.kernel.org/pub/software/scm/git/git-$git_version.tar.gz
+            [ ! -f git-$git_version.tar.gz ] && Download_src
+            tar xvf git-$git_version.tar.gz
+            cd git-$git_version
+            # 安装依赖
+            yum -y install gcc openssl-devel curl-devel expat-devel perl-devel
+            [ -d /usr/local/git ] && rm -rf /usr/local/git
+            make prefix=/usr/local/git all && make prefix=/usr/local/git install
+            if [ $? -eq 0 ];then
+                echo "${CMSG}********* git$git_version install success !!！${CEND}"
+                rm -rf /usr/bin/git*  && ln -s /usr/local/git/bin/* /usr/bin/
+            else
+                echo "${CFAILURE}***** git$git_version install fail !!! ${CEND}"
+            fi
+            cd ..
+            rm -rf git-$git_version
+        fi
         # tmux
         if [ ! -e "$(which tmux)" ]; then
             yum -y install ncurses-devel automake
             # Install libevent first
-            src_url=https://github.com/libevent/libevent/releases/download/release-$libevent_version/libevent-$libevent_version.tar.gz
-            Download_src
             cd $script_dir/src
+            src_url=https://github.com/libevent/libevent/releases/download/release-$libevent_version/libevent-$libevent_version.tar.gz
+            [ ! -f libevent-$libevent_version.tar.gz ] && Download_src
             tar xzf libevent-${libevent_version}.tar.gz
             cd  libevent-${libevent_version}
-            ./configure
-            make && make install
+            ./configure && make && make install
+            if [ $? -eq 0 ];then
+                echo "${CMSG}********* libevent-${libevent_version} install success !!！${CEND}";
+            else
+                echo "${CFAILURE}***** libevent-${libevent_version} install fail !!! ${CEND}"
+            fi
             cd ..
             rm -rf libevent-${libevent_version}
-            #
+            # tmux install
+            [ -d tmux ] && rm -rf tmux
             git clone https://github.com/tmux/tmux.git
             cd tmux
             sh autogen.sh
             CFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib" ./configure
             make && make install
+            if [ $? -eq 0 ];then
+                echo "${CMSG}********* tmux install success !!！${CEND}";
+            else
+                echo "${CFAILURE}***** tmux install fail !!! ${CEND}"
+            fi
             unset LDFLAGS
             cd ..
             rm -rf tmux
@@ -233,61 +254,99 @@ installDepsBySrc() {
         U_V3=`python -V 2>&1|awk '{print $2}'|awk -F '.' '{print $3}'`
         Python_version=$U_V1.$U_V2.$U_V3
         if [ $Python_version!=$python2_version ]; then
+            cd $script_dir/src
             src_url=https://www.python.org/ftp/python/$python2_version/Python-$python2_version.tar.xz
-            Download_src
-            tar xvf Python-$python2_version.tar.xz&&cd Python-$python2_version
+            [ ! -f Python-$python2_version.tar.xz ] && Download_src
+            tar xvf Python-$python2_version.tar.xz && cd Python-$python2_version
             # 安装依赖
             yum -y install  openssl-devel ncurses-devel  bzip2-devel sqlite-devel readline-devel zlib-devel  tk-devel gdbm-devel
             mkdir -p /usr/local/python$python2_version/lib
             ./configure --enable-shared  --enable-unicode=ucs4 --prefix=/usr/local/python$python2_version LDFLAGS="-Wl,-rpath /usr/local/python$python2_version/lib"
-            make&&make install
+            make && make install
+            if [ $? -eq 0 ];then
+                echo "${CMSG}********* Python-$python2_version install success !!！${CEND}"
+                # 替换默认python
+                if [ "${CentOS_RHEL_version}" == '7' ]; then
+                    if [ -h /usr/bin/python2.7 ]; then
+                        rm -rf /usr/bin/python2.7
+                    else
+                        mkdir -p /usr/bin/backup_python
+                        mv /usr/bin/python2.7 /usr/bin/python2.7.5
+                        cp /usr/bin/python2.7.5 /usr/bin/backup_python
+                    fi
+                    ln -s /usr/local/python$python2_version/bin/python2.7 /usr/bin/python2.7
+                    # 修改 /usr/bin/yum和/usr/libexec/urlgrabber-ext-down的Python版本
+                    sed -i "s@^#\!/usr/bin/python.*@#\!  /usr/bin/python2.7.5@" /usr/bin/yum
+                    sed -i "s@^#\!/usr/bin/python.*@#\!  /usr/bin/python2.7.5@" /usr/libexec/urlgrabber-ext-down
+                fi
+
+            else
+                echo "${CFAILURE}***** Python-$python2_version install fail !!! ${CEND}"
+            fi
             cd ..
             rm -rf Python-$python2_version
-            # 替换默认python
-            mkdir -p /usr/bin/backup_python
-            if [ "${CentOS_RHEL_version}" == '7' ]; then
-                mv /usr/bin/python2.7 /usr/bin/python2.7.5
-                cp /usr/bin/python2.7.5 /usr/bin/backup_python
-                ln -s /usr/local/python$python2_version/bin/python2.7 /usr/bin/python2.7
-                # 修改 /usr/bin/yum和/usr/libexec/urlgrabber-ext-down的Python版本
-                sed -i "s@^#\!/usr/bin/python.*@#\!  /usr/bin/python2.7.5@" /usr/bin/yum
-                sed -i "s@^#\!/usr/bin/python.*@#\!  /usr/bin/python2.7.5@" /usr/libexec/urlgrabber-ext-down
-                # pip setuptools
+            # pip setuptools
+            U_V1=`python -V 2>&1|awk '{print $2}'|awk -F '.' '{print $1}'`
+            U_V2=`python -V 2>&1|awk '{print $2}'|awk -F '.' '{print $2}'`
+            U_V3=`python -V 2>&1|awk '{print $2}'|awk -F '.' '{print $3}'`
+            Python_version=$U_V1.$U_V2.$U_V3
+            if [ $Python_version=$python2_version ]; then
+
+                cd $script_dir/src
+                src_url=https://github.com/pypa/pip/archive/$pip_version.tar.gz
+                [ ! -f $pip_version.tar.gz ] && Download_src
                 src_url=https://github.com/pypa/setuptools/archive/v$setuptools_version.tar.gz&&Download_src
-                src_url=https://github.com/pypa/pip/archive/$pip_version.tar.gz&&Download_src
+                [ ! -f v$setuptools_version.tar.gz ] && Download_src
                 tar xvf $pip_version.tar.gz&&tar xvf v$setuptools_version.tar.gz
                 cd setuptools-$setuptools_version
-                python bootstrap.py&&python setup.py install&&cd ..
-                cd pip-$pip_version
-                python setup.py install
+                python bootstrap.py && python setup.py install
+                if [ $? -eq 0 ];then
+                    echo "${CMSG}********* setuptools-$setuptools_version install success !!！${CEND}";
+                else
+                    echo "${CFAILURE}***** setuptools-$setuptools_version install fail !!! ${CEND}"
+                fi
                 cd ..
                 rm -rf setuptools-$setuptools_version
+                cd pip-$pip_version && python setup.py install
+                if [ $? -eq 0 ];then
+                    echo "${CMSG}********* pip-$pip_version install success !!！${CEND}";
+                else
+                    echo "${CFAILURE}***** pip-$pip_version install fail !!! ${CEND}"
+                fi
+                cd ..
                 rm -rf pip-$pip_version
+                # vim
+                cd $script_dir/src
+                yum -y install ncurses-devel perl-ExtUtils-Embed lua-devel
+                git clone https://github.com/vim/vim.git
+                cd vim
+                ./configure --prefix=/usr/local/vim --with-features=huge --enable-gui=gtk2 \
+                --enable-fontset --enable-multibyte --enable-pythoninterp \
+                --with-python-config-dir=/usr/local/python$python2_version/lib/python2.7/config \
+                --enable-perlinterp --enable-rubyinterp --enable-luainterp --enable-cscope --enable-xim --with-x  --with-luajit
+                make CFLAGS="-O2 -D_FORTIFY_SOURCE=1" && make install
+                if [ $? -eq 0 ];then
+                    echo "${CMSG}********* vim install success !!！${CEND}"
+                    ln -s /usr/local/vim/bin/vim /usr/local/bin/vim
+                else
+                    echo "${CFAILURE}***** vim install fail !!! ${CEND}"
+                fi
+                cd ..
+                rm -rf vim
             fi
         fi
         # zsh
         if [ ! -e "$(which zsh)" ]; then
             yum -y install ncurses-devel
             src_url=https://sourceforge.net/projects/zsh/files/zsh/$zsh_version/zsh-$zsh_version.tar.gz/download
-            Download_src&&mv download zsh-$zsh_version.tar.gz&&tar xvf zsh-$zsh_version.tar.gz
+            [ ! -f zsh-$zsh_version.tar.gz ] && Download_src && mv download zsh-$zsh_version.tar.gz
+            tar xvf zsh-$zsh_version.tar.gz
             cd zsh-$zsh_version
-            ./configure&&make&&make install
+            ./configure && make && make install
             cd ..
             rm -rf zsh-$zsh_version
         fi
-        # vim
-        cd $script_dir/src
-        yum -y install ncurses-devel perl-ExtUtils-Embed lua-devel
-        git clone https://github.com/vim/vim.git
-        cd vim
-        ./configure --prefix=/usr/local/vim --with-features=huge --enable-gui=gtk2 \
-        --enable-fontset --enable-multibyte --enable-pythoninterp \
-        --with-python-config-dir=/usr/local/python$python2_version/lib/python2.7/config \
-        --enable-perlinterp --enable-rubyinterp --enable-luainterp --enable-cscope --enable-xim --with-x  --with-luajit
-        make CFLAGS="-O2 -D_FORTIFY_SOURCE=1"&&make install
-        ln -s /usr/local/vim/bin/vim /usr/local/bin/vim
-        cd ..
-        rm -rf vim
+
 
     elif [ "${OS}" == "Ubuntu" ]; then
         # Install tmux

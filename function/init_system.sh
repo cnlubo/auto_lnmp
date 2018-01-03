@@ -39,6 +39,9 @@ select_system_setup_function(){
         # 创建用户设置密码
         useradd $Typical_User
         echo $default_pass | passwd $Typical_User --stdin  &>/dev/null
+        sed -i "s@^default_user.*@default_user=$Typical_User@" ./options.conf
+        SOURCE_SCRIPT $ScriptPath/options.conf
+        echo $default_user
     fi
 
     #安装必要的依赖和初始化系统
@@ -57,8 +60,8 @@ select_system_setup_function(){
     #     ;;
     # esac
     #
-    # # 源代码安装软件
-    installDepsBySrc 2>&1 | tee -a ${oneinstack_dir}/install.log
+    # 源代码安装软件
+    installDepsBySrc 2>&1 | tee $script_dir/logs/src_install.log
     echo "${CMSG}[Initialization $OS OK please reboot] **************************************************>>${CEND}";
     select_main_menu;
 }
