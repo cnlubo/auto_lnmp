@@ -195,7 +195,7 @@ installDepsBySrc() {
         fi
         if [ $Git_version != ${git_version:?} ] || [ ! -e "$( which git )" ]; then
             echo
-            echo "${CMSG}****************** git$git_version install begin *************************************>>${CEND}"
+            echo "${CMSG}****************** [git$git_version install begin] *************************************>>${CEND}"
             echo
             cd ${script_dir:?}/src
             src_url=https://www.kernel.org/pub/software/scm/git/git-$git_version.tar.gz
@@ -209,19 +209,19 @@ installDepsBySrc() {
             make prefix=/usr/local/git all && make prefix=/usr/local/git install
             if [ $? -eq 0 ];then
                 echo
-                echo "${CMSG}****************** git$git_version install success !!！**********************************>>${CEND}"
+                echo "${CMSG}****************** [git$git_version install success !] **********************************>>${CEND}"
                 echo
                 rm -rf /usr/bin/git*  && ln -s /usr/local/git/bin/* /usr/bin/
             else
                 echo
-                echo "${CFAILURE}************** git$git_version install fail !!!    **********************************>>${CEND}"
+                echo "${CFAILURE}************** [git$git_version install fail !] **********************************>>${CEND}"
                 echo
             fi
             cd ..
             rm -rf git-$git_version
         else
             echo
-            echo "${CMSG}****************** git has been  install  !!！***********************************************>>${CEND}"
+            echo "${CMSG}****************** [git has been  install !] ***********************************************>>${CEND}"
             echo
 
         fi
@@ -235,7 +235,7 @@ installDepsBySrc() {
         if [ $Python_version != ${python2_version:?} ]; then
             cd $script_dir/src
             echo
-            echo "${CMSG}****************** Python-$python2_version install begin *************************************>>${CEND}"
+            echo "${CMSG}****************** [Python-$python2_version install begin] *************************************>>${CEND}"
             echo
             src_url=https://www.python.org/ftp/python/$python2_version/Python-$python2_version.tar.xz
             [ -d Python-$python2_version ] && rm -rf Python-$python2_version
@@ -249,11 +249,11 @@ installDepsBySrc() {
             make && make install
             if [ $? -eq 0 ];then
                 echo
-                echo "${CMSG}************** Python-$python2_version install success !!！ **********************************>>${CEND}"
+                echo "${CMSG}************** [Python-$python2_version install success !] **********************************>>${CEND}"
                 echo
                 # 替换默认python
                 echo
-                echo "${CMSG}************** Update System Python begin !!！ **********************************>>${CEND}"
+                echo "${CMSG}************** [Update System Python begin] **********************************>>${CEND}"
                 echo
                 if [ "${CentOS_RHEL_version}" == '7' ]; then
                     if [ -h /usr/bin/python2.7 ]; then
@@ -271,7 +271,7 @@ installDepsBySrc() {
                     fi
                 fi
                 echo
-                echo "${CMSG}************** setuptools vs pip install begin  **********************************>>${CEND}"
+                echo "${CMSG}************** [setuptools vs pip install begin] **********************************>>${CEND}"
                 echo
                 # setuptools
                 cd $script_dir/src
@@ -283,14 +283,14 @@ installDepsBySrc() {
                 python bootstrap.py && python setup.py install
                 if [ $? -eq 0 ];then
                     echo
-                    echo "${CMSG}************** setuptools-$setuptools_version install success !!！ **********************************>>${CEND}"
+                    echo "${CMSG}************* [setuptools-$setuptools_version install success !] **********************************>>${CEND}"
                     echo
                     rm -rf /usr/bin/easy_install*
                     ln -s /usr/local/python$python2_version/bin/easy_install /usr/bin/easy_install
                     ln -s /usr/local/python$python2_version/bin/easy_install-2.7 /usr/bin/easy_install-2.7
                 else
                     echo
-                    echo "${CFAILURE}************** setuptools-$setuptools_version install fail !!! **********************************>>${CEND}"
+                    echo "${CFAILURE}************** [setuptools-$setuptools_version install fail !] **********************************>>${CEND}"
                     echo
                 fi
                 cd .. && rm -rf setuptools-$setuptools_version
@@ -303,24 +303,24 @@ installDepsBySrc() {
                 python setup.py install
                 if [ $? -eq 0 ];then
                     echo
-                    echo "${CMSG}************** pip-$pip_version install success !!！**********************************>>${CEND}"
+                    echo "${CMSG}************** [pip-$pip_version install success !]**********************************>>${CEND}"
                     echo
                     rm -rf /usr/bin/pip*
                     ln -s /usr/local/python$python2_version/bin/pip /usr/bin/pip
                     ln -s /usr/local/python$python2_version/bin/pip2 /usr/bin/pip2
                     ln -s /usr/local/python$python2_version/bin/pip2.7 /usr/bin/pip2.7
                 else
-                    echo "${CFAILURE}************** pip-$pip_version install fail !!! **********************************>>${CEND}"
+                    echo "${CFAILURE}************** [pip-$pip_version install fail !] **********************************>>${CEND}"
                 fi
                 cd .. && rm -rf pip-$pip_version
 
             else
-                echo "${CFAILURE}************** Python-$python2_version install fail !!!   **********************************>>${CEND}"
+                echo "${CFAILURE}************** [Python-$python2_version install fail !]  **********************************>>${CEND}"
             fi
             cd .. && rm -rf Python-$python2_version
         else
             echo
-            echo "${CMSG}****************** python2   has been  install  !!！********************************************>>${CEND}"
+            echo "${CMSG}****************** [python2 has been install !] ********************************************>>${CEND}"
             echo
         fi
 
@@ -328,12 +328,12 @@ installDepsBySrc() {
         if [ ! -e "$(which vim)" ] && [ -e "$( which python )" ]; then
             cd $script_dir/src
             echo
-            echo "${CMSG}************** setuptools vs pip install begin  **********************************>>${CEND}"
+            echo "${CMSG}************** [vim install begin]  **********************************>>${CEND}"
             echo
             yum -y install ncurses-devel perl-ExtUtils-Embed lua-devel
-            [ -d vim ] && rm  -rf vim
-            git clone https://github.com/vim/vim.git
+            [ ! -d vim ] && git clone https://github.com/vim/vim.git
             cd vim
+            git pull
             ./configure --prefix=/usr/local/vim --with-features=huge --enable-gui=gtk2 \
             --enable-fontset --enable-multibyte --enable-pythoninterp \
             --with-python-config-dir=/usr/local/python$python2_version/lib/python2.7/config \
@@ -341,24 +341,27 @@ installDepsBySrc() {
             make CFLAGS="-O2 -D_FORTIFY_SOURCE=1" && make install
             if [ $? -eq 0 ];then
                 echo
-                echo "${CMSG}**************  vim install success !!！**********************************>>${CEND}"
+                echo "${CMSG}**************  [vim install success !]**********************************>>${CEND}"
                 echo
                 [ -h /usr/local/bin/vim ] && rm -rf /usr/local/bin/vim
                 ln -s /usr/local/vim/bin/vim /usr/local/bin/vim
             else
                 echo
-                echo "${CFAILURE}**************  vim install fail !!! **********************************>>${CEND}"
+                echo "${CFAILURE}************** [vim install fail !] **********************************>>${CEND}"
                 echo
             fi
             cd .. && rm -rf vim
         else
             echo
-            echo "${CMSG}****************** vim  has been  install  !!！***********************************************>>${CEND}"
+            echo "${CMSG}****************** [vim  has been  install !] ***********************************************>>${CEND}"
             echo
         fi
 
         # tmux
         if [ ! -e "$(which tmux)" ]; then
+            echo
+            echo "${CMSG}************** [tmux install begin] **********************************>>${CEND}"
+            echo
             yum -y install ncurses-devel automake
             # Install libevent first
             cd $script_dir/src
@@ -371,29 +374,29 @@ installDepsBySrc() {
             ./configure && make && make install
             if [ $? -eq 0 ];then
                 echo
-                echo "${CMSG}**************  libevent-${libevent_version} install success !!！**********************************>>${CEND}"
+                echo "${CMSG}************** [libevent-${libevent_version} install success !] **********************************>>${CEND}"
                 echo
             else
                 echo
-                echo "${CFAILURE}************** libevent-${libevent_version} install fail !!! **********************************>>${CEND}"
+                echo "${CFAILURE}************** [libevent-${libevent_version} install fail !] **********************************>>${CEND}"
                 echo
             fi
             cd ..
             rm -rf libevent-${libevent_version}
             # tmux install
-            [ -d tmux ] && rm -rf tmux
-            git clone https://github.com/tmux/tmux.git
+            [ ! -d tmux ] && git clone https://github.com/tmux/tmux.git
             cd tmux
+            git push
             sh autogen.sh
             CFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib" ./configure
             make && make install
             if [ $? -eq 0 ];then
                 echo
-                echo "${CMSG}**************  tmux install success !!！**********************************${CEND}"
+                echo "${CMSG}************** [tmux install success !] **********************************${CEND}"
                 echo
             else
                 echo
-                echo "${CFAILURE}************** tmux install fail !!! **********************************${CEND}"
+                echo "${CFAILURE}************** [tmux install fail !] **********************************${CEND}"
                 echo
             fi
             unset LDFLAGS
@@ -406,7 +409,7 @@ installDepsBySrc() {
             fi
         else
             echo
-            echo "${CMSG}****************** tmux has been  install  !!！***********************************************>>${CEND}"
+            echo "${CMSG}****************** [tmux has been  install  !] ***********************************************>>${CEND}"
             echo
         fi
 
