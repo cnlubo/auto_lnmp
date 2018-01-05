@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2164
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
 # @Desc                                    install  packages and software
@@ -14,7 +15,7 @@ installDepsCentOS() {
 
     # Uninstall the conflicting packages
     echo "${CMSG}Removing the conflicting packages...${CEND}"
-    if [ "${CentOS_RHEL_version}" == '7' ]; then
+    if [ "${CentOS_RHEL_version:?}" == '7' ]; then
         yum -y groupremove "Basic Web Server" "MySQL Database server" "MySQL Database client" "File and Print Server"
         systemctl mask firewalld.service
         yum -y install iptables-services net-tools
@@ -75,7 +76,7 @@ installDepsUbuntu() {
         apt-get -y install ${Package} --force-yes
     done
 
-    if [[ "${Ubuntu_version}" =~ ^14$|^15$ ]]; then
+    if [[ "${Ubuntu_version:?}" =~ ^14$|^15$ ]]; then
         apt-get -y install libcloog-ppl1
         apt-get -y remove bison
         ln -sf /usr/include/freetype2 /usr/include/freetype2/freetype
@@ -104,7 +105,7 @@ installDepsDebian() {
     apt-get autoremove
 
     # Install needed packages
-    case "${Debian_version}" in
+    case "${Debian_version:?}" in
         [6,7])
             pkgList="gcc g++ make cmake autoconf libjpeg8 libjpeg8-dev libjpeg-dev libpng12-0 libpng12-dev libpng3 libfreetype6 libfreetype6-dev libxml2 libxml2-dev zlib1g zlib1g-dev libc6 libc6-dev libglib2.0-0 libglib2.0-dev bzip2 libzip-dev libbz2-1.0 libncurses5 libncurses5-dev libaio1 libaio-dev numactl libreadline-dev curl libcurl3 libcurl4-openssl-dev libcurl4-gnutls-dev e2fsprogs libkrb5-3 libkrb5-dev libltdl-dev libidn11 libidn11-dev openssl libssl-dev libtool libevent-dev bison re2c libsasl2-dev libxslt1-dev libicu-dev locales libcloog-ppl0 patch vim zip unzip tmux htop bc dc expect libexpat1-dev rsync git lsof lrzsz iptables rsyslog cron logrotate ntpdate libsqlite3-dev psmisc wget sysv-rc"
         ;;
@@ -191,13 +192,16 @@ installDepsBySrc() {
             U_V3=`git --version 2>&1|awk '{print $3}'|awk -F '.' '{print $3}'`
             Git_version=$U_V1.$U_V2.$U_V3
         fi
-        if [ $Git_version != $git_version ] || [ ! -e "$( which git )" ]; then
-            cd $script_dir/src
+        if [ $Git_version != ${git_version:?} ] || [ ! -e "$( which git )" ]; then
+            echo
+            echo "${CMSG}****************** git$git_version install begin *************************************>>${CEND}"
+            echo
+            cd ${script_dir:?}/src
             src_url=https://www.kernel.org/pub/software/scm/git/git-$git_version.tar.gz
             [ -d git-$git_version ] && rm -rf git-$git_version
             [ ! -f git-$git_version.tar.gz ] && Download_src
             tar xf git-$git_version.tar.gz
-            cd git-$git_version
+            cd git-${git_version:?}
             # 安装依赖
             yum -y install gcc openssl-devel curl-devel expat-devel perl-devel
             [ -d /usr/local/git ] && rm -rf /usr/local/git
@@ -205,10 +209,12 @@ installDepsBySrc() {
             if [ $? -eq 0 ];then
                 echo
                 echo "${CMSG}****************** git$git_version install success !!！**********************************>>${CEND}"
+                echo
                 rm -rf /usr/bin/git*  && ln -s /usr/local/git/bin/* /usr/bin/
             else
                 echo
                 echo "${CFAILURE}************** git$git_version install fail !!!    **********************************>>${CEND}"
+                echo
             fi
             cd ..
             rm -rf git-$git_version
@@ -220,8 +226,11 @@ installDepsBySrc() {
             U_V3=`python -V 2>&1|awk '{print $2}'|awk -F '.' '{print $3}'`
             Python_version=$U_V1.$U_V2.$U_V3
         fi
-        if [ $Python_version!=$python2_version ] || [ ! -e "$( which python )" ]; then
+        if [ $Python_version! = ${python2_version:?} ] || [ ! -e "$( which python )" ]; then
             cd $script_dir/src
+            echo
+            echo "${CMSG}****************** Python-$python2_version install begin *************************************>>${CEND}"
+            echo
             src_url=https://www.python.org/ftp/python/$python2_version/Python-$python2_version.tar.xz
             [ -d Python-$python2_version ] && rm -rf Python-$python2_version
             [ ! -f Python-$python2_version.tar.xz ] && Download_src
@@ -235,13 +244,16 @@ installDepsBySrc() {
             if [ $? -eq 0 ];then
                 echo
                 echo "${CMSG}************** Python-$python2_version install success !!！ **********************************>>${CEND}"
-
+                echo
                 # 替换默认python
+                echo
+                echo "${CMSG}************** Update System Python begin !!！ **********************************>>${CEND}"
+                echo
                 if [ "${CentOS_RHEL_version}" == '7' ]; then
                     if [ -h /usr/bin/python2.7 ]; then
                         rm -rf /usr/bin/python2.7
                     else
-                        [! -f /usr/bin/python2.7.5 ] && mkdir -p /usr/bin/backup_python && mv /usr/bin/python2.7 /usr/bin/python2.7.5 && cp /usr/bin/python2.7.5 /usr/bin/backup_python
+                        [ ! -f /usr/bin/python2.7.5 ] && mkdir -p /usr/bin/backup_python && mv /usr/bin/python2.7 /usr/bin/python2.7.5 && cp /usr/bin/python2.7.5 /usr/bin/backup_python
                     fi
                     ln -s /usr/local/python$python2_version/bin/python2.7 /usr/bin/python2.7
                     # 修改 /usr/bin/yum和/usr/libexec/urlgrabber-ext-down的Python版本
@@ -252,32 +264,41 @@ installDepsBySrc() {
                         sed -i "1c #\!  /usr/bin/python2.7.5" /usr/libexec/urlgrabber-ext-down
                     fi
                 fi
+                echo
+                echo "${CMSG}************** setuptools vs pip install begin  **********************************>>${CEND}"
+                echo
                 # setuptools
                 cd $script_dir/src
-                src_url=https://github.com/pypa/setuptools/archive/v$setuptools_version.tar.gz && Download_src
+                src_url=https://github.com/pypa/setuptools/archive/v${setuptools_version:?}.tar.gz
                 [ ! -f v$setuptools_version.tar.gz ] && Download_src
                 [ -d setuptools-$setuptools_version ] && rm -rf setuptools-$setuptools_version
                 tar xf v$setuptools_version.tar.gz
                 cd setuptools-$setuptools_version
                 python bootstrap.py && python setup.py install
                 if [ $? -eq 0 ];then
+                    echo
                     echo "${CMSG}************** setuptools-$setuptools_version install success !!！ **********************************>>${CEND}"
+                    echo
                     rm -rf /usr/bin/easy_install*
                     ln -s /usr/local/python$python2_version/bin/easy_install /usr/bin/easy_install
                     ln -s /usr/local/python$python2_version/bin/easy_install-2.7 /usr/bin/easy_install-2.7
                 else
+                    echo
                     echo "${CFAILURE}************** setuptools-$setuptools_version install fail !!! **********************************>>${CEND}"
+                    echo
                 fi
                 cd .. && rm -rf setuptools-$setuptools_version
                 # pip
-                src_url=https://github.com/pypa/pip/archive/$pip_version.tar.gz
+                src_url=https://github.com/pypa/pip/archive/${pip_version:?}.tar.gz
                 [ ! -f $pip_version.tar.gz ] && Download_src
                 [ -d pip-$pip_version ] && rm -rf pip-$pip_version
                 tar xvf $pip_version.tar.gz
                 cd pip-$pip_version
                 python setup.py install
                 if [ $? -eq 0 ];then
+                    echo
                     echo "${CMSG}************** pip-$pip_version install success !!！**********************************>>${CEND}"
+                    echo
                     rm -rf /usr/bin/pip*
                     ln -s /usr/local/python$python2_version/bin/pip /usr/bin/pip
                     ln -s /usr/local/python$python2_version/bin/pip2 /usr/bin/pip2
@@ -297,7 +318,7 @@ installDepsBySrc() {
         if [ ! -e "$(which vim)" ] && [ -e "$( which python )" ]; then
             cd $script_dir/src
             yum -y install ncurses-devel perl-ExtUtils-Embed lua-devel
-            [ -d vim ] && rm -rf vim
+            [ -d vim ] && rm  -rf vim
             git clone https://github.com/vim/vim.git
             cd vim
             ./configure --prefix=/usr/local/vim --with-features=huge --enable-gui=gtk2 \
@@ -306,11 +327,15 @@ installDepsBySrc() {
             --enable-perlinterp --enable-rubyinterp --enable-luainterp --enable-cscope --enable-xim --with-x  --with-luajit
             make CFLAGS="-O2 -D_FORTIFY_SOURCE=1" && make install
             if [ $? -eq 0 ];then
+                echo
                 echo "${CMSG}**************  vim install success !!！**********************************>>${CEND}"
+                echo
                 [ -h /usr/local/bin/vim ] && rm -rf /usr/local/bin/vim
                 ln -s /usr/local/vim/bin/vim /usr/local/bin/vim
             else
+                echo
                 echo "${CFAILURE}**************  vim install fail !!! **********************************>>${CEND}"
+                echo
             fi
             cd .. && rm -rf vim
         fi
@@ -320,16 +345,21 @@ installDepsBySrc() {
             yum -y install ncurses-devel automake
             # Install libevent first
             cd $script_dir/src
-            src_url=https://github.com/libevent/libevent/releases/download/release-$libevent_version/libevent-$libevent_version.tar.gz
+            # shellcheck disable=SC2034
+            src_url=https://github.com/libevent/libevent/releases/download/release-${libevent_version:?}/libevent-${libevent_version:?}.tar.gz
             [ ! -f libevent-$libevent_version.tar.gz ] && Download_src
             [ -d libevent-${libevent_version} ] && rm -rf libevent-${libevent_version}
             tar xzf libevent-${libevent_version}.tar.gz
             cd  libevent-${libevent_version}
             ./configure && make && make install
             if [ $? -eq 0 ];then
-                echo "${CMSG}********* libevent-${libevent_version} install success !!！${CEND}";
+                echo
+                echo "${CMSG}**************  libevent-${libevent_version} install success !!！**********************************>>${CEND}"
+                echo
             else
-                echo "${CFAILURE}***** libevent-${libevent_version} install fail !!! ${CEND}"
+                echo
+                echo "${CFAILURE}************** libevent-${libevent_version} install fail !!! **********************************>>${CEND}"
+                echo
             fi
             cd ..
             rm -rf libevent-${libevent_version}
@@ -341,9 +371,13 @@ installDepsBySrc() {
             CFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib" ./configure
             make && make install
             if [ $? -eq 0 ];then
-                echo "${CMSG}********* tmux install success !!！${CEND}";
+                echo
+                echo "${CMSG}**************  tmux install success !!！**********************************${CEND}"
+                echo
             else
-                echo "${CFAILURE}***** tmux install fail !!! ${CEND}"
+                echo
+                echo "${CFAILURE}************** tmux install fail !!! **********************************${CEND}"
+                echo
             fi
             unset LDFLAGS
             cd ..
@@ -375,8 +409,8 @@ installDepsBySrc() {
 
         # install htop
         if [ ! -e "$(which htop)" ]; then
-            tar xzf htop-${htop_version}.tar.gz
-            pushd htop-${htop_version}
+            tar xzf htop-${htop_version:?}.tar.gz
+            pushd htop-${htop_version:?}
             ./configure
             make -j ${THREAD} && make install
             popd
