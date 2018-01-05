@@ -327,6 +327,9 @@ installDepsBySrc() {
         # vim
         if [ ! -e "$(which vim)" ] && [ -e "$( which python )" ]; then
             cd $script_dir/src
+            echo
+            echo "${CMSG}************** setuptools vs pip install begin  **********************************>>${CEND}"
+            echo
             yum -y install ncurses-devel perl-ExtUtils-Embed lua-devel
             [ -d vim ] && rm  -rf vim
             git clone https://github.com/vim/vim.git

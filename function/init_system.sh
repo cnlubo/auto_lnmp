@@ -55,12 +55,12 @@ select_system_setup_function(){
             $script_dir/include/init_CentOS.sh 2>&1 | tee $script_dir/logs/init_centos.log
         ;;
         "Debian")
-            installDepsDebian 2>&1 | tee $script_dir/logs/install.log
-            $script_dir/include/init_Debian.sh 2>&1 | tee -a $script_dir/logs/install.log
+            installDepsDebian 2>&1 | tee $script_dir/logs/deps_install.log
+            $script_dir/include/init_Debian.sh 2>&1 | tee -a $script_dir/logs/init_debian.log
         ;;
         "Ubuntu")
-            installDepsUbuntu 2>&1 | tee $script_dir//logs/install.log
-            ${script_dir:?}/include/init_Ubuntu.sh 2>&1 | tee -a ${script_dir:?}/logs/install.log
+            installDepsUbuntu 2>&1 | tee $script_dir//logs/deps_install.log
+            ${script_dir:?}/include/init_Ubuntu.sh 2>&1 | tee -a ${script_dir:?}/logs/init_ubuntu.log
         ;;
     esac
 
