@@ -11,7 +11,7 @@ installDepsCentOS() {
     echo "${CMSG} install yum-fastestmirror epel-release...${CEND}"
     # yum -y install yum-fastestmirror epel-release
     yum -y install epel-release
-    # yum clean all
+    yum clean all
     # yum makecache
 
     # Uninstall the conflicting packages
@@ -320,7 +320,7 @@ installDepsBySrc() {
             cd .. && rm -rf Python-$python2_version
         else
             echo
-            echo "${CMSG}****************** python2   has been  install  !!！***********************************************>>${CEND}"
+            echo "${CMSG}****************** python2   has been  install  !!！********************************************>>${CEND}"
             echo
         fi
 
@@ -435,6 +435,7 @@ installDepsBySrc() {
             rm -rf htop-${htop_version}
         fi
     else
+        echo
         echo "No need to install software from source packages."
     fi
 
