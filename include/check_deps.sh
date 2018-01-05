@@ -219,6 +219,11 @@ installDepsBySrc() {
             fi
             cd ..
             rm -rf git-$git_version
+        else
+            echo
+            echo "${CMSG}****************** git has been  install  !!！***********************************************>>${CEND}"
+            echo
+
         fi
         # python
         if [ -e "$( which python )" ]; then
@@ -313,6 +318,10 @@ installDepsBySrc() {
                 echo "${CFAILURE}************** Python-$python2_version install fail !!!   **********************************>>${CEND}"
             fi
             cd .. && rm -rf Python-$python2_version
+        else
+            echo
+            echo "${CMSG}****************** python2   has been  install  !!！***********************************************>>${CEND}"
+            echo
         fi
 
         # vim
@@ -339,6 +348,10 @@ installDepsBySrc() {
                 echo
             fi
             cd .. && rm -rf vim
+        else
+            echo
+            echo "${CMSG}****************** vim  has been  install  !!！***********************************************>>${CEND}"
+            echo
         fi
 
         # tmux
@@ -388,6 +401,10 @@ installDepsBySrc() {
             else
                 ln -s /usr/local/lib/libevent-2.1.so.6 /usr/lib/libevent-2.1.so.6
             fi
+        else
+            echo
+            echo "${CMSG}****************** tmux has been  install  !!！***********************************************>>${CEND}"
+            echo
         fi
 
 
