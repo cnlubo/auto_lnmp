@@ -41,27 +41,26 @@ select_system_setup_function(){
         echo $default_pass | passwd $Typical_User --stdin  &>/dev/null
         sed -i "s@^default_user.*@default_user=$Typical_User@" ./options.conf
         SOURCE_SCRIPT $ScriptPath/options.conf
-        echo $default_user
+        # echo $default_user
     fi
+    # # 安装必要的依赖和初始化系统
+    case "${OS}" in
+        "CentOS")
+            installDepsCentOS 2>&1 | tee $script_dir/logs/deps_install.log
+            $script_dir/include/init_CentOS.sh 2>&1 | tee $script_dir/logs/init_centos.log
+        ;;
+        "Debian")
+            installDepsDebian 2>&1 | tee $script_dir/logs/install.log
+             $script_dir/include/init_Debian.sh 2>&1 | tee -a $script_dir/logs/install.log
+        ;;
+        "Ubuntu")
+            installDepsUbuntu 2>&1 | tee $script_dir//logs/install.log
+            $script_dir/include/init_Ubuntu.sh 2>&1 | tee -a $script_dir44/logs/install.log
+        ;;
+    esac
 
-    #安装必要的依赖和初始化系统
-    # case "${OS}" in
-    #     "CentOS")
-    #         installDepsCentOS 2>&1 | tee $script_dir/logs/install.log
-    #         $script_dir/include/init_CentOS.sh 2>&1 | tee -a $script_dir/logs/install.log
-    #     ;;
-    #     "Debian")
-    #         installDepsDebian 2>&1 | tee $script_dir/logs/install.log
-    #          $script_dir/include/init_Debian.sh 2>&1 | tee -a $script_dir/logs/install.log
-    #     ;;
-    #     "Ubuntu")
-    #         installDepsUbuntu 2>&1 | tee $script_dir//logs/install.log
-    #         $script_dir/include/init_Ubuntu.sh 2>&1 | tee -a $script_dir44/logs/install.log
-    #     ;;
-    # esac
-    #
     # 源代码安装软件
-    installDepsBySrc 2>&1 | tee $script_dir/logs/src_install.log
+    installDepsBySrc 2>&1 | tee $script_dir/logs/soft_install.log
     echo "${CMSG}[Initialization $OS OK please reboot] **************************************************>>${CEND}";
     select_main_menu;
 }
