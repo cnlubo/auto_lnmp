@@ -34,7 +34,7 @@ installDepsCentOS() {
     pkgList="deltarpm gcc gcc-c++ make cmake autoconf glibc glibc-devel glib2 glib2-devel \
     bzip2-devel curl libcurl-devel e2fsprogs e2fsprogs-devel krb5-devel openssl openssl-devel \
     libidn libidn-devel bison pcre pcre-devel zip unzip ntpdate sqlite-devel \
-    patch bc expect expat-devel rsyslog lsof wget net-tools"
+    patch bc expect expat-devel rsyslog lsof wget net-tools mkpasswd"
 
     for Package in ${pkgList}; do
         yum -y install ${Package}
@@ -309,6 +309,12 @@ installDepsBySrc() {
                     ln -s /usr/local/python$python2_version/bin/pip /usr/bin/pip
                     ln -s /usr/local/python$python2_version/bin/pip2 /usr/bin/pip2
                     ln -s /usr/local/python$python2_version/bin/pip2.7 /usr/bin/pip2.7
+                    # pip镜像
+                    mkdir -p /home/root/.pip && cp ${script_dir:?}/config/pip.conf /home/root/.pip/
+                    id ${default_user:?} >/dev/null 2>&1
+                    if [ $? -eq 0 ]; then
+                        mkdir -p /home/${default_user:?}/.pip && cp ${script_dir:?}/config/pip.conf /home/${default_user:?}/.pip/
+                    fi
                 else
                     echo "${CFAILURE}************** [pip-$pip_version install fail !] **********************************>>${CEND}"
                 fi
@@ -386,7 +392,7 @@ installDepsBySrc() {
             # tmux install
             [ ! -d tmux ] && git clone https://github.com/tmux/tmux.git
             cd tmux
-            git push
+            git pull
             sh autogen.sh
             CFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib" ./configure
             make && make install

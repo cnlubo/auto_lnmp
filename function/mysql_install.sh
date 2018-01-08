@@ -6,7 +6,7 @@
 #------------------------------------------------------------------
 system_check(){
     [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && exit;
-    [ $RamTotalG -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install mysql.\nThis script need memory more than 1G.\n${CEND}" && SELECT_RUN_SCRIPT;
+    [ ${RamTotalG:?} -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install mysql.\nThis script need memory more than 1G.\n${CEND}" && SELECT_RUN_SCRIPT;
 }
 
 MySQL_Var(){
@@ -34,7 +34,7 @@ MySQL_Var(){
     read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort)" MysqlOptPath
     #echo $MysqlBasePath
     MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort}"
-    MysqlDataPath="$MysqlOptPath/data"
+    MysqlDataPath="${MysqlOptPath}/data"
     MysqlLogPath="$MysqlOptPath/log"
     MysqlConfigPath="$MysqlOptPath/etc"
     MysqlTmpPath="$MysqlOptPath/tmp"
@@ -172,42 +172,42 @@ select_mysql_install(){
 *  `echo -e "$CBLUE  5) Back             "`
 *  `echo -e "$CBLUE  6) Quit             "`
 EOF
-read -p "${CBLUE}Which Version MySQL are you want to install:${CEND} " num3
+    read -p "${CBLUE}Which Version MySQL are you want to install:${CEND} " num3
 
-case $num3 in
-   1)
-     DbType="MySql"
-     DbVersion="5.7"
-     SOURCE_SCRIPT $FunctionPath/install/Mysql-5.7.sh
-     MySQLDB_Install_Main
-     ;;
-   2)
-     DbType="MySql"
-     DbVersion="5.6"
-     SOURCE_SCRIPT $FunctionPath/install/Mysql-5.6.sh
-     MySQLDB_Install_Main
-     ;;
-   3)
-     DbType="MariaDB"
-     DbVersion="10.2"
-     SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.2.sh
-     MariaDB_Install_Main
-     ;;
-   4)
-     DbType="MariaDB"
-     DbVersion="10.1"
-     SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
-     MariaDB_Install_Main
-     ;;
-   5)
-     clear
-     select_main_menu
-     ;;
-    6)
-    clear
-     exit 0
-     ;;
-   *)
-    select_mysql_install
-esac
+    case $num3 in
+        1)
+            DbType="MySql"
+            DbVersion="5.7"
+            SOURCE_SCRIPT $FunctionPath/install/Mysql-5.7.sh
+            MySQLDB_Install_Main
+        ;;
+        2)
+            DbType="MySql"
+            DbVersion="5.6"
+            SOURCE_SCRIPT $FunctionPath/install/Mysql-5.6.sh
+            MySQLDB_Install_Main
+        ;;
+        3)
+            DbType="MariaDB"
+            DbVersion="10.2"
+            SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.2.sh
+            MariaDB_Install_Main
+        ;;
+        4)
+            DbType="MariaDB"
+            DbVersion="10.1"
+            SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
+            MariaDB_Install_Main
+        ;;
+        5)
+            clear
+            select_main_menu
+        ;;
+        6)
+            clear
+            exit 0
+        ;;
+        *)
+            select_mysql_install
+    esac
 }

@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/bash\
+# shellcheck disable=SC2164
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
 # @CreatDate:                              2016-01-25 13:38:17
@@ -7,15 +8,15 @@
 #----------------------------------------------------------------------------
 Create_Conf() {
 
-    HostIP=`python $script_dir/py2/get_local_ip.py`
-    a=`echo $HostIP|cut -d\. -f1`
+    HostIP=`python ${script_dir:?}/py2/get_local_ip.py`
+    #a=`echo $HostIP|cut -d\. -f1`
     b=`echo $HostIP|cut -d\. -f2`
     c=`echo $HostIP|cut -d\. -f3`
     d=`echo $HostIP|cut -d\. -f4`
-    pt=`echo $MysqlPort % 256 | bc`
+    pt=`echo ${MysqlPort:?} % 256 | bc`
     server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
     # create dir
-    for path in $MysqlLogPath $MysqlConfigPath $MysqlDataPath $MysqlTmpPath $MysqlRunPath;do
+    for path in ${MysqlLogPath:?} ${MysqlConfigPath:?} ${MysqlDataPath:?} ${MysqlTmpPath:?} ${MysqlRunPath:?};do
         [ ! -d $path ] && mkdir -p $path
         chmod 755 $path;
         chown -R mysql:mysql $path;
@@ -139,10 +140,13 @@ EOF
 
 Install_MySQLDB()
 {
-    echo "${CMSG}[Mysql${mysql_5_7_version} Installing] **************************************************>>${CEND}";
+    echo "${CMSG}[Mysql${mysql_5_7_version:?} Installing] **************************************************>>${CEND}";
+
+
+    cd ${script_dir:?}/src
+    # shellcheck disable=SC2034
     src_url=http://cdn.mysql.com//Downloads/MySQL-5.7/mysql-$mysql_5_7_version.tar.gz
-    Download_src
-    cd $script_dir/src
+    [ ! -f mysql-$mysql_5_7_version.tar.gz ] && Download_src
     [ -d mysql-$mysql_5_7_version ] && rm -rf mysql-$mysql_5_7_version
     tar -zxf mysql-$mysql_5_7_version.tar.gz;
     cd mysql-$mysql_5_7_version;
@@ -186,7 +190,7 @@ Init_MySQLDB(){
     $MysqlBasePath/bin/mysqld --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --user=mysql \
     --basedir=$MysqlBasePath --datadir=$MysqlDataPath --initialize-insecure
     #启动脚本
-    mkdir -p $MysqlOptPath/init.d
+    mkdir -p ${MysqlOptPath:?}/init.d
     chown -R mysql.mysql $MysqlOptPath/
     cp $script_dir/template/mysql_start $MysqlOptPath/init.d/mysql$MysqlPort;
     chmod 775 $MysqlOptPath/init.d/mysql$MysqlPort;
@@ -197,7 +201,7 @@ Init_MySQLDB(){
     sed  -i ':a;$!{N;ba};s#mysql_user=#mysql_user='''$mysql_user'''#' $MysqlOptPath/init.d/mysql$MysqlPort
     sed  -i ':a;$!{N;ba};s#mysqld_pid_file_path=#mysqld_pid_file_path='''$MysqlRunPath/mysql$MysqlPort\.pid'''#' $MysqlOptPath/init.d/mysql$MysqlPort
     #服务脚本
-    if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
+    if ( [ $OS == "Ubuntu" ] && [ ${Ubuntu_version:?} -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] );then
         #support Systemd
         [ -L /lib/systemd/system/mysql$MysqlPort.service ] && rm -f /lib/systemd/system/mysql$MysqlPort.service;
         cp $script_dir/template/mysql.service /lib/systemd/system/mysql$MysqlPort.service;

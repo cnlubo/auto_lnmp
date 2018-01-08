@@ -41,14 +41,19 @@ select_system_setup_function(){
     else
         # 创建用户设置密码
         useradd $Typical_User
+        yum install expect
+        default_pass=`mkpasswd -l 8`
         echo ${default_pass:?} | passwd $Typical_User --stdin  &>/dev/null
-        #sed -i "s@^default_user.*@default_user=$Typical_User@" ./options.conf
-        #SOURCE_SCRIPT $ScriptPath/options.conf
-        # echo $default_user
+        echo
+        echo "${CRED}[system user $Typical_User passwd:${default_pass:?} !!!!! ] *******************************>>${CEND}" | tee -a $script_dir/logs/pp.log
+        echo
+        # sudo 权限
+        [ -f /etc/sudoers.d/ak47 ] && rm -rf /etc/sudoers.d/ak47
+        echo " $Typical_User   ALL=(ALL)  NOPASSWD: ALL " >> /etc/sudoers.d/ak47 && chmod 400 /etc/sudoers.d/ak47
     fi
     sed -i "s@^default_user.*@default_user=$Typical_User@" ./options.conf
     SOURCE_SCRIPT ${ScriptPath:?}/options.conf
-    # # 安装必要的依赖和初始化系统
+    # 安装必要的依赖和初始化系统
     case "${OS}" in
         "CentOS")
             installDepsCentOS 2>&1 | tee $script_dir/logs/deps_install.log

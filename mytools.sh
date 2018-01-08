@@ -7,16 +7,24 @@
 #
 #---------------------------------------------------------------------------
 export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-#get scriptpath
-ScriptPath=$(cd $(dirname "$0") && pwd)
-sed -i "s@^script_dir.*@script_dir=`(cd $(dirname "$BASH_SOURCE[0]") && pwd)`@" ./options.conf
+# dirname $0，取得当前执行的脚本文件的父目录
+# cd `dirname $0`，进入这个目录(切换当前工作目录)
+# pwd，显示当前工作目录(cd执行后的)
+parentdir=$(dirname "$0")
+ScriptPath=$(cd ${parentdir:?} && pwd)
+# BASH_SOURCE[0] 等价于 BASH_SOURCE,取得当前执行的shell文件所在的路径及文件名
+scriptdir=$(dirname "${BASH_SOURCE[0]}")
+sed -i "s@^script_dir.*@script_dir=`(cd ${scriptdir:?} && pwd)`@" ./options.conf
+
 # mac 需要在sed -i 后增加一个"" 不能忽略否则报错
 #sed -i "" "s@^script_dir.*@script_dir=`(cd $(dirname "$BASH_SOURCE[0]") && pwd)`@" ./options.conf
 #加载配置内容
+# shellcheck source=$ScriptPath/include/color.sh
 source $ScriptPath/include/color.sh
+# shellcheck source=$ScriptPath/include/common.sh
 source $ScriptPath/include/common.sh
 SOURCE_SCRIPT $ScriptPath/options.conf
-SOURCE_SCRIPT $script_dir/apps.conf
+SOURCE_SCRIPT ${script_dir:?}/apps.conf
 SOURCE_SCRIPT $script_dir/include/check_os.sh
 SOURCE_SCRIPT $script_dir/include/set_dir.sh
 SOURCE_SCRIPT $script_dir/include/set_menu.sh
@@ -24,27 +32,7 @@ SOURCE_SCRIPT $script_dir/include/set_menu.sh
 # Check if user is root
 [[ $(id -u) != '0' ]] && EXIT_MSG "Please use root to run this script."
 
-# # modify ssh port
-#
-# if [ -e "/etc/ssh/sshd_config" ]; then
-#     [ -z "`grep ^Port /etc/ssh/sshd_config`" ] && ssh_port=22 || ssh_port=`grep ^Port /etc/ssh/sshd_config | awk '{print $2}'`
-#     while :; do echo
-#         read -p "Please input SSH port(Default: $ssh_port): " SSH_PORT
-#         [ -z "$SSH_PORT" ] && SSH_PORT=$ssh_port
-#         if [ $SSH_PORT -eq 22 >/dev/null 2>&1 -o $SSH_PORT -gt 1024 >/dev/null 2>&1 -a $SSH_PORT -lt 65535 >/dev/null 2>&1 ]; then
-#             break
-#         else
-#             echo "${CWARNING}input error! Input range: 22,1025~65534${CEND}"
-#         fi
-#     done
-#
-#     if [ -z "`grep ^Port /etc/ssh/sshd_config`" -a "$SSH_PORT" != '22' ]; then
-#         sed -i "s@^#Port.*@&\nPort $SSH_PORT@" /etc/ssh/sshd_config
-#     elif [ -n "`grep ^Port /etc/ssh/sshd_config`" ]; then
-#         sed -i "s@^Port.*@Port $SSH_PORT@" /etc/ssh/sshd_config
-#     fi
-# fi
-# # 创建普通用户
+
 
 ## get the IP information
 #IPADDR=`./py2/get_ipaddr.py`
@@ -59,7 +47,7 @@ select_main_menu(){
         read -p "${CBLUE}Which function you want to run:${CEND}" num1
         case $num1 in
             1)
-                SOURCE_SCRIPT $FunctionPath/init_system.sh
+                SOURCE_SCRIPT ${FunctionPath:?}/init_system.sh
                 select_system_setup_function
             ;;
             2)
