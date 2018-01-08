@@ -232,7 +232,7 @@ installDepsBySrc() {
             U_V3=`python -V 2>&1|awk '{print $2}'|awk -F '.' '{print $3}'`
             Python_version=$U_V1.$U_V2.$U_V3
         fi
-        if [ $Python_version != ${python2_version:?} ]; then
+        if [ "$Python_version" != "${python2_version:?}" ] || [ ! -e "$( which python )" ] ; then
             cd $script_dir/src
             echo
             echo "${CMSG}****************** [Python-$python2_version install begin] *************************************>>${CEND}"
