@@ -101,15 +101,15 @@ ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 #EOF
 #sysctl -p
 
-if [ "${CentOS_RHEL_version:?}" == '5' ]; then
+if [ ${CentOS_RHEL_version:?} == '5' ]; then
     sed -i 's@^[3-6]:2345:respawn@#&@g' /etc/inittab
     sed -i 's@^ca::ctrlaltdel@#&@' /etc/inittab
     sed -i 's@LANG=.*$@LANG="en_US.UTF-8"@g' /etc/sysconfig/i18n
-elif [ "${CentOS_RHEL_version:?}" == '6' ]; then
+elif [ ${CentOS_RHEL_version:?} == '6' ]; then
     sed -i 's@^ACTIVE_CONSOLES.*@ACTIVE_CONSOLES=/dev/tty[1-2]@' /etc/sysconfig/init
     sed -i 's@^start@#start@' /etc/init/control-alt-delete.conf
     sed -i 's@LANG=.*$@LANG="en_US.UTF-8"@g' /etc/sysconfig/i18n
-elif [ "${CentOS_RHEL_version:?}" == '7' ]; then
+elif [ ${CentOS_RHEL_version:?} == '7' ]; then
     sed -i 's@LANG=.*$@LANG="en_US.UTF-8"@g' /etc/locale.conf
 fi
 
