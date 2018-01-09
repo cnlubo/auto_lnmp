@@ -197,7 +197,7 @@ installDepsBySrc() {
         fi
         if [ $Git_version != ${git_version:?} ] || [ ! -e "$( which git )" ]; then
             echo
-            echo "${CMSG}****************** [git$git_version install begin] *************************************>>${CEND}"
+            echo "${CMSG} [ git$git_version install begin ] *************************************>>${CEND}"
             echo
             cd ${script_dir:?}/src
             src_url=https://www.kernel.org/pub/software/scm/git/git-$git_version.tar.gz
@@ -211,19 +211,19 @@ installDepsBySrc() {
             make prefix=/usr/local/git all && make prefix=/usr/local/git install
             if [ $? -eq 0 ];then
                 echo
-                echo "${CMSG}****************** [git$git_version install success !] **********************************>>${CEND}"
+                echo "${CMSG} [ git$git_version install success ! ] **********************************>>${CEND}"
                 echo
                 rm -rf /usr/bin/git*  && ln -s /usr/local/git/bin/* /usr/bin/
             else
                 echo
-                echo "${CFAILURE}************** [git$git_version install fail !] **********************************>>${CEND}"
+                echo "${CFAILURE} [ git$git_version install fail ! ] **********************************>>${CEND}"
                 echo
             fi
             cd ..
             rm -rf git-$git_version
         else
             echo
-            echo "${CMSG}****************** [git has been  install !] ***********************************************>>${CEND}"
+            echo "${CMSG} [ git has been  install !] ***********************************************>>${CEND}"
             echo
 
         fi
@@ -237,7 +237,7 @@ installDepsBySrc() {
         if [ "$Python_version" != "${python2_version:?}" ] || [ ! -e "$( which python )" ] ; then
             cd $script_dir/src
             echo
-            echo "${CMSG}****************** [Python-$python2_version install begin] *************************************>>${CEND}"
+            echo "${CMSG} [ Python-$python2_version install begin ] *************************************>>${CEND}"
             echo
             src_url=https://www.python.org/ftp/python/$python2_version/Python-$python2_version.tar.xz
             [ -d Python-$python2_version ] && rm -rf Python-$python2_version
@@ -251,11 +251,11 @@ installDepsBySrc() {
             make && make install
             if [ $? -eq 0 ];then
                 echo
-                echo "${CMSG}************** [Python-$python2_version install success !] **********************************>>${CEND}"
+                echo "${CMSG} [ Python-$python2_version install success ! ] **********************************>>${CEND}"
                 echo
                 # 替换默认python
                 echo
-                echo "${CMSG}************** [Update System Python begin] **********************************>>${CEND}"
+                echo "${CMSG} [ Update System Python begin ] **********************************>>${CEND}"
                 echo
                 if [ "${CentOS_RHEL_version}" == '7' ]; then
                     if [ -h /usr/bin/python2.7 ]; then
@@ -273,7 +273,7 @@ installDepsBySrc() {
                     fi
                 fi
                 echo
-                echo "${CMSG}************** [setuptools vs pip install begin] **********************************>>${CEND}"
+                echo "${CMSG} [ setuptools vs pip install begin ] **********************************>>${CEND}"
                 echo
                 # setuptools
                 cd $script_dir/src
@@ -285,14 +285,14 @@ installDepsBySrc() {
                 python bootstrap.py && python setup.py install
                 if [ $? -eq 0 ];then
                     echo
-                    echo "${CMSG}************* [setuptools-$setuptools_version install success !] **********************************>>${CEND}"
+                    echo "${CMSG} [ setuptools-$setuptools_version install success !!!] **********************************>>${CEND}"
                     echo
                     rm -rf /usr/bin/easy_install*
                     ln -s /usr/local/python$python2_version/bin/easy_install /usr/bin/easy_install
                     ln -s /usr/local/python$python2_version/bin/easy_install-2.7 /usr/bin/easy_install-2.7
                 else
                     echo
-                    echo "${CFAILURE}************** [setuptools-$setuptools_version install fail !] **********************************>>${CEND}"
+                    echo "${CFAILURE} [ setuptools-$setuptools_version install fail !!!] **********************************>>${CEND}"
                     echo
                 fi
                 cd .. && rm -rf setuptools-$setuptools_version
@@ -305,16 +305,19 @@ installDepsBySrc() {
                 python setup.py install
                 if [ $? -eq 0 ];then
                     echo
-                    echo "${CMSG}************** [pip-$pip_version install success !]**********************************>>${CEND}"
+                    echo "${CMSG} [ pip-$pip_version install success !!!]**********************************>>${CEND}"
                     echo
                     rm -rf /usr/bin/pip*
                     ln -s /usr/local/python$python2_version/bin/pip /usr/bin/pip
                     ln -s /usr/local/python$python2_version/bin/pip2 /usr/bin/pip2
                     ln -s /usr/local/python$python2_version/bin/pip2.7 /usr/bin/pip2.7
                     # pip镜像
-                    mkdir -p /home/root/.pip && cp ${script_dir:?}/config/pip.conf /home/root/.pip/
+                    [ ! -d home/root/.pip ] && mkdir -p /home/root/.pip
+                    [ -f /home/root/.pip/pip.conf ] && mv /home/root/.pip/pip.conf /home/root/.pip/pip.conf_bak
+                    cp ${script_dir:?}/config/pip.conf /home/root/.pip/
                     id ${default_user:?} >/dev/null 2>&1
                     if [ $? -eq 0 ]; then
+                        [ -d /home/${default_user:?}/.pip ] && rm -rf /home/${default_user:?}/.pip
                         mkdir -p /home/${default_user:?}/.pip && cp ${script_dir:?}/config/pip.conf /home/${default_user:?}/.pip/
                     fi
                 else
