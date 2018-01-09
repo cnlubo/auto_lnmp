@@ -5,6 +5,8 @@
 # @Desc
 #----------------------------------------------------------------------------
 SOURCE_SCRIPT ${script_dir:?}/include/check_deps.sh
+SOURCE_SCRIPT ${script_dir:?}/include/configure_os.sh
+
 select_system_setup_function(){
 
     echo "${CMSG}[Initialization $OS] **************************************************>>${CEND}";
@@ -16,7 +18,6 @@ select_system_setup_function(){
             read -p "Please input SSH port(Default: $ssh_port): " SSH_PORT
             [ -z "$SSH_PORT" ] && SSH_PORT=$ssh_port
             # shellcheck disable=SC1073
-            #if [ $SSH_PORT -eq 22 >/dev/null 2>&1 -o $SSH_PORT -gt 1024 >/dev/null 2>&1 -a $SSH_PORT -lt 65535 >/dev/null 2>&1 ]; then
             if [ $SSH_PORT -eq 22 ] || [ $SSH_PORT -gt 1024 ] && [ $SSH_PORT -lt 65535 ]; then
                 break
             else
@@ -45,7 +46,7 @@ select_system_setup_function(){
         default_pass=`mkpasswd -l 8`
         echo ${default_pass:?} | passwd $Typical_User --stdin  &>/dev/null
         echo
-        echo "${CRED}[system user $Typical_User passwd:${default_pass:?} !!!!! ] *******************************>>${CEND}" | tee -a $script_dir/logs/pp.log
+        echo "${CRED}[system user $Typical_User passwd:${default_pass:?} !!!!! ] *******************************>>${CEND}" | tee $script_dir/logs/pp.log
         echo
         # sudo 权限
         [ -f /etc/sudoers.d/ak47 ] && rm -rf /etc/sudoers.d/ak47
@@ -57,7 +58,9 @@ select_system_setup_function(){
     case "${OS}" in
         "CentOS")
             installDepsCentOS 2>&1 | tee $script_dir/logs/deps_install.log
-            $script_dir/include/init_CentOS.sh 2>&1 | tee $script_dir/logs/init_centos.log
+            common_setup 2>&1 | tee $script_dir/logs/init_centos.log
+            centos_setup 2>&1 | tee -a $script_dir/logs/init_centos.log
+            # $script_dir/include/init_CentOS.sh 2>&1 | tee $script_dir/logs/init_centos.log
         ;;
         "Debian")
             installDepsDebian 2>&1 | tee $script_dir/logs/deps_install.log

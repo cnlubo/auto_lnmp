@@ -8,14 +8,16 @@
 installDepsCentOS() {
 
     #sed -i 's@^exclude@#exclude@' /etc/yum.conf #注释exclude
-    echo "${CMSG} install yum-fastestmirror epel-release...${CEND}"
+    echo "${CMSG}[ Install yum-fastestmirror epel-release ] **********************************>>${CEND}"
     # yum -y install yum-fastestmirror epel-release
     yum -y install epel-release
     yum clean all
     # yum makecache
-
+    echo "${CMSG}[ Disable selinux ] **********************************>>${CEND}"
+    setenforce 0
+    sed -i 's/^SELINUX=.*$/SELINUX=disabled/' /etc/selinux/config
     # Uninstall the conflicting packages
-    echo "${CMSG}Removing the conflicting packages...${CEND}"
+    echo "${CMSG}[ Removing the conflicting packages ] **********************************>>${CEND}"
     if [ "${CentOS_RHEL_version:?}" == '7' ]; then
         yum -y groupremove "Basic Web Server" "MySQL Database server" "MySQL Database client" "File and Print Server"
         systemctl mask firewalld.service
@@ -26,7 +28,7 @@ installDepsCentOS() {
     elif [ "${CentOS_RHEL_version}" == '5' ]; then
         yum -y groupremove "FTP Server" "Windows File Server" "PostgreSQL Database" "News Server" "MySQL Database" "DNS Name Server" "Web Server" "Dialup Networking Support" "Mail Server" "Ruby" "Office/Productivity" "Sound and Video" "Printing Support" "OpenFabrics Enterprise Distribution"
     fi
-    echo "${CMSG}Installing dependencies packages...${CEND}"
+    echo "${CMSG}[ Installing dependencies packages ] **********************************>>${CEND}"
     yum check-update
     # Install needed packages
     #pkgList="deltarpm gcc gcc-c++ make cmake autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel ncurses ncurses-devel libaio numactl numactl-libs readline-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5-devel libidn libidn-devel openssl openssl-devel libxslt-devel libicu-devel libevent-devel libtool libtool-ltdl bison gd-devel vim-enhanced pcre-devel zip unzip ntpdate sqlite-devel sysstat patch bc expect expat-devel rsync rsyslog git lsof lrzsz wget net-tools"
@@ -43,7 +45,7 @@ installDepsCentOS() {
     yum -y upgrade
     # centos devtoolset
     # devtoolset-3(gcc-4.9.2)、devtoolset-4(gcc-5.2.1)
-    echo "${CMSG}Installing centos devtoolset3(gcc-4.9.2)...${CEND}"
+    echo "${CMSG}[ Installing centos devtoolset3(gcc-4.9.2) ] **********************************>>${CEND}"
     yum -y install scl-utils
     if [ "$CentOS_RHEL_version" == '7' ];then
         rpm -ivh "https://www.softwarecollections.org/repos/rhscl/devtoolset-3/epel-7-x86_64/noarch/rhscl-devtoolset-3-epel-7-x86_64-1-2.noarch.rpm"
