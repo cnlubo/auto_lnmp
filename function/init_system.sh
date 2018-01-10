@@ -38,7 +38,7 @@ select_system_setup_function(){
     Typical_User="${Typical_User:=$default_user}"
     id $Typical_User >/dev/null 2>&1
     if [ $? -eq 0 ]; then
-        echo "${CWARNING}Input user($Typical_User)exist${CEND}"
+        echo "${CWARNING}[ Input user($Typical_User) exist !!!] *******************************>>${CEND}"
     else
         # 创建用户设置密码
         useradd $Typical_User
@@ -74,6 +74,6 @@ select_system_setup_function(){
 
     # 源代码安装软件
     installDepsBySrc 2>&1 | tee $script_dir/logs/soft_install.log
-    echo "${CMSG}******************    [Initialization $OS OK please reboot] ***********************************************>>${CEND}";
+    echo "${CMSG} [ Initialization $OS OK please reboot] ***********************************************>>${CEND}";
     select_main_menu;
 }

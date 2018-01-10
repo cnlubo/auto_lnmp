@@ -196,7 +196,6 @@ installDepsBySrc() {
             Git_version=$U_V1.$U_V2.$U_V3
         fi
         if [ $Git_version != ${git_version:?} ] || [ ! -e "$( which git )" ]; then
-            echo
             echo "${CMSG} [ git$git_version install begin ] *************************************>>${CEND}"
             echo
             cd ${script_dir:?}/src
@@ -210,19 +209,16 @@ installDepsBySrc() {
             [ -d /usr/local/git ] && rm -rf /usr/local/git
             make prefix=/usr/local/git all && make prefix=/usr/local/git install
             if [ $? -eq 0 ];then
-                echo
                 echo "${CMSG} [ git$git_version install success ! ] **********************************>>${CEND}"
                 echo
                 rm -rf /usr/bin/git*  && ln -s /usr/local/git/bin/* /usr/bin/
             else
-                echo
                 echo "${CFAILURE} [ git$git_version install fail ! ] **********************************>>${CEND}"
                 echo
             fi
             cd ..
             rm -rf git-$git_version
         else
-            echo
             echo "${CMSG} [ git has been  install !] ***********************************************>>${CEND}"
             echo
 
@@ -236,7 +232,6 @@ installDepsBySrc() {
         fi
         if [ "$Python_version" != "${python2_version:?}" ] || [ ! -e "$( which python )" ] ; then
             cd $script_dir/src
-            echo
             echo "${CMSG} [ Python-$python2_version install begin ] *************************************>>${CEND}"
             echo
             src_url=https://www.python.org/ftp/python/$python2_version/Python-$python2_version.tar.xz
@@ -250,11 +245,9 @@ installDepsBySrc() {
             ./configure --enable-shared  --enable-unicode=ucs4 --prefix=/usr/local/python$python2_version LDFLAGS="-Wl,-rpath /usr/local/python$python2_version/lib"
             make && make install
             if [ $? -eq 0 ];then
-                echo
                 echo "${CMSG} [ Python-$python2_version install success ! ] **********************************>>${CEND}"
                 echo
                 # 替换默认python
-                echo
                 echo "${CMSG} [ Update System Python begin ] **********************************>>${CEND}"
                 echo
                 if [ "${CentOS_RHEL_version}" == '7' ]; then
@@ -272,7 +265,6 @@ installDepsBySrc() {
                         sed -i "1c #\!  /usr/bin/python2.7.5" /usr/libexec/urlgrabber-ext-down
                     fi
                 fi
-                echo
                 echo "${CMSG} [ setuptools vs pip install begin ] **********************************>>${CEND}"
                 echo
                 # setuptools
@@ -284,14 +276,12 @@ installDepsBySrc() {
                 cd setuptools-$setuptools_version
                 python bootstrap.py && python setup.py install
                 if [ $? -eq 0 ];then
-                    echo
                     echo "${CMSG} [ setuptools-$setuptools_version install success !!!] **********************************>>${CEND}"
                     echo
                     rm -rf /usr/bin/easy_install*
                     ln -s /usr/local/python$python2_version/bin/easy_install /usr/bin/easy_install
                     ln -s /usr/local/python$python2_version/bin/easy_install-2.7 /usr/bin/easy_install-2.7
                 else
-                    echo
                     echo "${CFAILURE} [ setuptools-$setuptools_version install fail !!!] **********************************>>${CEND}"
                     echo
                 fi
@@ -304,7 +294,6 @@ installDepsBySrc() {
                 cd pip-$pip_version
                 python setup.py install
                 if [ $? -eq 0 ];then
-                    echo
                     echo "${CMSG} [ pip-$pip_version install success !!!]**********************************>>${CEND}"
                     echo
                     rm -rf /usr/bin/pip*
@@ -313,6 +302,7 @@ installDepsBySrc() {
                     ln -s /usr/local/python$python2_version/bin/pip2.7 /usr/bin/pip2.7
                     # pip镜像
                     echo "${CMSG} [ setup pip.conf ]**********************************>>${CEND}"
+                    echo
                     [ ! -d /root/.pip ] && mkdir -p /root/.pip
                     [ -f /root/.pip/pip.conf ] && mv /root/.pip/pip.conf /root/.pip/pip.conf_bak
                     cp ${script_dir:?}/config/pip.conf /root/.pip/pip.conf
@@ -323,15 +313,16 @@ installDepsBySrc() {
                     fi
                 else
                     echo "${CFAILURE} [ pip-$pip_version install fail !!!] **********************************>>${CEND}"
+                    echo
                 fi
                 cd .. && rm -rf pip-$pip_version
 
             else
                 echo "${CFAILURE} [ Python-$python2_version install fail !!!]  **********************************>>${CEND}"
+                echo
             fi
             rm -rf $script_dir/src/Python-$python2_version
         else
-            echo
             echo "${CMSG} [ python2 has been install !!!] ********************************************>>${CEND}"
             echo
         fi
@@ -339,7 +330,6 @@ installDepsBySrc() {
         # vim
         if [ ! -e "$(which vim)" ] && [ -e "$( which python )" ]; then
             cd $script_dir/src
-            echo
             echo "${CMSG} [ vim install begin ]  **********************************>>${CEND}"
             echo
             yum -y install ncurses-devel perl-ExtUtils-Embed lua-devel
@@ -352,26 +342,22 @@ installDepsBySrc() {
             --enable-perlinterp --enable-rubyinterp --enable-luainterp --enable-cscope --enable-xim --with-x  --with-luajit
             make CFLAGS="-O2 -D_FORTIFY_SOURCE=1" && make install
             if [ $? -eq 0 ];then
-                echo
                 echo "${CMSG} [ vim install success !!!]**********************************>>${CEND}"
                 echo
                 [ -h /usr/local/bin/vim ] && rm -rf /usr/local/bin/vim
                 ln -s /usr/local/vim/bin/vim /usr/local/bin/vim
             else
-                echo
                 echo "${CFAILURE} [ vim install fail !!!] **********************************>>${CEND}"
                 echo
             fi
             cd .. && rm -rf vim
         else
-            echo
             echo "${CMSG} [ vim  has been  install !!!] ***********************************************>>${CEND}"
             echo
         fi
 
         # tmux
         if [ ! -e "$(which tmux)" ]; then
-            echo
             echo "${CMSG} [ tmux install begin ] **********************************>>${CEND}"
             echo
             yum -y install ncurses-devel automake
@@ -385,11 +371,9 @@ installDepsBySrc() {
             cd  libevent-${libevent_version}
             ./configure && make && make install
             if [ $? -eq 0 ];then
-                echo
                 echo "${CMSG} [ libevent-${libevent_version} install success !!!] **********************************>>${CEND}"
                 echo
             else
-                echo
                 echo "${CFAILURE} [ libevent-${libevent_version} install fail !!!] **********************************>>${CEND}"
                 echo
             fi
@@ -403,11 +387,9 @@ installDepsBySrc() {
             CFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib" ./configure
             make && make install
             if [ $? -eq 0 ];then
-                echo
                 echo "${CMSG} [ tmux install success !!!] **********************************${CEND}"
                 echo
             else
-                echo
                 echo "${CFAILURE} [ tmux install fail !!!] **********************************${CEND}"
                 echo
             fi
@@ -420,23 +402,35 @@ installDepsBySrc() {
                 ln -s /usr/local/lib/libevent-2.1.so.6 /usr/lib/libevent-2.1.so.6
             fi
         else
-            echo
             echo "${CMSG} [ tmux has been  install !!!] ***********************************************>>${CEND}"
             echo
         fi
 
-
-        # # zsh
-        # if [ ! -e "$(which zsh)" ]; then
-        #     yum -y install ncurses-devel
-        #     src_url=https://sourceforge.net/projects/zsh/files/zsh/$zsh_version/zsh-$zsh_version.tar.gz/download
-        #     [ ! -f zsh-$zsh_version.tar.gz ] && Download_src && mv download zsh-$zsh_version.tar.gz
-        #     tar xvf zsh-$zsh_version.tar.gz
-        #     cd zsh-$zsh_version
-        #     ./configure && make && make install
-        #     cd ..
-        #     rm -rf zsh-$zsh_version
-        # fi
+        # zsh
+        if [ ! -e "$(which zsh)" ]; then
+            yum -y install ncurses-devel
+            cd $script_dir/src
+            # shellcheck disable=SC2034
+            src_url=https://sourceforge.net/projects/zsh/files/zsh/${zsh_version:?}/zsh-$zsh_version.tar.gz/download
+            [ ! -f zsh-$zsh_version.tar.gz ] && Download_src && mv download zsh-$zsh_version.tar.gz
+            tar xvf zsh-$zsh_version.tar.gz
+            cd zsh-$zsh_version
+            ./configure && make && make install
+            if [ $? -eq 0 ];then
+                echo "${CMSG} [ zsh $zsh_version install success !!!] **********************************${CEND}"
+                echo
+                # zsh 加入到ect shells 中
+                if [ "$(grep -c /usr/local/bin/zsh /etc/shells)" -gt 0 ]; then
+                    echo "/usr/local/bin/zsh" | tee -a /etc/shells
+                fi
+                # root用户切换为zsh
+                
+            else
+                echo "${CFAILURE} [ zsh $zsh_version install fail !!!] **********************************${CEND}"
+                echo
+            fi
+            cd .. && rm -rf zsh-$zsh_version
+        fi
 
 
     elif [ "${OS}" == "Ubuntu" ]; then
