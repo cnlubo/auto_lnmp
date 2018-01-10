@@ -420,11 +420,12 @@ installDepsBySrc() {
                 echo "${CMSG} [ zsh $zsh_version install success !!!] **********************************${CEND}"
                 echo
                 # zsh 加入到ect shells 中
-                if [ "$(grep -c /usr/local/bin/zsh /etc/shells)" -gt 0 ]; then
+                if [ "$(grep -c /usr/local/bin/zsh /etc/shells)" -eq 0 ]; then
                     echo "/usr/local/bin/zsh" | tee -a /etc/shells
                 fi
                 # root用户切换为zsh
-                
+                chsh -s /usr/local/bin/zsh
+
             else
                 echo "${CFAILURE} [ zsh $zsh_version install fail !!!] **********************************${CEND}"
                 echo
