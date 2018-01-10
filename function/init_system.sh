@@ -42,7 +42,7 @@ select_system_setup_function(){
     else
         # 创建用户设置密码
         useradd $Typical_User
-        yum install expect
+        yum -y install expect
         default_pass=`mkpasswd -l 8`
         echo ${default_pass:?} | passwd $Typical_User --stdin  &>/dev/null
         echo

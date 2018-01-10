@@ -312,26 +312,27 @@ installDepsBySrc() {
                     ln -s /usr/local/python$python2_version/bin/pip2 /usr/bin/pip2
                     ln -s /usr/local/python$python2_version/bin/pip2.7 /usr/bin/pip2.7
                     # pip镜像
-                    [ ! -d home/root/.pip ] && mkdir -p /home/root/.pip
-                    [ -f /home/root/.pip/pip.conf ] && mv /home/root/.pip/pip.conf /home/root/.pip/pip.conf_bak
-                    cp ${script_dir:?}/config/pip.conf /home/root/.pip/
+                    echo "${CMSG} [ setup pip.conf ]**********************************>>${CEND}"
+                    [ ! -d /root/.pip ] && mkdir -p /root/.pip
+                    [ -f /root/.pip/pip.conf ] && mv /root/.pip/pip.conf /root/.pip/pip.conf_bak
+                    cp ${script_dir:?}/config/pip.conf /root/.pip/pip.conf
                     id ${default_user:?} >/dev/null 2>&1
                     if [ $? -eq 0 ]; then
                         [ -d /home/${default_user:?}/.pip ] && rm -rf /home/${default_user:?}/.pip
-                        mkdir -p /home/${default_user:?}/.pip && cp ${script_dir:?}/config/pip.conf /home/${default_user:?}/.pip/
+                        mkdir -p /home/${default_user:?}/.pip && cp ${script_dir:?}/config/pip.conf /home/${default_user:?}/.pip/pip.conf
                     fi
                 else
-                    echo "${CFAILURE}************** [pip-$pip_version install fail !] **********************************>>${CEND}"
+                    echo "${CFAILURE} [ pip-$pip_version install fail !!!] **********************************>>${CEND}"
                 fi
                 cd .. && rm -rf pip-$pip_version
 
             else
-                echo "${CFAILURE}************** [Python-$python2_version install fail !]  **********************************>>${CEND}"
+                echo "${CFAILURE} [ Python-$python2_version install fail !!!]  **********************************>>${CEND}"
             fi
-            cd .. && rm -rf Python-$python2_version
+            rm -rf $script_dir/src/Python-$python2_version
         else
             echo
-            echo "${CMSG}****************** [python2 has been install !] ********************************************>>${CEND}"
+            echo "${CMSG} [ python2 has been install !!!] ********************************************>>${CEND}"
             echo
         fi
 
@@ -339,7 +340,7 @@ installDepsBySrc() {
         if [ ! -e "$(which vim)" ] && [ -e "$( which python )" ]; then
             cd $script_dir/src
             echo
-            echo "${CMSG}************** [vim install begin]  **********************************>>${CEND}"
+            echo "${CMSG} [ vim install begin ]  **********************************>>${CEND}"
             echo
             yum -y install ncurses-devel perl-ExtUtils-Embed lua-devel
             [ ! -d vim ] && git clone https://github.com/vim/vim.git
@@ -352,26 +353,26 @@ installDepsBySrc() {
             make CFLAGS="-O2 -D_FORTIFY_SOURCE=1" && make install
             if [ $? -eq 0 ];then
                 echo
-                echo "${CMSG}**************  [vim install success !]**********************************>>${CEND}"
+                echo "${CMSG} [ vim install success !!!]**********************************>>${CEND}"
                 echo
                 [ -h /usr/local/bin/vim ] && rm -rf /usr/local/bin/vim
                 ln -s /usr/local/vim/bin/vim /usr/local/bin/vim
             else
                 echo
-                echo "${CFAILURE}************** [vim install fail !] **********************************>>${CEND}"
+                echo "${CFAILURE} [ vim install fail !!!] **********************************>>${CEND}"
                 echo
             fi
             cd .. && rm -rf vim
         else
             echo
-            echo "${CMSG}****************** [vim  has been  install !] ***********************************************>>${CEND}"
+            echo "${CMSG} [ vim  has been  install !!!] ***********************************************>>${CEND}"
             echo
         fi
 
         # tmux
         if [ ! -e "$(which tmux)" ]; then
             echo
-            echo "${CMSG}************** [tmux install begin] **********************************>>${CEND}"
+            echo "${CMSG} [ tmux install begin ] **********************************>>${CEND}"
             echo
             yum -y install ncurses-devel automake
             # Install libevent first
@@ -385,11 +386,11 @@ installDepsBySrc() {
             ./configure && make && make install
             if [ $? -eq 0 ];then
                 echo
-                echo "${CMSG}************** [libevent-${libevent_version} install success !] **********************************>>${CEND}"
+                echo "${CMSG} [ libevent-${libevent_version} install success !!!] **********************************>>${CEND}"
                 echo
             else
                 echo
-                echo "${CFAILURE}************** [libevent-${libevent_version} install fail !] **********************************>>${CEND}"
+                echo "${CFAILURE} [ libevent-${libevent_version} install fail !!!] **********************************>>${CEND}"
                 echo
             fi
             cd ..
@@ -403,11 +404,11 @@ installDepsBySrc() {
             make && make install
             if [ $? -eq 0 ];then
                 echo
-                echo "${CMSG}************** [tmux install success !] **********************************${CEND}"
+                echo "${CMSG} [ tmux install success !!!] **********************************${CEND}"
                 echo
             else
                 echo
-                echo "${CFAILURE}************** [tmux install fail !] **********************************${CEND}"
+                echo "${CFAILURE} [ tmux install fail !!!] **********************************${CEND}"
                 echo
             fi
             unset LDFLAGS
@@ -420,7 +421,7 @@ installDepsBySrc() {
             fi
         else
             echo
-            echo "${CMSG}****************** [tmux has been  install  !] ***********************************************>>${CEND}"
+            echo "${CMSG} [ tmux has been  install !!!] ***********************************************>>${CEND}"
             echo
         fi
 
