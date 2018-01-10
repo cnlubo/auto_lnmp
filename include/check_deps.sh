@@ -413,6 +413,7 @@ installDepsBySrc() {
             # shellcheck disable=SC2034
             src_url=https://sourceforge.net/projects/zsh/files/zsh/${zsh_version:?}/zsh-$zsh_version.tar.gz/download
             [ ! -f zsh-$zsh_version.tar.gz ] && Download_src && mv download zsh-$zsh_version.tar.gz
+            [ -d zsh-$zsh_version ] && rm -rf zsh-$zsh_version
             tar xvf zsh-$zsh_version.tar.gz
             cd zsh-$zsh_version
             ./configure && make && make install
@@ -425,7 +426,23 @@ installDepsBySrc() {
                 fi
                 # root用户切换为zsh
                 chsh -s /usr/local/bin/zsh
-
+                # Oh My Zsh
+                cd ~
+                sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+                # powerline
+                git clone git://github.com/jeremyFreeAgent/oh-my-zsh-powerline-theme ~/.ohmyzsh-powerline
+                cd ~/.ohmyzsh-powerline && ./install_in_omz.sh
+                cd ~
+                git clone https://github.com/powerline/fonts.git
+                cd fonts && ./install.sh
+                # normal 用户切换
+                # id ${default_user:?} >/dev/null 2>&1
+                # if [ $? -eq 0 ]; then
+                #     cd /home/$default_user
+                #
+                #
+                # fi
+                
             else
                 echo "${CFAILURE} [ zsh $zsh_version install fail !!!] **********************************${CEND}"
                 echo
