@@ -1,4 +1,6 @@
 logs/*.log
+!logs/README.md
 !logs/readme.md
 src/
+!src/README.md
 .idea/
