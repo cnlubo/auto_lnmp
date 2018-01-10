@@ -350,7 +350,7 @@ installDepsBySrc() {
                 echo "${CFAILURE} [ vim install fail !!!] **********************************>>${CEND}"
                 echo
             fi
-            cd .. && rm -rf vim
+            # cd .. && rm -rf vim
         else
             echo "${CMSG} [ vim  has been  install !!!] ***********************************************>>${CEND}"
             echo
@@ -394,8 +394,7 @@ installDepsBySrc() {
                 echo
             fi
             unset LDFLAGS
-            cd ..
-            rm -rf tmux
+            # cd .. && rm -rf tmux
             if [ "${OS_BIT}" == "64" ]; then
                 ln -s /usr/local/lib/libevent-2.1.so.6 /usr/lib64/libevent-2.1.so.6
             else
@@ -442,7 +441,7 @@ installDepsBySrc() {
                 #
                 #
                 # fi
-                
+
             else
                 echo "${CFAILURE} [ zsh $zsh_version install fail !!!] **********************************${CEND}"
                 echo
