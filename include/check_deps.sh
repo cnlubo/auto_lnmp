@@ -427,7 +427,8 @@ installDepsBySrc() {
                 chsh -s /usr/local/bin/zsh
                 # Oh My Zsh
                 cd ~
-                sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)" && env bash
+                # sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)" && env bash
+                $script_dir/include/OhMyZsh_install.sh
                 # powerline
                 git clone git://github.com/jeremyFreeAgent/oh-my-zsh-powerline-theme ~/.ohmyzsh-powerline
                 cd ~/.ohmyzsh-powerline && ./install_in_omz.sh
