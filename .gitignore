@@ -4,3 +4,4 @@ logs/*.log
 src/*
 !src/README.md
 .idea/
+*/.DS_Store

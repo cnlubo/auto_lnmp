@@ -434,6 +434,14 @@ installDepsBySrc() {
                 cd ~
                 git clone https://github.com/powerline/fonts.git
                 cd fonts && ./install.sh
+                # zsh theme
+                [ -d /root/.oh-my-zsh/custom/themes ] && mkdir -p /root/.oh-my-zsh/custom/themes
+                cp $script_dir/template/zsh/ak47.zhs-theme /root/.oh-my-zsh/custom/themes/
+                if [ -f ~/.zshrc ] || [ -h ~/.zshrc ]; then
+                    cp ~/.zshrc ~/.zshrc.pre
+                    sed -i "s@^#ZSH_THEME.*@&\nZSH_THEME='ak47'@" /root/.zshrc
+                    # ZSH_THEME="ak47"
+                fi
                 # normal 用户切换
                 # id ${default_user:?} >/dev/null 2>&1
                 # if [ $? -eq 0 ]; then
