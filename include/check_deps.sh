@@ -440,7 +440,6 @@ installDepsBySrc() {
                 git clone git://github.com/jeremyFreeAgent/oh-my-zsh-powerline-theme ~/.ohmyzsh-powerline
                 cd ~/.ohmyzsh-powerline && ./install_in_omz.sh
                 cd ~
-
                 [ ! -d fonts ] && git clone https://github.com/powerline/fonts.git
                 cd fonts && ./install.sh
                 # zsh theme
@@ -448,7 +447,14 @@ installDepsBySrc() {
                 cp $script_dir/template/zsh/ak47.zsh-theme /root/.oh-my-zsh/custom/themes/
                 if [ -f ~/.zshrc ] || [ -h ~/.zshrc ]; then
                     cp ~/.zshrc ~/.zshrc.pre
+                    # 注释原有模版
+                    sed -i '\@ZSH_THEME=@s@^@\#@1' /root/.zshrc
+                    # 设置新模版
                     sed -i "s@^#ZSH_THEME.*@&\nZSH_THEME='ak47'@" /root/.zshrc
+                    # 注释
+                    # sed -i '\@ZSH_THEME=@s@^@\#@1' /root/.zshrc
+                    # 删除注释
+                    # sed -i '\@ZSH_THEME=@s@^#@@1' /root/.zshrc
                     # ZSH_THEME="ak47"
                 fi
                 # normal 用户切换
