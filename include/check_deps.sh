@@ -48,9 +48,9 @@ installDepsCentOS() {
     echo "${CMSG}[ Installing centos devtoolset3(gcc-4.9.2) ] **********************************>>${CEND}"
     yum -y install scl-utils
     if [ "$CentOS_RHEL_version" == '7' ];then
-        rpm -ivh "https://www.softwarecollections.org/repos/rhscl/devtoolset-3/epel-7-x86_64/noarch/rhscl-devtoolset-3-epel-7-x86_64-1-2.noarch.rpm"
+        rpm -ivh "http://www.softwarecollections.org/repos/rhscl/devtoolset-3/epel-7-x86_64/noarch/rhscl-devtoolset-3-epel-7-x86_64-1-2.noarch.rpm"
     elif [ "$CentOS_RHEL_version" == '6' ];then
-        rpm -ivh "https://www.softwarecollections.org/repos/rhscl/devtoolset-3/epel-6-x86_64/noarch/rhscl-devtoolset-3-epel-6-x86_64-1-2.noarch.rpm"
+        rpm -ivh "http://www.softwarecollections.org/repos/rhscl/devtoolset-3/epel-6-x86_64/noarch/rhscl-devtoolset-3-epel-6-x86_64-1-2.noarch.rpm"
     fi
     yum -y install devtoolset-3-gcc devtoolset-3-gcc-c++ devtoolset-3-gdb
 
@@ -424,20 +424,28 @@ installDepsBySrc() {
                     echo "/usr/local/bin/zsh" | tee -a /etc/shells
                 fi
                 # root用户切换为zsh
-                chsh -s /usr/local/bin/zsh
+                #chsh -s /usr/local/bin/zsh
                 # Oh My Zsh
-                cd ~
-                # sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)" && env bash
-                $script_dir/include/OhMyZsh_install.sh
+                if [ -d ~/.oh-my-zsh ]; then
+                    echo "${CMSG} [ You already have Oh My Zsh installed !!! ] **********************************${CEND}"
+                    echo "${CRED} [ You'll need to remove $ZSH if you want to re-install !!! ] ******************${CEND}"
+
+                else
+                    cd ~
+                    # sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)" && env bash
+                    $script_dir/include/OhMyZsh_install.sh
+                fi
                 # powerline
+                [ -d ~/.ohmyzsh-powerline ] && rm -rf ~/.ohmyzsh-powerline
                 git clone git://github.com/jeremyFreeAgent/oh-my-zsh-powerline-theme ~/.ohmyzsh-powerline
                 cd ~/.ohmyzsh-powerline && ./install_in_omz.sh
                 cd ~
-                git clone https://github.com/powerline/fonts.git
+
+                [ ! -d fonts ] && git clone https://github.com/powerline/fonts.git
                 cd fonts && ./install.sh
                 # zsh theme
                 [ -d /root/.oh-my-zsh/custom/themes ] && mkdir -p /root/.oh-my-zsh/custom/themes
-                cp $script_dir/template/zsh/ak47.zhs-theme /root/.oh-my-zsh/custom/themes/
+                cp $script_dir/template/zsh/ak47.zsh-theme /root/.oh-my-zsh/custom/themes/
                 if [ -f ~/.zshrc ] || [ -h ~/.zshrc ]; then
                     cp ~/.zshrc ~/.zshrc.pre
                     sed -i "s@^#ZSH_THEME.*@&\nZSH_THEME='ak47'@" /root/.zshrc
