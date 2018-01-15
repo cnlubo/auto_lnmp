@@ -459,12 +459,14 @@ installDepsBySrc() {
                     fi
                 fi
                 # normal 用户切换
-                # id ${default_user:?} >/dev/null 2>&1
-                # if [ $? -eq 0 ]; then
-                #     cd /home/$default_user
-                #
-                #
-                # fi
+                echo ${default_user:?}
+                id ${default_user:?} >/dev/null 2>&1
+                if [ $? -eq 0 ]; then
+                    echo "${CMSG} [ Setting ${default_user:?} zsh shell !!! ] **********************************${CEND}"
+                    cp /etc/passwd /etc/passwd_bak
+                    sed -i  "s@aszx:/bin/bash@aszx:/usr/local/bin/zsh@g" /etc/passwd
+
+                fi
 
             else
                 echo "${CFAILURE} [ zsh $zsh_version install fail !!!] **********************************${CEND}"
