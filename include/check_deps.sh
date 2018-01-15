@@ -456,8 +456,6 @@ installDepsBySrc() {
                         # 删除原有设置
                         #sed -i  "/#/b;/plugins=(/,/)/d" /root/.zshrc
                         sed -i  "/#/b;/plugins=(/,/)/c plugins=(git z wd extract)" /root/.zshrc
-                        # shellcheck source=/root/.zshrc
-                        source ~/.zshrc
                     fi
                 fi
                 # normal 用户切换
