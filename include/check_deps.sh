@@ -3,7 +3,7 @@
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
 # @Desc                                    install  packages and software
-#----------------------------------------------------------------------------
+#---------------------------------------------------------------------------
 
 installDepsCentOS() {
 
@@ -434,28 +434,31 @@ installDepsBySrc() {
                     cd ~
                     # sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)" && env bash
                     $script_dir/include/OhMyZsh_install.sh
-                fi
-                # powerline
-                [ -d ~/.ohmyzsh-powerline ] && rm -rf ~/.ohmyzsh-powerline
-                git clone git://github.com/jeremyFreeAgent/oh-my-zsh-powerline-theme ~/.ohmyzsh-powerline
-                cd ~/.ohmyzsh-powerline && ./install_in_omz.sh
-                cd ~
-                [ ! -d fonts ] && git clone https://github.com/powerline/fonts.git
-                cd fonts && ./install.sh
-                # zsh theme
-                [ -d /root/.oh-my-zsh/custom/themes ] && mkdir -p /root/.oh-my-zsh/custom/themes
-                cp $script_dir/template/zsh/ak47.zsh-theme /root/.oh-my-zsh/custom/themes/
-                if [ -f ~/.zshrc ] || [ -h ~/.zshrc ]; then
-                    cp ~/.zshrc ~/.zshrc.pre
-                    # 注释原有模版
-                    sed -i '\@ZSH_THEME=@s@^@\#@1' /root/.zshrc
-                    # 设置新模版
-                    sed -i "s@^#ZSH_THEME.*@&\nZSH_THEME='ak47'@" /root/.zshrc
-                    # 注释
-                    # sed -i '\@ZSH_THEME=@s@^@\#@1' /root/.zshrc
-                    # 删除注释
-                    # sed -i '\@ZSH_THEME=@s@^#@@1' /root/.zshrc
-                    # ZSH_THEME="ak47"
+                    #fi
+                    # powerline
+                    [ -d ~/.ohmyzsh-powerline ] && rm -rf ~/.ohmyzsh-powerline
+                    git clone git://github.com/jeremyFreeAgent/oh-my-zsh-powerline-theme ~/.ohmyzsh-powerline
+                    cd ~/.ohmyzsh-powerline && ./install_in_omz.sh
+                    cd ~
+                    [ ! -d fonts ] && git clone https://github.com/powerline/fonts.git
+                    cd fonts && ./install.sh
+                    # zsh theme
+                    [ -d /root/.oh-my-zsh/custom/themes ] && mkdir -p /root/.oh-my-zsh/custom/themes
+                    cp $script_dir/template/zsh/ak47.zsh-theme /root/.oh-my-zsh/custom/themes/
+                    if [ -f ~/.zshrc ] || [ -h ~/.zshrc ]; then
+                        cp ~/.zshrc ~/.zshrc.pre
+                        # 注释原有模版
+                        sed -i '\@ZSH_THEME=@s@^@\#@1' /root/.zshrc
+                        sed -i "s@^#ZSH_THEME.*@&\nsetopt no_nomatch@" /root/.zshrc
+                        # 设置新模版
+                        sed -i "s@^#ZSH_THEME.*@&\nZSH_THEME=\"ak47\"@" /root/.zshrc
+                        # 设置插件
+                        # 删除原有设置
+                        #sed -i  "/#/b;/plugins=(/,/)/d" /root/.zshrc
+                        sed -i  "/#/b;/plugins=(/,/)/c plugins=(git z wd extract)" /root/.zshrc
+                        # shellcheck source=/root/.zshrc
+                        source ~/.zshrc
+                    fi
                 fi
                 # normal 用户切换
                 # id ${default_user:?} >/dev/null 2>&1
