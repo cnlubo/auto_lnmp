@@ -476,10 +476,30 @@ installDepsBySrc() {
                         printf "${YELLOW}Found /home/${default_user:?}/.zshrc.${NORMAL} ${GREEN}Backing up to /home/${default_user:?}/.zshrc.pre-oh-my-zsh${NORMAL}\n";
                         sudo -u ${default_user:?} -H mv /home/${default_user:?}/.zshrc /home/${default_user:?}/.zshrc.pre-oh-my-zsh;
                     fi
-
                     printf "${BLUE}Using the Oh My Zsh template file and adding it to /home/${default_user:?}/.zshrc${NORMAL}\n"
                     sudo -u ${default_user:?} -H cp $normal_zsh/templates/zshrc.zsh-template /home/${default_user:?}/.zshrc
                     sudo -u ${default_user:?} -H sed -i "/^export ZSH=/c export ZSH=$normal_zsh" /home/${default_user:?}/.zshrc
+                    [ -d /home/${default_user:?}/.ohmyzsh-powerline ] && sudo -u ${default_user:?} -H rm -rf /home/${default_user:?}/.ohmyzsh-powerline
+                    sudo -u ${default_user:?} -H git clone git://github.com/jeremyFreeAgent/oh-my-zsh-powerline-theme /home/${default_user:?}/.ohmyzsh-powerline
+                    sudo -u ${default_user:?} -H mkdir -p /home/${default_user:?}/.oh-my-zsh/custom/themes/
+                    sudo -u ${default_user:?} -H ln -f /home/${default_user:?}/.ohmyzsh-powerline/powerline.zsh-theme /home/${default_user:?}/.oh-my-zsh/custom/themes/powerline.zsh-theme
+                    [ ! -d /home/${default_user:?}/fonts ] && sudo -u ${default_user:?} -H git clone https://github.com/powerline/fonts.git /home/${default_user:?}/fonts
+                    sudo -u ${default_user:?} -H /home/${default_user:?}/fonts/install.sh
+                    # zsh theme
+                    [ -d /home/${default_user:?}/.oh-my-zsh/custom/themes ] && sudo -u ${default_user:?} -H mkdir -p /home/${default_user:?}/.oh-my-zsh/custom/themes
+                    sudo -u ${default_user:?} -H cp $script_dir/template/zsh/ak47.zsh-theme /home/${default_user:?}/.oh-my-zsh/custom/themes/
+                    if [ -f /home/${default_user:?}/.zshrc ] || [ -h /home/${default_user:?}/.zshrc ]; then
+                        sudo -u ${default_user:?} -H cp /home/${default_user:?}/.zshrc /home/${default_user:?}/.zshrc.pre
+                        # 注释原有模版
+                        sudo -u ${default_user:?} -H sed -i '\@ZSH_THEME=@s@^@\#@1' /home/${default_user:?}/.zshrc
+                        sudo -u ${default_user:?} -H sed -i "s@^#ZSH_THEME.*@&\nsetopt no_nomatch@" /home/${default_user:?}/.zshrc
+                        # 设置新模版
+                        sudo -u ${default_user:?} -H sed -i "s@^#ZSH_THEME.*@&\nZSH_THEME=\"ak47\"@" /home/${default_user:?}/.zshrc
+                        # 设置插件
+                        # 删除原有设置
+                        #sed -i  "/#/b;/plugins=(/,/)/d" /root/.zshrc
+                        sudo -u ${default_user:?} -H sed -i  "/#/b;/plugins=(/,/)/c plugins=(git z wd extract)" /home/${default_user:?}/.zshrc
+                    fi
 
                 fi
 
@@ -487,7 +507,8 @@ installDepsBySrc() {
                 echo "${CFAILURE} [ zsh $zsh_version install fail !!!] **********************************${CEND}"
                 echo
             fi
-            cd .. && rm -rf zsh-$zsh_version
+            cd $script_dir
+            rm -rf $script_dir/src/zsh-$zsh_version
         fi
 
 
