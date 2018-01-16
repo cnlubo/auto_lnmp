@@ -438,7 +438,6 @@ installDepsBySrc() {
                         sed -i  "s@${default_user:?}:/bin/bash@${default_user:?}:/usr/local/bin/zsh@g" /etc/passwd
                     fi
                     # Oh My Zsh
-
                     if [ -d $root_zsh ] || [ -d $normal_zsh ]; then
                         echo "${CRED}[root or ${default_user:?} already have Oh My Zsh installed !!! ] **********************************${CEND}"
                         echo "${CRED}[You'll need to remove $ZSH if you want to re-install !!! ] ******************${CEND}"
@@ -446,10 +445,6 @@ installDepsBySrc() {
                     else
                         echo "${CMSG} [Oh My Zsh install ] ************************************>>${CEND}"
                         echo
-                        #cd ~
-                        # sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)" && env bash
-                        #$script_dir/include/OhMyZsh_install.sh
-                        #fi
                         if [ $default_user_exists -eq 1 ]; then
                             sudo -u ${default_user:?} -H git clone --depth=1 https://github.com/robbyrussell/oh-my-zsh.git $normal_zsh
                             ln -s $normal_zsh $root_zsh
@@ -492,7 +487,6 @@ installDepsBySrc() {
                                 #sed -i  "/#/b;/plugins=(/,/)/d" /root/.zshrc
                                 sudo -u ${default_user:?} -H sed -i  "/#/b;/plugins=(/,/)/c plugins=(git z wd extract)" /home/${default_user:?}/.zshrc
                             fi
-
                         else
                             git clone --depth=1 https://github.com/robbyrussell/oh-my-zsh.git $root_zsh
                             echo "${CMSG}[ powerline install ] **********************************${CEND}"
@@ -503,7 +497,12 @@ installDepsBySrc() {
                             # fonts
                             [ ! -d /root/fonts ] && git clone https://github.com/powerline/fonts.git /root/fonts
                             cd /root/fonts && git pull && cd $script_dir
+                            echo "${CMSG}[custom zsh theme install ] ****************************************>>${CEND}"
+                            echo
+                            [ -d /root/.oh-my-zsh/custom/themes ] && mkdir -p /root/.oh-my-zsh/custom/themes
+                            cp $script_dir/template/zsh/ak47.zsh-theme /root/.oh-my-zsh/custom/themes/
                         fi
+
                         if [ -f /root/.zshrc ] || [ -h /root/.zshrc ]; then
                             echo "${CMSG} [ Found /root/.zshrc. Backing up to /root/.zshrc.pre-oh-my-zsh ] **********************************${CEND}"
                             mv /root/.zshrc /root/.zshrc.pre-oh-my-zsh
@@ -512,25 +511,8 @@ installDepsBySrc() {
                         sed -i "/^export ZSH=/c export ZSH=$root_zsh" /root/.zshrc
                         # fonts
                         /root/fonts/install.sh
-
-
-
-
-
-
-
-                        # powerline
-                        [ -d ~/.ohmyzsh-powerline ] && rm -rf ~/.ohmyzsh-powerline
-                        git clone git://github.com/jeremyFreeAgent/oh-my-zsh-powerline-theme ~/.ohmyzsh-powerline
-                        cd ~/.ohmyzsh-powerline && ./install_in_omz.sh
-                        cd ~
-                        [ ! -d fonts ] && git clone https://github.com/powerline/fonts.git
-                        cd fonts && ./install.sh
-                        # zsh theme
-                        [ -d /root/.oh-my-zsh/custom/themes ] && mkdir -p /root/.oh-my-zsh/custom/themes
-                        cp $script_dir/template/zsh/ak47.zsh-theme /root/.oh-my-zsh/custom/themes/
-                        if [ -f ~/.zshrc ] || [ -h ~/.zshrc ]; then
-                            cp ~/.zshrc ~/.zshrc.pre
+                        if [ -f /root/.zshrc ] || [ -h /root/.zshrc ]; then
+                            cp /root/.zshrc /root/.zshrc.pre
                             # 注释原有模版
                             sed -i '\@ZSH_THEME=@s@^@\#@1' /root/.zshrc
                             sed -i "s@^#ZSH_THEME.*@&\nsetopt no_nomatch@" /root/.zshrc
@@ -538,68 +520,17 @@ installDepsBySrc() {
                             sed -i "s@^#ZSH_THEME.*@&\nZSH_THEME=\"ak47\"@" /root/.zshrc
                             # 设置插件
                             # 删除原有设置
-                            #sed -i  "/#/b;/plugins=(/,/)/d" /root/.zshrc
                             sed -i  "/#/b;/plugins=(/,/)/c plugins=(git z wd extract)" /root/.zshrc
                         fi
-                    fi
-                    # normal 用户切换
-                    # echo ${default_user:?}
-                    id ${default_user:?} >/dev/null 2>&1
-                    if [ $? -eq 0 ]; then
-                        echo "${CMSG} [ Setting ${default_user:?} zsh shell !!! ] **********************************${CEND}"
-                        normal_zsh=/home/${default_user:?}/.oh-my-zsh
-                        cp /etc/passwd /etc/passwd_bak
-                        sed -i  "s@aszx:/bin/bash@${default_user:?}:/usr/local/bin/zsh@g" /etc/passwd
-                        [ -d /home/${default_user:?}/.oh-my-zsh ] && rm -rf /home/${default_user:?}/.oh-my-zsh
-                        if [ -d /root/.oh-my-zsh ]; then
-                            cp -r -a /root/.oh-my-zsh $normal_zsh && cd $normal_zsh && git pull && chown -Rf ${default_user:?}${default_user:?} $normal_zsh/
-
-                        else
-                            sudo -u ${default_user:?} -H git clone --depth=1 https://github.com/robbyrussell/oh-my-zsh.git $normal_zsh
-                        fi
-
-                        if [ -f /home/${default_user:?}/.zshrc ] || [ -h /home/${default_user:?}/.zshrc ]; then
-                            printf "${YELLOW}Found /home/${default_user:?}/.zshrc.${NORMAL} ${GREEN}Backing up to /home/${default_user:?}/.zshrc.pre-oh-my-zsh${NORMAL}\n";
-                            sudo -u ${default_user:?} -H mv /home/${default_user:?}/.zshrc /home/${default_user:?}/.zshrc.pre-oh-my-zsh;
-                        fi
-
-                        printf "${BLUE}Using the Oh My Zsh template file and adding it to /home/${default_user:?}/.zshrc${NORMAL}\n"
-                        sudo -u ${default_user:?} -H cp $normal_zsh/templates/zshrc.zsh-template /home/${default_user:?}/.zshrc
-                        sudo -u ${default_user:?} -H sed -i "/^export ZSH=/c export ZSH=$normal_zsh" /home/${default_user:?}/.zshrc
-
-
-                        [ -d /home/${default_user:?}/.ohmyzsh-powerline ] && sudo -u ${default_user:?} -H rm -rf /home/${default_user:?}/.ohmyzsh-powerline
-
-                        sudo -u ${default_user:?} -H git clone git://github.com/jeremyFreeAgent/oh-my-zsh-powerline-theme /home/${default_user:?}/.ohmyzsh-powerline
-                        sudo -u ${default_user:?} -H mkdir -p /home/${default_user:?}/.oh-my-zsh/custom/themes/
-                        sudo -u ${default_user:?} -H ln -f /home/${default_user:?}/.ohmyzsh-powerline/powerline.zsh-theme /home/${default_user:?}/.oh-my-zsh/custom/themes/powerline.zsh-theme
-                        [ ! -d /home/${default_user:?}/fonts ] && sudo -u ${default_user:?} -H git clone https://github.com/powerline/fonts.git /home/${default_user:?}/fonts
-                        sudo -u ${default_user:?} -H /home/${default_user:?}/fonts/install.sh
-
-
-                        # zsh theme
-                        [ -d /home/${default_user:?}/.oh-my-zsh/custom/themes ] && sudo -u ${default_user:?} -H mkdir -p /home/${default_user:?}/.oh-my-zsh/custom/themes
-                        sudo -u ${default_user:?} -H cp $script_dir/template/zsh/ak47.zsh-theme /home/${default_user:?}/.oh-my-zsh/custom/themes/
-                        if [ -f /home/${default_user:?}/.zshrc ] || [ -h /home/${default_user:?}/.zshrc ]; then
-                            sudo -u ${default_user:?} -H cp /home/${default_user:?}/.zshrc /home/${default_user:?}/.zshrc.pre
-                            # 注释原有模版
-                            sudo -u ${default_user:?} -H sed -i '\@ZSH_THEME=@s@^@\#@1' /home/${default_user:?}/.zshrc
-                            sudo -u ${default_user:?} -H sed -i "s@^#ZSH_THEME.*@&\nsetopt no_nomatch@" /home/${default_user:?}/.zshrc
-                            # 设置新模版
-                            sudo -u ${default_user:?} -H sed -i "s@^#ZSH_THEME.*@&\nZSH_THEME=\"ak47\"@" /home/${default_user:?}/.zshrc
-                            # 设置插件
-                            # 删除原有设置
-                            #sed -i  "/#/b;/plugins=(/,/)/d" /root/.zshrc
-                            sudo -u ${default_user:?} -H sed -i  "/#/b;/plugins=(/,/)/c plugins=(git z wd extract)" /home/${default_user:?}/.zshrc
-                        fi
-
+                        echo "${CMSG}[ Oh My Zsh install success !!!] **********************************${CEND}"
                     fi
                 else
                     echo "${CRED}[ zsh $zsh_version is not installed!! Please install zsh first!!!] **********************************${CEND}"
 
                 fi
                 unset CHECK_ZSH_INSTALLED
-
+                unset normal_zsh
+                unset root_zsh
             else
                 echo "${CFAILURE} [ zsh $zsh_version install fail !!!] **********************************${CEND}"
                 echo
