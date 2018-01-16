@@ -459,12 +459,27 @@ installDepsBySrc() {
                     fi
                 fi
                 # normal 用户切换
-                echo ${default_user:?}
+                # echo ${default_user:?}
                 id ${default_user:?} >/dev/null 2>&1
                 if [ $? -eq 0 ]; then
                     echo "${CMSG} [ Setting ${default_user:?} zsh shell !!! ] **********************************${CEND}"
+                    normal_zsh=/home/${default_user:?}/.oh-my-zsh
                     cp /etc/passwd /etc/passwd_bak
-                    sed -i  "s@aszx:/bin/bash@aszx:/usr/local/bin/zsh@g" /etc/passwd
+                    sed -i  "s@aszx:/bin/bash@${default_user:?}:/usr/local/bin/zsh@g" /etc/passwd
+                    if [ -d /root/.oh-my-zsh ]; then
+                        cp -r -a /root/.oh-my-zsh $normal_zsh
+                        cd $normal_zsh && git pull
+                    else
+                        sudo -u ${default_user:?} -H git clone --depth=1 https://github.com/robbyrussell/oh-my-zsh.git $normal_zsh
+                    fi
+                    if [ -f /home/${default_user:?}/.zshrc ] || [ -h /home/${default_user:?}/.zshrc ]; then
+                        printf "${YELLOW}Found /home/${default_user:?}/.zshrc.${NORMAL} ${GREEN}Backing up to /home/${default_user:?}/.zshrc.pre-oh-my-zsh${NORMAL}\n";
+                        sudo -u ${default_user:?} -H mv /home/${default_user:?}/.zshrc /home/${default_user:?}/.zshrc.pre-oh-my-zsh;
+                    fi
+
+                    printf "${BLUE}Using the Oh My Zsh template file and adding it to /home/${default_user:?}/.zshrc${NORMAL}\n"
+                    sudo -u ${default_user:?} -H cp $normal_zsh/templates/zshrc.zsh-template /home/${default_user:?}/.zshrc
+                    sudo -u ${default_user:?} -H sed -i "/^export ZSH=/c export ZSH=$normal_zsh" /home/${default_user:?}/.zshrc
 
                 fi
 
