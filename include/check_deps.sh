@@ -328,81 +328,6 @@ installDepsBySrc() {
             echo
         fi
 
-        # vim
-        if [ ! -e "$(which vim)" ] && [ -e "$( which python )" ]; then
-            cd $script_dir/src
-            echo "${CMSG} [ vim install begin ]  **********************************>>${CEND}"
-            echo
-            yum -y install ncurses-devel perl-ExtUtils-Embed lua-devel
-            [ ! -d vim ] && git clone https://github.com/vim/vim.git
-            cd vim && git pull
-            ./configure --prefix=/usr/local/vim --with-features=huge --enable-gui=gtk2 \
-            --enable-fontset --enable-multibyte --enable-pythoninterp \
-            --with-python-config-dir=/usr/local/python$python2_version/lib/python2.7/config \
-            --enable-perlinterp --enable-rubyinterp --enable-luainterp --enable-cscope --enable-xim --with-x  --with-luajit
-            make CFLAGS="-O2 -D_FORTIFY_SOURCE=1" && make install
-            if [ $? -eq 0 ];then
-                echo "${CMSG} [ vim install success !!!]**********************************>>${CEND}"
-                echo
-                [ -h /usr/local/bin/vim ] && rm -rf /usr/local/bin/vim
-                ln -s /usr/local/vim/bin/vim /usr/local/bin/vim
-            else
-                echo "${CFAILURE} [ vim install fail !!!] **********************************>>${CEND}"
-                echo
-            fi
-        else
-            echo "${CMSG} [ vim  has been  install !!!] ***********************************************>>${CEND}"
-            echo
-        fi
-
-        # tmux
-        if [ ! -e "$(which tmux)" ]; then
-            echo "${CMSG} [ tmux install begin ] **********************************>>${CEND}"
-            echo
-            yum -y install ncurses-devel automake
-            # Install libevent first
-            cd $script_dir/src
-            # shellcheck disable=SC2034
-            src_url=https://github.com/libevent/libevent/releases/download/release-${libevent_version:?}/libevent-${libevent_version:?}.tar.gz
-            [ ! -f libevent-$libevent_version.tar.gz ] && Download_src
-            [ -d libevent-${libevent_version} ] && rm -rf libevent-${libevent_version}
-            tar xzf libevent-${libevent_version}.tar.gz
-            cd  libevent-${libevent_version}
-            ./configure && make && make install
-            if [ $? -eq 0 ];then
-                echo "${CMSG} [ libevent-${libevent_version} install success !!!] **********************************>>${CEND}"
-                echo
-            else
-                echo "${CFAILURE} [ libevent-${libevent_version} install fail !!!] **********************************>>${CEND}"
-                echo
-            fi
-            cd ..
-            rm -rf libevent-${libevent_version}
-            # tmux install
-            [ ! -d tmux ] && git clone https://github.com/tmux/tmux.git
-            cd tmux
-            git pull
-            sh autogen.sh
-            CFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib" ./configure
-            make && make install
-            if [ $? -eq 0 ];then
-                echo "${CMSG} [ tmux install success !!!] **********************************${CEND}"
-                echo
-            else
-                echo "${CFAILURE} [ tmux install fail !!!] **********************************${CEND}"
-                echo
-            fi
-            unset LDFLAGS
-            if [ "${OS_BIT}" == "64" ]; then
-                ln -s /usr/local/lib/libevent-2.1.so.6 /usr/lib64/libevent-2.1.so.6
-            else
-                ln -s /usr/local/lib/libevent-2.1.so.6 /usr/lib/libevent-2.1.so.6
-            fi
-        else
-            echo "${CMSG} [ tmux has been  install !!!] ***********************************************>>${CEND}"
-            echo
-        fi
-
         # zsh
         if [ ! -e "$(which zsh)" ]; then
             yum -y install ncurses-devel
@@ -537,6 +462,80 @@ installDepsBySrc() {
             fi
             cd $script_dir
             rm -rf $script_dir/src/zsh-$zsh_version
+        fi
+        # vim
+        if [ ! -e "$(which vim)" ] && [ -e "$( which python )" ]; then
+            cd $script_dir/src
+            echo "${CMSG} [ vim install begin ]  **********************************>>${CEND}"
+            echo
+            yum -y install ncurses-devel perl-ExtUtils-Embed lua-devel
+            [ ! -d vim ] && git clone https://github.com/vim/vim.git
+            cd vim && git pull
+            ./configure --prefix=/usr/local/vim --with-features=huge --enable-gui=gtk2 \
+            --enable-fontset --enable-multibyte --enable-pythoninterp \
+            --with-python-config-dir=/usr/local/python$python2_version/lib/python2.7/config \
+            --enable-perlinterp --enable-rubyinterp --enable-luainterp --enable-cscope --enable-xim --with-x  --with-luajit
+            make CFLAGS="-O2 -D_FORTIFY_SOURCE=1" && make install
+            if [ $? -eq 0 ];then
+                echo "${CMSG} [ vim install success !!!]**********************************>>${CEND}"
+                echo
+                [ -h /usr/local/bin/vim ] && rm -rf /usr/local/bin/vim
+                ln -s /usr/local/vim/bin/vim /usr/local/bin/vim
+            else
+                echo "${CFAILURE} [ vim install fail !!!] **********************************>>${CEND}"
+                echo
+            fi
+        else
+            echo "${CMSG} [ vim  has been  install !!!] ***********************************************>>${CEND}"
+            echo
+        fi
+
+        # tmux
+        if [ ! -e "$(which tmux)" ]; then
+            echo "${CMSG} [ tmux install begin ] **********************************>>${CEND}"
+            echo
+            yum -y install ncurses-devel automake
+            # Install libevent first
+            cd $script_dir/src
+            # shellcheck disable=SC2034
+            src_url=https://github.com/libevent/libevent/releases/download/release-${libevent_version:?}/libevent-${libevent_version:?}.tar.gz
+            [ ! -f libevent-$libevent_version.tar.gz ] && Download_src
+            [ -d libevent-${libevent_version} ] && rm -rf libevent-${libevent_version}
+            tar xzf libevent-${libevent_version}.tar.gz
+            cd  libevent-${libevent_version}
+            ./configure && make && make install
+            if [ $? -eq 0 ];then
+                echo "${CMSG} [ libevent-${libevent_version} install success !!!] **********************************>>${CEND}"
+                echo
+            else
+                echo "${CFAILURE} [ libevent-${libevent_version} install fail !!!] **********************************>>${CEND}"
+                echo
+            fi
+            cd ..
+            rm -rf libevent-${libevent_version}
+            # tmux install
+            [ ! -d tmux ] && git clone https://github.com/tmux/tmux.git
+            cd tmux
+            git pull
+            sh autogen.sh
+            CFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib" ./configure
+            make && make install
+            if [ $? -eq 0 ];then
+                echo "${CMSG} [ tmux install success !!!] **********************************${CEND}"
+                echo
+            else
+                echo "${CFAILURE} [ tmux install fail !!!] **********************************${CEND}"
+                echo
+            fi
+            unset LDFLAGS
+            if [ "${OS_BIT}" == "64" ]; then
+                ln -s /usr/local/lib/libevent-2.1.so.6 /usr/lib64/libevent-2.1.so.6
+            else
+                ln -s /usr/local/lib/libevent-2.1.so.6 /usr/lib/libevent-2.1.so.6
+            fi
+        else
+            echo "${CMSG} [ tmux has been  install !!!] ***********************************************>>${CEND}"
+            echo
         fi
 
 
