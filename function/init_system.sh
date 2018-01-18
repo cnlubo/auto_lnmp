@@ -50,7 +50,12 @@ select_system_setup_function(){
         echo
         # sudo 权限
         [ -f /etc/sudoers.d/ak47 ] && rm -rf /etc/sudoers.d/ak47
-        echo " $Typical_User   ALL=(ALL)  NOPASSWD: ALL " >> /etc/sudoers.d/ak47 && chmod 400 /etc/sudoers.d/ak47
+        # echo " $Typical_User   ALL=(ALL)  NOPASSWD: ALL " >> /etc/sudoers.d/ak47 && chmod 400 /etc/sudoers.d/ak47
+        cat > /etc/sudoers.d/ak47 << EOF
+Defaults    secure_path = /usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+$Typical_User   ALL=(ALL)  NOPASSWD: ALL
+EOF
+        chmod 400 /etc/sudoers.d/ak47
     fi
     sed -i "s@^default_user.*@default_user=$Typical_User@" ./options.conf
     SOURCE_SCRIPT ${ScriptPath:?}/options.conf
