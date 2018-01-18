@@ -5,7 +5,7 @@ src/*
 !src/README.md
 .idea/
 */.DS_Store
-config/vim/bundle/
+config/vim/bundle/*
 !config/vim/bundle/README.md
-config/vim/autoload/
+config/vim/autoload/*
 !config/vim/autoload/README.md
