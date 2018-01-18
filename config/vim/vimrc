@@ -1,0 +1,711 @@
+scriptencoding utf-8
+" =============================================================================
+" Author: cnlubo
+" Version: v1.0
+" Update Time: 2017-03-03
+" ==============================================================================
+" Initial Plugin 加载插件
+"===============================================================================
+" 修改leader键
+let mapleader = ','
+let g:mapleader = ','
+syntax enable                               " 开启语法高亮
+" install Vundle bundles
+if filereadable(expand("~/.vimrc.bundles"))
+    source ~/.vimrc.bundles
+endif
+
+"===============================================================================
+" General Settings 基础设置
+"===============================================================================
+set history=2000                                  " history存储容量
+filetype plugin indent on                         " 开启检测文件类型、自动缩进，允许插件
+set autoread                                      " 文件修改之后自动载入。
+set shortmess=atI                                 " 启动的时候不显示那个援助索马里儿童的提示
+
+" 备份,到另一个位置. 防止误删, 目前是取消备份
+"set backup
+"set backupext=.bak
+"set backupdir=/tmp/vimbk/
+
+set nobackup                                      " 取消备份。视情况自己改
+set noswapfile                                    " 关闭交换文件
+set autochdir                                     " 自动切换当前目录为当前文件所在的目录"
+
+set wildignore=*.swp,*.bak,*.pyc,*.class,.svn
+
+
+set mouse-=a                                      " 不启用鼠标
+" set mouse=a                                     " 启用鼠标
+" set mousehide                                   " Hide the mouse cursor while typing
+
+" 修复ctrl+m 多光标操作选择的bug，但是改变了ctrl+v进行字符选中时将包含光标下的字符
+"set selection=exclusive
+set selection=inclusive
+set selectmode=mouse,key
+" change the terminal's title
+set title
+" 去掉输入错误的提示声音
+set novisualbell         " don't beep
+set noerrorbells         " don't beep
+set t_vb=
+set tm=500
+
+" Remember info about open buffers on close
+set viminfo^=%
+
+" For regular expressions turn magic on
+set magic
+ " 避免插入状态无法用退格键和 Delete 键删除回车符
+set backspace=eol,start,indent
+set whichwrap+=<,>,h,l
+
+"==========================================
+" Display Settings 展示/排版等界面格式设置
+"==========================================
+" 突出显示当前行列
+set cursorcolumn
+set cursorline
+
+"设置 退出vim后，内容显示在终端屏幕, 可以用于查看和复制
+"好处：误删什么的，如果以前屏幕打开，可以找回
+set t_ti= t_te=
+
+"显示当前的行号列号：
+set ruler
+
+""在状态栏显示正在输入的命令
+set showcmd
+
+"左下角显示当前vim模式
+set showmode
+
+"在上下移动光标时，光标的上方或下方至少会保留显示的行数
+set scrolloff=7
+
+"显示状态栏 (默认值为 1, 无法显示状态栏)
+set laststatus=2
+" 设定命令行的行数为 1
+set cmdheight=1
+
+set statusline=%F\ %h%1*%m%r%w%0*[%{strlen(&filetype)?&filetype:'none'},%{&encoding},%{&fileformat}]%=%-14.(%l,%c%V%)\ %<%p%%\ \ \ [%L]\ \ \
+set statusline+=%{strftime('%Y-%m-%d\ -\ %H:%M\ %A')}%{fugitive#statusline()}
+hi User1 Ctermfg=57         ctermbg=253
+"显示行号：
+set number
+" 取消换行。
+set nowrap
+ "插入括号时，短暂地跳转到匹配的对应括号
+set showmatch
+"短暂跳转到匹配括号的时间
+set matchtime=2
+
+"设置文内智能搜索提示
+set hlsearch                         " 高亮search命中的文本。
+set ignorecase                       " 搜索时忽略大小写
+set incsearch                        " 随着键入即时搜索
+set smartcase                        " 有一个或以上大写字母时仍大小写敏感
+set nowrapscan                       " 禁止在搜索到文件两端时重新搜索"
+
+" 代码折叠
+set foldenable
+" 折叠方法
+" manual    手工折叠
+" indent    使用缩进表示折叠
+" expr      使用表达式定义折叠
+" syntax    使用语法定义折叠
+" diff      对没有更改的文本进行折叠
+" marker    使用标记进行折叠, 默认标记是 {{{ 和 }}}
+
+set foldmethod=indent
+set foldcolumn=0                     " 设置折叠区域的宽度
+set foldlevel=99                     " 设置折叠层数为
+"set foldclose=all                    " 设置为自动关闭折叠
+"set foldopen=all
+
+" 代码折叠自定义快捷键 <leader>zz
+let g:FoldMethod = 0
+map <leader>zz :call ToggleFold()<cr>
+fun! ToggleFold()
+    if g:FoldMethod == 0
+        exe "normal! zM"
+        let g:FoldMethod = 1
+    else
+        exe "normal! zR"
+        let g:FoldMethod = 0
+    endif
+endfun
+
+
+" 缩进配置
+"开启新行时使用智能自动缩进
+set smartindent
+set autoindent                                          " always set autoindenting on
+" never add copyindent, case error   " copy the previous indentation on autoindenting
+
+" tab相关变更
+set tabstop=4                                           " 设置Tab键的宽度        [等同的空格个数]
+set shiftwidth=4                                        " 每一次缩进对应的空格数
+set softtabstop=4                                       " 按退格键时可以一次删掉 4 个空格
+set smarttab                                            " insert tabs on the start of a line according to shiftwidth, not tabstop
+set expandtab                                           " 将Tab自动转化成空格    [需要输入真正的Tab键时，使用 Ctrl+V + Tab]
+set shiftround                                          " use multiple of shiftwidth when indenting with '<' and '>'
+
+set list                                                "显示tab和空格
+set lcs=tab:\|\ ,nbsp:%,trail:-                         "将Tab显示为|(竖线)，将行尾的空格显示为-(减号)
+highlight LeaderTab   guifg=#666666                     "设定行首tab为灰色
+match LeaderTab /^\t/                                   "匹配行首tab
+
+set hidden                                              "允许在有未保存的修改时切换缓冲区，此时的修改由 vim 负责保存
+set wildmode=list:longest
+set ttyfast
+
+set nrformats=                                           " 00x增减数字时使用十进制
+
+
+" 相对行号      行号变成相对，可以用 nj  nk   进行跳转 5j   5k 上下跳5行
+" set relativenumber number
+" au FocusLost * :set norelativenumber number
+" au FocusGained * :set relativenumber
+" 插入模式下用绝对行号, 普通模式下用相对
+" autocmd InsertEnter * :set norelativenumber number
+" autocmd InsertLeave * :set relativenumber
+" function! NumberToggle()
+" if(&relativenumber == 1)
+" set norelativenumber number
+" else
+" set relativenumber
+" endif
+" endfunc
+" nnoremap <C-n> :call NumberToggle()<cr>                 "ctrl+n 相对和绝对行号切换
+
+" 防止tmux下vim的背景色显示异常
+" Refer: http://sunaku.github.io/vim-256color-bce.html
+if &term =~ '256color'
+  " disable Background Color Erase (BCE) so that color schemes
+  " render properly when inside 256-color tmux and GNU screen.
+  " see also http://snk.tuxfamily.org/log/vim-256color-bce.html
+  set t_ut=
+endif
+
+
+"------------------------------------------------------------------------------
+"自定义函数
+"按下,ch 就可以将当前光标下的列高亮，再按下一次，取消高亮；并且可以同时多列高亮
+"------------------------------------------------------------------------------
+"function! SetColorColumn()
+"let col_num = virtcol(".")
+"let cc_list = split(&cc, ',')
+"if count(cc_list, string(col_num)) <= 0
+"execute "set cc+=".col_num
+"else
+"execute "set cc-=".col_num
+"endif
+"endfunction
+"map ,ch :call SetColorColumn()<CR>
+
+
+"-------------------------------------------------------------------------------
+"[参考线切换]
+" ----------------------------------------------------------------------------
+" fu! ReferenceLine(t)
+"   let ccnum = &cc
+"    if ccnum == '' | let ccnum = 0 | en
+"    let csw = &sw
+"    if a:t == 'add'
+"        let ccnum = ccnum + csw
+"        exec "setl cc=".ccnum
+"    elsei a:t == 'sub'
+"        let ccnum = ccnum - csw
+"        if ccnum >= 0 | exec "setl cc=".ccnum | en
+"    en
+" endf
+" nn <silent> <A-u>:call ReferenceLine('sub')<CR>
+" nn <silent> <A-o>:call ReferenceLine('add')<CR>
+
+
+
+"==========================================
+" FileEncode Settings 文件编码,格式
+"==========================================
+" 设置新文件的编码为 UTF-8
+set encoding=utf-8
+" 自动判断编码时，依次尝试以下编码：
+set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
+set helplang=cn
+" 终端屏幕显示编码只影响普通模式 (非图形界面) 下的 Vim。
+set termencoding=utf-8
+
+" Use Unix as the standard file type
+set ffs=unix,dos,mac
+" 如遇Unicode值大于255的文本，不必等到空格再折行。
+set formatoptions+=m
+" 合并两行中文时，不在中间加空格：
+set formatoptions+=B
+
+"==========================================
+" others 其它设置
+"==========================================
+" vimrc文件修改之后自动加载
+" windows
+autocmd! bufwritepost _vimrc source %
+" linux
+autocmd! bufwritepost .vimrc source %
+
+" 自动补全配置
+"让Vim的补全菜单行为与一般IDE一致(参考VimTip1228)
+set completeopt=longest,menu
+
+" 增强模式中的命令行自动完成操作
+set wildmenu
+" Ignore compiled files
+set wildignore=*.o,*~,*.pyc,*.class
+
+"离开插入模式后自动关闭预览窗口
+autocmd InsertLeave * if pumvisible() == 0|pclose|endif
+
+"回车即选中当前项
+inoremap <expr> <CR>       pumvisible() ? "\<C-y>" : "\<CR>"
+
+
+" In the quickfix window, <CR> is used to jump to the error under the
+" cursor, so undefine the mapping there.
+autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
+" quickfix window  s/v to open in split window,  ,gd/,jd => quickfix window => open it
+autocmd BufReadPost quickfix nnoremap <buffer> v <C-w><Enter><C-w>L
+autocmd BufReadPost quickfix nnoremap <buffer> s <C-w><Enter><C-w>K
+
+
+" command-line window
+autocmd CmdwinEnter * nnoremap <buffer> <CR> <CR>
+
+"上下左右键的行为 会显示其他信息
+ inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
+ inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
+ inoremap <expr> <PageDown> pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<PageDown>"
+ inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<PageUp>"
+
+" 打开自动定位到最后编辑的位置, 需要确认 .viminfo 当前用户可写
+ if has("autocmd")
+    au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+ endif
+
+"==========================================
+" HotKey Settings  自定义快捷键设置
+"==========================================
+" 主要按键重定义
+" 关闭方向键, 强迫自己用 hjkl
+map <Left> <Nop>
+map <Right> <Nop>
+map <Up> <Nop>
+map <Down> <Nop>
+
+"Treat long lines as break lines (useful when moving around in them)
+"se swap之后，同物理行上线直接跳
+"map j gj
+"map k gk
+nnoremap k gk
+nnoremap gk k
+nnoremap j gj
+nnoremap gj j
+
+" F1 - F6 设置
+" F1 废弃这个键,防止调出系统帮助
+noremap  <F1> <Esc>"
+" F2 行号开关，用于鼠标复制代码用
+" 为方便复制，用<F2>开启/关闭行号显示:
+function! HideNumber()
+  if(&relativenumber == &number)
+    set relativenumber! number!
+  elseif(&number)
+    set number!
+  else
+    set relativenumber!
+  endif
+  set number?
+endfunc
+"nnoremap <F2> :set nonumber! nonumber?<CR>
+nnoremap <F2> :call HideNumber()<CR>
+
+
+" F3 显示可打印字符开关
+nnoremap <F3> :set list! list?<CR>
+" F4 换行开关
+nnoremap <F4> :set wrap! wrap?<CR>
+
+" F5 粘贴模式paste_mode开关,用于有格式的代码粘贴
+" F5 set paste问题已解决, 粘贴代码前不需要按F5了
+set pastetoggle=<F5>            "    when in insert mode, press <F5> to go to
+                                "    paste mode, where you can paste mass data
+                                "    that won't be autoindented
+
+" disbale paste mode when leaving insert mode
+au InsertLeave * set nopaste
+
+" Automatically set paste mode in Vim when pasting in insert mode
+function! XTermPasteBegin()
+  set pastetoggle=<Esc>[201~
+  set paste
+  return ""
+endfunction
+inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
+
+" F6 语法开关，关闭语法可以加快大文件的展示
+nnoremap <F6> :exec exists('syntax_on') ? 'syn off' : 'syn on'<CR>
+
+" F7 开关列高量显示
+nnoremap <F7> :set cursorcolumn! cursorcolumn?<CR>
+" F8 自动插入注释信息
+
+
+"Smart way to move between windows 分屏窗口移动
+map <C-j> <C-W>j
+map <C-k> <C-W>k
+map <C-h> <C-W>h
+map <C-l> <C-W>l
+
+" http://stackoverflow.com/questions/13194428/is-better-way-to-zoom-windows-in-vim-than-zoomwin
+" Zoom / Restore window.
+function! s:ZoomToggle() abort
+    if exists('t:zoomed') && t:zoomed
+        execute t:zoom_winrestcmd
+        let t:zoomed = 0
+    else
+        let t:zoom_winrestcmd = winrestcmd()
+        resize
+        vertical resize
+        let t:zoomed = 1
+    endif
+endfunction
+command! ZoomToggle call s:ZoomToggle()
+nnoremap <silent> <Leader>z :ZoomToggle<CR>
+
+
+" Go to home and end using capitalized directions
+noremap H ^
+noremap L $
+
+"Map ; to : and save a million keystrokes
+" ex mode commands made easy 用于快速进入命令行
+nnoremap ; :
+
+" 命令行模式增强，ctrl - a到行首， -e 到行尾
+cnoremap <C-j> <t_kd>
+cnoremap <C-k> <t_ku>
+cnoremap <C-a> <Home>
+cnoremap <C-e> <End>
+
+" 搜索相关
+" Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
+map <space> /
+" 进入搜索Use sane regexes"
+nnoremap / /\v
+vnoremap / /\v
+
+"Keep search pattern at the center of the screen."
+nnoremap <silent> n nzz
+nnoremap <silent> N Nzz
+nnoremap <silent> * *zz
+nnoremap <silent> # #zz
+nnoremap <silent> g* g*zz
+
+" 去掉搜索高亮
+noremap <silent><leader>/ :nohls<CR>
+
+" switch # *
+nnoremap # *
+nnoremap * #
+
+" for # indent, python文件中输入新行时#号注释不切回行首
+autocmd BufNewFile,BufRead *.py inoremap # X<c-h>#
+
+
+" --------tab/buffer相关--------------------------
+" 切换前后buffer
+nnoremap [b :bprevious<cr>
+nnoremap ]b :bnext<cr>
+
+" 使用方向键切换buffer
+noremap <left> :bp<CR>
+noremap <right> :bn<CR>
+" tab 操作
+" http://vim.wikia.com/wiki/Alternative_tab_navigation
+" http://stackoverflow.com/questions/2005214/switching-to-a-particular-tab-in-vim
+
+" tab切换
+map <leader>th :tabfirst<cr>
+map <leader>tl :tablast<cr>
+
+map <leader>tj :tabnext<cr>
+map <leader>tk :tabprev<cr>
+map <leader>tn :tabnext<cr>
+map <leader>tp :tabprev<cr>
+
+map <leader>te :tabedit<cr>
+map <leader>td :tabclose<cr>
+map <leader>tm :tabm<cr>
+
+" normal模式下切换到确切的tab
+noremap <leader>1 1gt
+noremap <leader>2 2gt
+noremap <leader>3 3gt
+noremap <leader>4 4gt
+noremap <leader>5 5gt
+noremap <leader>6 6gt
+noremap <leader>7 7gt
+noremap <leader>8 8gt
+noremap <leader>9 9gt
+noremap <leader>0 :tablast<cr>
+
+" Toggles between the active and last active tab "
+" The first tab is always 1 "
+let g:last_active_tab = 1
+" nnoremap <leader>gt :execute 'tabnext ' . g:last_active_tab<cr>
+" nnoremap <silent> <c-o> :execute 'tabnext ' . g:last_active_tab<cr>
+" vnoremap <silent> <c-o> :execute 'tabnext ' . g:last_active_tab<cr>
+nnoremap <silent> <leader>tt :execute 'tabnext ' . g:last_active_tab<cr>
+autocmd TabLeave * let g:last_active_tab = tabpagenr()
+
+" 新建tab  Ctrl+t
+nnoremap <C-t>     :tabnew<CR>
+inoremap <C-t>     <Esc>:tabnew<CR>
+
+
+" => 选中及操作改键
+
+" 调整缩进后自动选中，方便再次操作
+vnoremap < <gv
+vnoremap > >gv
+
+" y$ -> Y Make Y behave like other capitals
+map Y y$
+
+" 复制选中区到系统剪切板中
+vnoremap <leader>y "+y
+
+" select all
+map <Leader>sa ggVG
+
+" select block
+nnoremap <leader>v V`}
+
+" w!! to sudo & write a file
+cmap w!! w !sudo tee >/dev/null %
+
+" kj 替换 Esc
+inoremap kj <Esc>
+
+" 滚动Speed up scrolling of the viewport slightly
+nnoremap <C-e> 2<C-e>
+nnoremap <C-y> 2<C-y>
+
+
+" Quickly close the current window
+nnoremap <leader>q :q<CR>
+
+" Quickly save the current file
+nnoremap <leader>w :w<CR>
+
+
+" Swap implementations of ` and ' jump to markers
+" By default, ' jumps to the marked line, ` jumps to the marked line and
+" column, so swap them
+" 交换 ' `, 使得可以快速使用'跳到marked位置
+nnoremap ' `
+nnoremap ` '
+
+" remap U to <C-r> for easier redo
+nnoremap U <C-r>
+
+" Quickly edit/reload the vimrc file
+nmap <silent> <leader>ev :e $MYVIMRC<CR>
+nmap <silent> <leader>sv :so $MYVIMRC<CR>
+
+"==========================================
+" FileType Settings  文件类型设置
+"==========================================
+
+" 具体编辑文件类型的一般设置，比如不要 tab 等
+autocmd FileType python set tabstop=4 shiftwidth=4 expandtab ai
+autocmd FileType ruby,javascript,html,css,xml set tabstop=2 shiftwidth=2 softtabstop=2 expandtab ai
+autocmd BufRead,BufNewFile *.md,*.mkd,*.markdown set filetype=markdown.mkd
+autocmd BufRead,BufNewFile *.part set filetype=html
+" disable showmatch when use > in php
+au BufWinEnter *.php set mps-=<:>
+
+" 保存python文件时删除多余空格
+fun! <SID>StripTrailingWhitespaces()
+    let l = line(".")
+    let c = col(".")
+    %s/\s\+$//e
+    call cursor(l, c)
+endfun
+autocmd FileType c,cpp,java,go,php,javascript,puppet,python,rust,twig,xml,yml,perl autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
+
+
+
+
+
+" 自动插入文件头
+let g:author = 'lubo'
+let g:email  = '454331202@qq.com'
+
+function! AddTitle(type)
+    if a:type=='add'
+        normal ms
+    endif
+    exe 'normal'.1.'G'
+    let line = getline('.')
+    if (line =~ '^#!.*$' || line =~ '^#.*coding:.*$') ||line =~ '!/bin/bash'
+        normal 's
+        return
+    endif
+    normal O
+    if &filetype=='python'
+        call setline('.', "\#!/usr/bin/env python")
+        normal o
+        call setline('.', "\# -*- coding:utf-8 -*-")
+    elseif &filetype=='sh'
+        call setline('.', "\#!/bin/bash")
+    endif
+    normal o
+    call setline('.',"\#---------------------------------------------------------------------------")
+    normal o
+    call setline('.', "\#")
+    normal o
+    call setline('.', "\#   Author:                ".g:author)
+    normal o
+    call setline('.', "\#   E-mail:                ".g:email)
+    normal o
+    call setline('.', "\#   LastModified:          ".strftime("%F %T"))
+    normal o
+    call setline('.', "\#   Filename:              ".expand("%:t"))
+    normal o
+    call setline('.', "\#   Desc:")
+    normal o
+    call setline('.', "\#")
+    normal o
+    call setline('.',"\#---------------------------------------------------------------------------")
+    if a:type=='add'
+        normal 's
+    else
+        normal G
+    endif
+endfunc
+map <F8> :call AddTitle('add')<CR>
+
+
+
+" autocmd BufWritePre,FileWritePre *.*   ks|call LastModified()
+
+fun! LastModified()
+    if line("$") > 20
+        let n = 20
+    else
+        let n = line("$")
+    endif
+    normal ms
+    exe '1,'.n.' s/^\(s*\(\*\|#\|"\|\/\/\)\+\s*[L]astModified:\s\).*/\1         '   .
+                \ strftime("%F %T") . "/e"
+    normal 's
+endfun
+
+function! AddComment()
+    if &filetype == 'python'
+        normal ms
+        normal O
+        call setline('.',"\#---------------------------------------------------------------------------")
+        normal o
+        call setline('.', "\# 1.")
+        normal o
+        call setline('.', "\# Function:")
+        normal o
+        call setline('.', "\# ChangeLog:")
+        normal o
+        call setline('.',"\#---------------------------------------------------------------------------")
+        normal 's
+    endif
+endfunc
+map <F11> :call AddComment()<CR>
+
+" 定义函数AutoSetFileHead，自动插入文件头
+autocmd BufNewFile *.sh,*.py,*.pl exec ":call AutoSetFileHead()"
+"autocmd BufNewFile *.py exec ":call AddTitle()"
+function! AutoSetFileHead()
+    if &filetype == 'sh'
+"        call setline(1, "\#!/bin/bash")
+        "call setline(2, "\#---------------------------------------------------------------------------")
+        "call setline(3, "\# Author:       lubo qq:454331202")
+        "call setline(4, "\#")
+        "call setline(5, "\# Created Time: ".strftime("%Y年%m月%d日 %H:%M:%S"))
+        "call setline(6, "\#")
+        "call setline(7, "\# FileName:     ".expand("%"))
+        "call setline(8, "\#")
+        "call setline(9, "\# Description:")
+        "call setline(10, "\#")
+        "call setline(11, "\# ChangeLog:")
+        "call setline(12,"\#---------------------------------------------------------------------------")
+        call AddTitle('new')
+    elseif &filetype == 'python'
+        call AddTitle('new')
+    elseif &filetype == 'perl'
+        call setline(1, "\#!/usr/bin/perl")
+        call setline(2, "\#---------------------------------------------------------------------------")
+        call setline(3, "\# Author:       lubo qq:454331202")
+        call setline(4, "\#")
+        call setline(5, "\# Created Time: ".strftime("%Y年%m月%d日 %H:%M:%S"))
+        call setline(6, "\#")
+        call setline(7, "\# FileName:     ".expand("%"))
+        call setline(8, "\#")
+        call setline(9, "\# Description:")
+        call setline(10, "\#")
+        call setline(11, "\# ChangeLog:")
+        call setline(12,"\#---------------------------------------------------------------------------")
+    endif
+    normal G
+endfunc
+" F10 to run python script
+nnoremap <buffer> <F10> :exec '!python' shellescape(@%, 1)<cr>
+
+"==========================================
+" Theme Settings  主题设置
+"==========================================
+" Set extra options when running in GUI mode
+if has("gui_running")
+    set guifont=Monaco:h14
+    set guioptions-=T
+    set guioptions+=e
+    set guioptions-=r
+    set guioptions-=L
+    set guitablabel=%M\ %t
+    set showtabline=1
+    set linespace=2
+    set noimd
+    set background=light
+else
+    set background=dark
+endif
+
+" theme主题
+set t_Co=256
+let g:solarized_termcolors=16
+"colorscheme darkburn
+colorscheme molokai
+set background=dark
+"colorscheme solarized
+"set background=light
+
+"设置标记一列的背景颜色和数字一行颜色一致
+hi! link SignColumn   LineNr
+hi! link ShowMarksHLl DiffAdd
+hi! link ShowMarksHLu DiffChange
+
+" for error highlight，防止错误整行标红导致看不清
+highlight clear SpellBad
+highlight SpellBad term=standout ctermfg=1 term=underline cterm=underline
+highlight clear SpellCap
+highlight SpellCap term=underline cterm=underline
+highlight clear SpellRare
+highlight SpellRare term=underline cterm=underline
+highlight clear SpellLocal
+highlight SpellLocal term=underline cterm=underline

@@ -466,7 +466,7 @@ installDepsBySrc() {
         # vim
         if [ ! -e "$(which vim)" ] && [ -e "$( which python )" ]; then
             cd $script_dir/src
-            echo "${CMSG} [ vim install begin ]  **********************************>>${CEND}"
+            echo "${CMSG}[ vim install begin ]  **********************************>>${CEND}"
             echo
             yum -y install ncurses-devel perl-ExtUtils-Embed lua-devel
             [ ! -d vim ] && git clone https://github.com/vim/vim.git
@@ -477,12 +477,32 @@ installDepsBySrc() {
             --enable-perlinterp --enable-rubyinterp --enable-luainterp --enable-cscope --enable-xim --with-x  --with-luajit
             make CFLAGS="-O2 -D_FORTIFY_SOURCE=1" && make install
             if [ $? -eq 0 ];then
-                echo "${CMSG} [ vim install success !!!]**********************************>>${CEND}"
+                echo "${CMSG}[ vim install success !!!]**********************************>>${CEND}"
                 echo
                 [ -h /usr/local/bin/vim ] && rm -rf /usr/local/bin/vim
                 ln -s /usr/local/vim/bin/vim /usr/local/bin/vim
+                echo "${CMSG}[ vim plugins install begin ]**********************************>>${CEND}"
+                echo
+                echo "${CMSG}[ Step1:backing up current vim config ]************************>>${CEND}"
+                echo
+                today=`date +%Y%m%d`
+                home_path=/home/${default_user:?}
+                for i in $home_path/.vim $home_path/.vimrc $home_path/.gvimrc $home_path/.vimrc.bundles
+                do
+                    [ -e $i ] && [ ! -L $i ] && sudo -u ${default_user:?} -H mv $i $home_path/$i.$today
+                done
+                for i in $home_path/.vim $home_path/.vimrc $home_path/.gvimrc $home_path/.vimrc.bundles
+                do
+                    [ -L $i ] && sudo -u ${default_user:?} -H unlink $i
+                done
+                echo "${CMSG}[ Step2: setting up ]********************************************>>${CEND}"
+                echo
+                lnif $CURRENT_DIR/vimrc $HOME/.vimrc
+                lnif $CURRENT_DIR/vimrc.bundles $HOME/.vimrc.bundles
+                lnif "$CURRENT_DIR/" "$HOME/.vim"
+
             else
-                echo "${CFAILURE} [ vim install fail !!!] **********************************>>${CEND}"
+                echo "${CFAILURE}[ vim install fail !!!] **********************************>>${CEND}"
                 echo
             fi
         else
@@ -521,28 +541,26 @@ installDepsBySrc() {
             CFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib" ./configure
             make && make install
             if [ $? -eq 0 ];then
-                echo "${CMSG} [ tmux install success !!!] **********************************${CEND}"
+                echo "${CMSG}[tmux install success !!!] **********************************${CEND}"
                 echo
             else
-                echo "${CFAILURE} [ tmux install fail !!!] **********************************${CEND}"
+                echo "${CFAILURE}[tmux install fail !!!] **********************************${CEND}"
                 echo
             fi
             unset LDFLAGS
             if [ "${OS_BIT}" == "64" ]; then
+                [ -h /usr/lib64/libevent-2.1.so.6 ] && rm -rf /usr/lib64/libevent-2.1.so.6
                 ln -s /usr/local/lib/libevent-2.1.so.6 /usr/lib64/libevent-2.1.so.6
             else
+                [ -h /usr/lib64/libevent-2.1.so.6 ] && rm -rf /usr/lib64/libevent-2.1.so.6
                 ln -s /usr/local/lib/libevent-2.1.so.6 /usr/lib/libevent-2.1.so.6
             fi
         else
-            echo "${CMSG} [ tmux has been  install !!!] ***********************************************>>${CEND}"
+            echo "${CMSG}[tmux has been  install !!!] ***********************************************>>${CEND}"
             echo
         fi
-
-
     elif [ "${OS}" == "Ubuntu" ]; then
         # Install tmux
-
-
         # install htop
         if [ ! -e "$(which htop)" ]; then
             tar xzf htop-${htop_version:?}.tar.gz
