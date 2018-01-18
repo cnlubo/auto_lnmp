@@ -497,10 +497,19 @@ installDepsBySrc() {
                 done
                 echo "${CMSG}[ Step2: setting up ]********************************************>>${CEND}"
                 echo
-                lnif $CURRENT_DIR/vimrc $HOME/.vimrc
-                lnif $CURRENT_DIR/vimrc.bundles $HOME/.vimrc.bundles
-                lnif "$CURRENT_DIR/" "$HOME/.vim"
-
+                [ -d /opt/modules/vim ] && rm -rf /opt/modules/vim
+                mkdir -p /opt/modules/vim
+                mkdir -p /opt/modules/vim/autoload
+                mkdir -p /opt/modules/vim/bundle
+                mkdir -p /opt/modules/vim/syntax
+                cp $script_dir/config/vim/vimrc /opt/modules/vim/
+                cp $script_dir/config/vim/vimrc.bundles /opt/modules/vim/
+                cp $script_dir/config/vim/filetype.vim /opt/modules/vim/
+                cp $script_dir/config/vim/syntax/nginx.vim /opt/modules/vim/syntax/
+                chown -Rf ${default_user:?}:${default_user:?} /opt/modules/vim/
+                sudo -u ${default_user:?} -H ln -s /opt/modules/vim/vimrc $home_path/.vimrc
+                sudo -u ${default_user:?} -H ln -s /opt/modules/vim/vimrc.bundles $home_path/.vimrc.bundles
+                sudo -u ${default_user:?} -H ln -s /opt/modules/vim $home_path/.vim
             else
                 echo "${CFAILURE}[ vim install fail !!!] **********************************>>${CEND}"
                 echo
