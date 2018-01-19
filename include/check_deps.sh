@@ -45,14 +45,15 @@ installDepsCentOS() {
     yum -y upgrade
     # centos devtoolset
     # devtoolset-3(gcc-4.9.2)、devtoolset-4(gcc-5.2.1)
-    echo "${CMSG}[ Installing centos devtoolset3(gcc-4.9.2) ] **********************************>>${CEND}"
-    yum -y install scl-utils
-    if [ "$CentOS_RHEL_version" == '7' ];then
-        rpm -ivh "http://www.softwarecollections.org/repos/rhscl/devtoolset-3/epel-7-x86_64/noarch/rhscl-devtoolset-3-epel-7-x86_64-1-2.noarch.rpm"
-    elif [ "$CentOS_RHEL_version" == '6' ];then
-        rpm -ivh "http://www.softwarecollections.org/repos/rhscl/devtoolset-3/epel-6-x86_64/noarch/rhscl-devtoolset-3-epel-6-x86_64-1-2.noarch.rpm"
-    fi
-    yum -y install devtoolset-3-gcc devtoolset-3-gcc-c++ devtoolset-3-gdb
+    
+    # echo "${CMSG}[ Installing centos devtoolset3(gcc-4.9.2) ] **********************************>>${CEND}"
+    # yum -y install scl-utils
+    # if [ "$CentOS_RHEL_version" == '7' ];then
+    #     rpm -ivh "http://www.softwarecollections.org/repos/rhscl/devtoolset-3/epel-7-x86_64/noarch/rhscl-devtoolset-3-epel-7-x86_64-1-2.noarch.rpm"
+    # elif [ "$CentOS_RHEL_version" == '6' ];then
+    #     rpm -ivh "http://www.softwarecollections.org/repos/rhscl/devtoolset-3/epel-6-x86_64/noarch/rhscl-devtoolset-3-epel-6-x86_64-1-2.noarch.rpm"
+    # fi
+    # yum -y install devtoolset-3-gcc devtoolset-3-gcc-c++ devtoolset-3-gdb
 
 }
 
@@ -132,60 +133,6 @@ installDepsDebian() {
 
 installDepsBySrc() {
 
-
-    # pushd ${oneinstack_dir}/src
-    #
-    # if [ "${OS}" == "Ubuntu" ]; then
-    #     if [[ "${Ubuntu_version}" =~ ^14$|^15$ ]]; then
-    #         # Install bison on ubt 14.x 15.x
-    #         tar xzf bison-${bison_version}.tar.gz
-    #         pushd bison-${bison_version}
-    #         ./configure
-    #         make -j ${THREAD} && make install
-    #         popd
-    #         rm -rf bison-${bison_version}
-    #     fi
-    # elif [ "${OS}" == "CentOS" ]; then
-    #     # Install tmux
-    #     if [ ! -e "$(which tmux)" ]; then
-    #         # Install libevent first
-    #         tar xzf libevent-${libevent_version}.tar.gz
-    #         pushd libevent-${libevent_version}
-    #         ./configure
-    #         make -j ${THREAD} && make install
-    #         popd
-    #         rm -rf libevent-${libevent_version}
-    #
-    #         tar xzf tmux-${tmux_version}.tar.gz
-    #         pushd tmux-${tmux_version}
-    #         CFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib" ./configure
-    #         make -j ${THREAD} && make install
-    #         unset LDFLAGS
-    #         popd
-    #         rm -rf tmux-${tmux_version}
-    #
-    #         if [ "${OS_BIT}" == "64" ]; then
-    #             ln -s /usr/local/lib/libevent-2.0.so.5 /usr/lib64/libevent-2.0.so.5
-    #         else
-    #             ln -s /usr/local/lib/libevent-2.0.so.5 /usr/lib/libevent-2.0.so.5
-    #         fi
-    #     fi
-    #
-    #     # install htop
-    #     if [ ! -e "$(which htop)" ]; then
-    #         tar xzf htop-${htop_version}.tar.gz
-    #         pushd htop-${htop_version}
-    #         ./configure
-    #         make -j ${THREAD} && make install
-    #         popd
-    #         rm -rf htop-${htop_version}
-    #     fi
-    # else
-    #     echo "No need to install software from source packages."
-    # fi
-    # popd
-    #
-    #
     if [ "${OS}" == "CentOS" ]; then
         # git
         yum -y remove git
@@ -495,6 +442,14 @@ installDepsBySrc() {
                 do
                     [ -L $i ] && sudo -u ${default_user:?} -H unlink $i
                 done
+                for i in /root/.vim /root/.vimrc /root/.gvimrc /root/.vimrc.bundles
+                do
+                    [ -e $i ] && [ ! -L $i ] && mv $i /root/$i.$today
+                done
+                for i in /root/.vim /root/.vimrc /root/.gvimrc /root/.vimrc.bundles
+                do
+                    [ -L $i ] && unlink $i
+                done
                 echo "${CMSG}[ Step2: setting up ]********************************************>>${CEND}"
                 echo
                 [ -d /opt/modules/vim ] && rm -rf /opt/modules/vim
@@ -510,15 +465,20 @@ installDepsBySrc() {
                 sudo -u ${default_user:?} -H ln -s /opt/modules/vim/vimrc $home_path/.vimrc
                 sudo -u ${default_user:?} -H ln -s /opt/modules/vim/vimrc.bundles $home_path/.vimrc.bundles
                 sudo -u ${default_user:?} -H ln -s /opt/modules/vim $home_path/.vim
+                # root user
+                ln -s /opt/modules/vim/vimrc /root/.vimrc
+                ln -s /opt/modules/vim/vimrc.bundles /root/.vimrc.bundles
+                ln -s /opt/modules/vim /root/.vim
+
                 echo "${CMSG}[ Step3: update/install plugins using Vim-plug]*********************>>${CEND}"
                 echo
-                # system_shell=$SHELL
-                # export SHELL="/bin/sh"
+                system_shell=$SHELL
+                export SHELL="/bin/sh"
                 yum -y install ctags
                 sudo -u ${default_user:?} -H curl -fLo $home_path/.vim/autoload/plug.vim --create-dirs \
                 https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
                 sudo  -u ${default_user:?} -H  vim -u $home_path/.vimrc.bundles +PlugInstall! +PlugClean! +qall
-                #export SHELL=$system_shell
+                export SHELL=$system_shell
                 echo "${CMSG}[ vim plugins install done !!!]**************************************>>${CEND}"
                 echo
             else
@@ -526,7 +486,7 @@ installDepsBySrc() {
                 echo
             fi
         else
-            echo "${CMSG} [ vim  has been  install !!!] *********************************************>>${CEND}"
+            echo "${CMSG} [ vim  has been  install !!!] *****************************************>>${CEND}"
             echo
         fi
 
