@@ -18,7 +18,7 @@ filetype off " required! turn off
 
 if !exists('g:bundle_groups')
     " let g:bundle_groups=['python','markdown','php','golang', 'ruby', 'html', 'tmux', 'beta','json']
-    let g:bundle_groups=['python','markdown','php', 'html', 'tmux','json']
+    let g:bundle_groups=['python','markdown','html', 'tmux','json']
 endif
 
 " ----------------------------------------------------------------------------
@@ -66,7 +66,7 @@ Plug 'scrooloose/nerdcommenter'
 
 " 快速加入修改环绕字符
 " for repeat -> enhance surround.vim, . to repeat command
-Plug 'tpope/vim-repeat' | Plug 'tpope/vim-surround'
+" Plug 'tpope/vim-repeat' | Plug 'tpope/vim-surround'
 
 " trailingwhitespace
 " 快速去行尾空格 [, + <Space>]
@@ -124,7 +124,7 @@ Plug 'dyng/ctrlsf.vim'
 
 " quick run
 " quickrun
-Plug 'thinca/vim-quickrun'
+"Plug 'thinca/vim-quickrun'
 
 " git
 " fugitive
@@ -168,13 +168,13 @@ Plug 'majutsushi/tagbar'
 
 " text object
 " 支持自定义文本对象
-Plug 'kana/vim-textobj-user'
+"Plug 'kana/vim-textobj-user'
 " 增加行文本对象: l   dal yal cil
-Plug 'kana/vim-textobj-line'
+"Plug 'kana/vim-textobj-line'
 " 增加文件文本对象: e   dae yae cie
-Plug 'kana/vim-textobj-entire'
+"Plug 'kana/vim-textobj-entire'
 " 增加缩进文本对象: i   dai yai cii - 相同缩进属于同一块
-Plug 'kana/vim-textobj-indent'
+"Plug 'kana/vim-textobj-indent'
 
 if count(g:bundle_groups, 'tmux')
     " tmux
