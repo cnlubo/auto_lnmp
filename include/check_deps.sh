@@ -510,12 +510,23 @@ installDepsBySrc() {
                 sudo -u ${default_user:?} -H ln -s /opt/modules/vim/vimrc $home_path/.vimrc
                 sudo -u ${default_user:?} -H ln -s /opt/modules/vim/vimrc.bundles $home_path/.vimrc.bundles
                 sudo -u ${default_user:?} -H ln -s /opt/modules/vim $home_path/.vim
+                echo "${CMSG}[ Step3: update/install plugins using Vim-plug]*********************>>${CEND}"
+                echo
+                # system_shell=$SHELL
+                # export SHELL="/bin/sh"
+                yum -y install ctags
+                sudo -u ${default_user:?} -H curl -fLo $home_path/.vim/autoload/plug.vim --create-dirs \
+                https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+                sudo  -u ${default_user:?} -H  vim -u $home_path/.vimrc.bundles +PlugInstall! +PlugClean! +qall
+                #export SHELL=$system_shell
+                echo "${CMSG}[ vim plugins install done !!!]**************************************>>${CEND}"
+                echo
             else
-                echo "${CFAILURE}[ vim install fail !!!] **********************************>>${CEND}"
+                echo "${CFAILURE}[ vim install fail !!!] ****************************************>>${CEND}"
                 echo
             fi
         else
-            echo "${CMSG} [ vim  has been  install !!!] ***********************************************>>${CEND}"
+            echo "${CMSG} [ vim  has been  install !!!] *********************************************>>${CEND}"
             echo
         fi
 

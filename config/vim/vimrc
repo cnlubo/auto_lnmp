@@ -2,14 +2,33 @@ scriptencoding utf-8
 " =============================================================================
 " Author: cnlubo
 " Version: v1.0
-" Update Time: 2017-03-03
+" Update Time: 2018-01-19
+" 参考 https://github.com/wklken/k-vim/blob/master/vimrc
 " ==============================================================================
+" Sections:
+"       -> Initial Plugin 加载插件
+"       -> General Settings 基础设置
+"       -> Display Settings 展示/排版等界面格式设置
+"       -> FileEncode Settings 文件编码设置
+"       -> Others 其它配置
+"       -> HotKey Settings  自定义快捷键
+"       -> FileType Settings  针对文件类型的设置
+"       -> Theme Settings  主题设置
+"       -> 插件配置和具体设置在vimrc.bundles中
+" Note: Don't put anything in your .vimrc you don't understand!
+"===============================================================================
+
+
+"===============================================================================
 " Initial Plugin 加载插件
 "===============================================================================
+
+
 " 修改leader键
 let mapleader = ','
 let g:mapleader = ','
 syntax enable                               " 开启语法高亮
+
 " install Vundle bundles
 if filereadable(expand("~/.vimrc.bundles"))
     source ~/.vimrc.bundles
@@ -19,7 +38,10 @@ endif
 " General Settings 基础设置
 "===============================================================================
 set history=2000                                  " history存储容量
-filetype plugin indent on                         " 开启检测文件类型、自动缩进，允许插件
+filetype on                                       " 检测文件类型
+filetype indent on                                " 针对不同的文件类型采用不同的缩进格式
+filetype plugin on                                " 允许插件
+filetype plugin indent on                         " 启动自动补全
 set autoread                                      " 文件修改之后自动载入。
 set shortmess=atI                                 " 启动的时候不显示那个援助索马里儿童的提示
 
@@ -40,7 +62,6 @@ set mouse-=a                                      " 不启用鼠标
 " set mousehide                                   " Hide the mouse cursor while typing
 
 " 修复ctrl+m 多光标操作选择的bug，但是改变了ctrl+v进行字符选中时将包含光标下的字符
-"set selection=exclusive
 set selection=inclusive
 set selectmode=mouse,key
 " change the terminal's title
@@ -93,7 +114,7 @@ set statusline+=%{strftime('%Y-%m-%d\ -\ %H:%M\ %A')}%{fugitive#statusline()}
 hi User1 Ctermfg=57         ctermbg=253
 "显示行号：
 set number
-" 取消换行。
+" 取消换行
 set nowrap
  "插入括号时，短暂地跳转到匹配的对应括号
 set showmatch
@@ -118,7 +139,7 @@ set foldenable
 " marker    使用标记进行折叠, 默认标记是 {{{ 和 }}}
 
 set foldmethod=indent
-set foldcolumn=0                     " 设置折叠区域的宽度
+"set foldcolumn=0                     " 设置折叠区域的宽度
 set foldlevel=99                     " 设置折叠层数为
 "set foldclose=all                    " 设置为自动关闭折叠
 "set foldopen=all
@@ -542,9 +563,14 @@ fun! <SID>StripTrailingWhitespaces()
 endfun
 autocmd FileType c,cpp,java,go,php,javascript,puppet,python,rust,twig,xml,yml,perl autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
 
-
-
-
+" 设置可以高亮的关键字
+if has("autocmd")
+  " Highlight TODO, FIXME, NOTE, etc.
+  if v:version > 701
+    autocmd Syntax * call matchadd('Todo',  '\W\zs\(TODO\|FIXME\|CHANGED\|DONE\|XXX\|BUG\|HACK\)')
+    autocmd Syntax * call matchadd('Debug', '\W\zs\(NOTE\|INFO\|IDEA\|NOTICE\)')
+  endif
+endif
 
 " 自动插入文件头
 let g:author = 'lubo'

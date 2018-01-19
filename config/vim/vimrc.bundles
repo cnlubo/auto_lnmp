@@ -3,7 +3,7 @@
 "==========================================
 
 "################### 包依赖 #####################
-" package dependence:  ctags
+" package dependence:  ctags ag(he_silver_searcher)
 " mac brew instal ctags
 " 安装后 .zshrc 需要增加export PATH=/usr/local/bin:/usr/local/sbin:$PATH
 " python dependence:  pep8, pyflake
@@ -51,7 +51,7 @@ Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
 " 代码自动补全
 " 迄今为止用到的最好的自动VIM自动补全插件
 " 重启 :YcmRestartServer
-Plug 'Valloric/YouCompleteMe'
+" Plug 'Valloric/YouCompleteMe'
 
 " 自动补全单引号，双引号等
 Plug 'Raimondi/delimitMate'
@@ -67,6 +67,7 @@ Plug 'scrooloose/nerdcommenter'
 " 快速加入修改环绕字符
 " for repeat -> enhance surround.vim, . to repeat command
 Plug 'tpope/vim-repeat' | Plug 'tpope/vim-surround'
+
 " trailingwhitespace
 " 快速去行尾空格 [, + <Space>]
 Plug 'bronson/vim-trailing-whitespace'
@@ -77,14 +78,14 @@ Plug 'junegunn/vim-easy-align'
 
 " quick movement
 " easymotion
-"更高效的移动 [,, + w/fx/h/j/k/l]
-Plug 'Lokaltog/vim-easymotion'
+" 更高效的移动 [,, + w/fx/h/j/k/l]
+" Plug 'Lokaltog/vim-easymotion'
 
 " 更高效的行内移动, f/F/t/T, 才触发
 " quickscope
-Plug 'unblevable/quick-scope'
+" Plug 'unblevable/quick-scope'
 
-Plug 'vim-scripts/matchit.zip'
+" Plug 'vim-scripts/matchit.zip'
 
 " signature
 " 显示marks - 方便自己进行标记和跳转
@@ -92,7 +93,7 @@ Plug 'vim-scripts/matchit.zip'
 " '[a-zA-Z] go to mark
 " m<Space>  del all marks
 " m/        list all marks
-Plug 'kshenoy/vim-signature'
+" Plug 'kshenoy/vim-signature'
 
 " quick selection and edit
 " expandregion
@@ -183,8 +184,8 @@ endif
 
 if count(g:bundle_groups, 'markdown')
 " Markdown 语法高亮插件
- Plug 'godlygeek/tabular'
- Plug 'plasticboy/vim-markdown'
+ " Plug 'godlygeek/tabular'
+ Plug 'plasticboy/vim-markdown', {'for': 'md'}
 
 " Markdown realtime preview
 " https://github.com/suan/vim-instant-markdown
@@ -217,11 +218,11 @@ if count(g:bundle_groups, 'python')
     let g:vim_isort_map = '<C-i>'
 endif
 
-if count(g:bundle_groups, 'php')
+" if count(g:bundle_groups, 'php')
     " piv
     " shift-v可以查看函数手册 / leader-pd生成注释
-    Plug 'spf13/PIV'
-endif
+    " Plug 'spf13/PIV'
+" endif
 
 if count(g:bundle_groups, 'ruby')
     Plug 'vim-ruby/vim-ruby'
@@ -243,17 +244,17 @@ if count(g:bundle_groups, 'html')
 endif
 
 " this is just for beta version
-if count(g:bundle_groups, 'beta')
+" if count(g:bundle_groups, 'beta')
     " indent
-    Plug 'nathanaelkane/vim-indent-guides'
+"    Plug 'nathanaelkane/vim-indent-guides'
     " <leader>ig to trigger
-    let g:indent_guides_start_level = 2
-    let g:indent_guides_guide_size = 1
-    let g:indent_guides_auto_colors = 0
-    autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  ctermbg=black
-    autocmd VimEnter,Colorscheme * :hi IndentGuidesEven ctermbg=black
+"    let g:indent_guides_start_level = 2
+"    let g:indent_guides_guide_size = 1
+"    let g:indent_guides_auto_colors = 0
+"    autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  ctermbg=black
+"    autocmd VimEnter,Colorscheme * :hi IndentGuidesEven ctermbg=black
 
-endif
+" endif
 
 
 " Add plugins to &runtimepath
@@ -341,6 +342,51 @@ call plug#end()
     nnoremap <silent> <Leader>ec :SyntasticToggleMode<CR>
 " }}}
 
+
+" ale {{{
+if has_key(g:plugs, 'ale')
+    " pip install flake8
+    " npm install -g eslint eslint-plugin-standard eslint-plugin-promise eslint-config-standard
+    " npm install -g eslint-plugin-import eslint-plugin-node eslint-plugin-html babel-eslint
+    let g:ale_linters = {
+    \   'python': ['flake8'],
+    \   'javascript': ['eslint'],
+    \}
+
+    " E501 -> 120 chars
+    let g:ale_python_flake8_args="--ignore=E114,E116,E131 --max-line-length=120"
+    " --ignore=E225,E124,E712,E116
+
+    let g:ale_sign_error = '>>'
+    let g:ale_sign_warning = '>'
+
+    let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
+    let g:ale_echo_msg_error_str = 'E'
+    let g:ale_echo_msg_warning_str = 'W'
+    let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+
+    nmap <silent> <Leader>ep <Plug>(ale_previous_wrap)
+    nmap <silent> <Leader>en <Plug>(ale_next_wrap)
+
+    nnoremap <silent> <Leader>ec :ALEToggle<CR>
+
+    " troggle quickfix list
+    function! ToggleErrors()
+        let old_last_winnr = winnr('$')
+        lclose
+        if old_last_winnr == winnr('$')
+            " Nothing was closed, open syntastic_error location panel
+            lopen
+        endif
+    endfunction
+    nnoremap <Leader>s :call ToggleErrors()<cr>
+
+    let g:ale_set_highlights = 1
+    highlight clear ALEErrorSign
+    highlight clear ALEWarningSign
+endif
+
+" }}}
 
 " ################### 自动补全 ###################
 
