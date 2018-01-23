@@ -52,7 +52,7 @@ MySQL_Base_Packages_Install(){
                 echo '[remove old mysql] **************************************************>>'
                 yum -y remove mysql-server mysql
                 BasePackages="wget gcc gcc-c++ autoconf libxml2-devel zlib-devel libjpeg-devel \
-                libpng-devel glibc-devel glibc-static glib2-devel  bzip2-devel openssl-devel \
+                libpng-devel glibc-devel glibc-static glib2-devel  bzip2 bzip2-devel openssl-devel \
                 ncurses-devel bison cmake make libaio-devel expect gnutls-devel"
                 if [ $DbType == 'MariaDB' ];then
                     BasePackages=${BasePackages}" gnutls-devel"
@@ -110,7 +110,7 @@ MySQL_Base_Packages_Install(){
     fi
     id $mysql_user >/dev/null 2>&1
     if [ ! $? -eq 0 ]; then
-        useradd -g $mysql_user  -M -s /sbin/nologin $mysql_user;
+        useradd -g $mysql_user  -M -s /sbin/nologin $mysql_user
     fi
     # #create dir
     # for path in $MysqlLogPath $MysqlConfigPath $MysqlDataPath $MysqlTmpPath $MysqlRunPath;do
