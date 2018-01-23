@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2164
 # ----------------------------------------------------------------
 #@Author          :              cnlubo (454331202@qq.com)
 #@Filename       :              mysql_install.sh
@@ -6,13 +7,13 @@
 #------------------------------------------------------------------
 system_check(){
     [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && exit;
-    [ ${RamTotalG:?} -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install mysql.\nThis script need memory more than 1G.\n${CEND}" && SELECT_RUN_SCRIPT;
+    [ ${RamTotalG:?} -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install mysql.\nThis script need memory more than 1G.\n${CEND}" && select_main_menu
 }
 
 MySQL_Var(){
 
     # 生成数据库root用户随机密码(8位长度包含字母数字和特殊字符)
-    dbrootpwd=`mkpasswd -l 8`
+    # dbrootpwd=`mkpasswd -l 8`
     read -p "Please input Port(Default:3306):" MysqlPort
     MysqlPort="${MysqlPort:=3306}"
     case   $DbType in
@@ -34,11 +35,11 @@ MySQL_Var(){
     read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort)" MysqlOptPath
     #echo $MysqlBasePath
     MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort}"
-    MysqlDataPath="${MysqlOptPath}/data"
-    MysqlLogPath="$MysqlOptPath/log"
-    MysqlConfigPath="$MysqlOptPath/etc"
-    MysqlTmpPath="$MysqlOptPath/tmp"
-    MysqlRunPath="$MysqlOptPath/run"
+    # MysqlDataPath="${MysqlOptPath}/data"
+    # MysqlLogPath="$MysqlOptPath/log"
+    # MysqlConfigPath="$MysqlOptPath/etc"
+    # MysqlTmpPath="$MysqlOptPath/tmp"
+    # MysqlRunPath="$MysqlOptPath/run"
     # setting innodb_buffer_pool_size
     innodb_buffer_pool_size=`expr $RamTotalG \* 80 / 102400`
     read -p "Please input innodb_buffer_pool_size (default:${innodb_buffer_pool_size}G)" innodb_buffer_pool_size
@@ -56,8 +57,6 @@ MySQL_Base_Packages_Install(){
                 if [ $DbType == 'MariaDB' ];then
                     BasePackages=${BasePackages}" gnutls-devel"
                 fi
-                #echo $BasePackages
-                # gnutls-devel only for mariadb10.2
             }
         ;;
         "Ubuntu")
@@ -70,42 +69,42 @@ MySQL_Base_Packages_Install(){
         ;;
 
         *)
-        echo "not supported System";;
+            echo "${CMSG}[ not supported System !!! ] **********************************>>${CEND}"
+        ;;
     esac
-    #echo $BasePackages
     INSTALL_BASE_PACKAGES $BasePackages
 
     if [ -f "/usr/local/lib/libjemalloc.so" ];then
-        echo -e "\033[31mjemalloc having install! \033[0m"
+        echo "${CMSG}[ jemalloc has been install !!! ] ****************************>>${CEND}"
+        echo
     else
-        src_url=https://github.com/jemalloc/jemalloc/releases/download/$jemalloc_version/jemalloc-$jemalloc_version.tar.bz2
-        Download_src
-        cd $script_dir/src
-        tar xvf jemalloc-$jemalloc_version.tar.bz2
-        cd jemalloc-$jemalloc_version
-        ./configure
-        make && make install
+        src_url=https://github.com/jemalloc/jemalloc/releases/download/${jemalloc_version:?}/jemalloc-$jemalloc_version.tar.bz2
+        cd ${script_dir:?}/src
+        [ ! -f jemalloc-$jemalloc_version.tar.bz2 ] && Download_src
+        [ -d jemalloc-$jemalloc_version ] && rm -rf jemalloc-$jemalloc_version
+        tar xvf jemalloc-$jemalloc_version.tar.bz2 && cd jemalloc-$jemalloc_version
+        ./configure && make && make install
         if [ -f "/usr/local/lib/libjemalloc.so" ];then
             echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
             ldconfig
         else
-            echo -e "\033[31mjemalloc install failed, Please contact the author! \033[0m"
+            echo "${CFAILURE}[ jemalloc install failed, Please contact the author !!!] ****************************>>${CEND}"
             kill -9 $$
         fi
-        rm -rf jemalloc-$jemalloc_version
-        cd $script_dir
+        cd .. && rm -rf $script_dir/src/jemalloc-$jemalloc_version
     fi
     #下载boost 源码
     if [ $DbType == 'MySql' ] && [ $DbVersion == '5.7' ];then
+        # shellcheck disable=SC2034
         src_url=https://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz
-        Download_src
         cd $script_dir/src
+        [ ! -f boost_1_59_0.tar.gz ] && Download_src
         [ -d boost_1_59_0 ] && rm -rf boost_1_59_0
         tar xvf boost_1_59_0.tar.gz
         cd $script_dir
     fi
     #create group and user
-    grep $mysql_user /etc/group >/dev/null 2>&1
+    grep ${mysql_user:?} /etc/group >/dev/null 2>&1
     if [ ! $? -eq 0 ]; then
         groupadd $mysql_user;
     fi
@@ -120,57 +119,16 @@ MySQL_Base_Packages_Install(){
     #     chown -R mysql:mysql $path;
     # done
 }
-#SELECT_MYSQL_INSTALL(){
-#
-#
-#    SYSTEM_CHECK
-#
-#    echo "${CMSG}-----------------------------------------------------------------------${CEND}"
-#    PS3="${CBLUE}Which version MySql are you want to install:${CEND}"
-#    declare -a VarLists
-#    VarLists=("Back"  "MySQL-5.7" "MariaDB-10.2" "MySQL-5.6" "MariaDB-10.1")
-#    select var in ${VarLists[@]} ;do
-#        case $var in
-#            ${VarLists[1]})
-#                DbType="MySql"
-#                DbVersion="5.7"
-#                SOURCE_SCRIPT $FunctionPath/install/Mysql-5.7.sh
-#            MySQLDB_Install_Main;;
-#            ${VarLists[2]})
-#                DbType="MariaDB"
-#                DbVersion="10.2"
-#                SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.2.sh
-#            MariaDB_Install_Main;;
-#            ${VarLists[3]})
-#                DbType="MySql"
-#                DbVersion="5.6"
-#                SOURCE_SCRIPT $FunctionPath/install/Mysql-5.6.sh
-#            MysqlDB_Install_Main;;
-#            ${VarLists[4]})
-#                DbType="MariaDB"
-#                DbVersion="10.1"
-#                SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
-#            MariaDB_Install_Main;;
-#
-#            ${VarLists[0]})
-#            SELECT_RUN_SCRIPT;;
-#            *)
-#            SELECT_MYSQL_INSTALL;;
-#        esac
-#        break
-#    done
-#}
 select_mysql_install(){
 
     system_check
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     cat << EOF
 *  `echo -e "$CBLUE  1) MySQL-5.7        "`
-*  `echo -e "$CBLUE  2) MySQL-5.6        "`
-*  `echo -e "$CBLUE  3) MariaDB-10.2     "`
-*  `echo -e "$CBLUE  4) MariaDB-10.1     "`
-*  `echo -e "$CBLUE  5) Back             "`
-*  `echo -e "$CBLUE  6) Quit             "`
+*  `echo -e "$CBLUE  2) MariaDB-10.2     "`
+*  `echo -e "$CBLUE  3) MariaDB-10.1     "`
+*  `echo -e "$CBLUE  4) Back             "`
+*  `echo -e "$CBLUE  5) Quit             "`
 EOF
     read -p "${CBLUE}Which Version MySQL are you want to install:${CEND} " num3
 
@@ -178,32 +136,26 @@ EOF
         1)
             DbType="MySql"
             DbVersion="5.7"
-            SOURCE_SCRIPT $FunctionPath/install/Mysql-5.7.sh
+            SOURCE_SCRIPT ${FunctionPath:?}/install/Mysql-5.7.sh
             MySQLDB_Install_Main
         ;;
         2)
-            DbType="MySql"
-            DbVersion="5.6"
-            SOURCE_SCRIPT $FunctionPath/install/Mysql-5.6.sh
-            MySQLDB_Install_Main
-        ;;
-        3)
             DbType="MariaDB"
             DbVersion="10.2"
             SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.2.sh
             MariaDB_Install_Main
         ;;
-        4)
+        3)
             DbType="MariaDB"
             DbVersion="10.1"
             SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
             MariaDB_Install_Main
         ;;
-        5)
+        4)
             clear
             select_main_menu
         ;;
-        6)
+        5)
             clear
             exit 0
         ;;

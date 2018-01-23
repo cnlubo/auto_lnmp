@@ -45,7 +45,7 @@ installDepsCentOS() {
     yum -y upgrade
     # centos devtoolset
     # devtoolset-3(gcc-4.9.2)、devtoolset-4(gcc-5.2.1)
-    
+
     # echo "${CMSG}[ Installing centos devtoolset3(gcc-4.9.2) ] **********************************>>${CEND}"
     # yum -y install scl-utils
     # if [ "$CentOS_RHEL_version" == '7' ];then
@@ -248,7 +248,7 @@ installDepsBySrc() {
                     ln -s /usr/local/python$python2_version/bin/pip2 /usr/bin/pip2
                     ln -s /usr/local/python$python2_version/bin/pip2.7 /usr/bin/pip2.7
                     # pip镜像
-                    echo "${CMSG} [ setup pip.conf ]**********************************>>${CEND}"
+                    echo "${CMSG}[ setup pip.conf ]**********************************>>${CEND}"
                     echo
                     [ ! -d /root/.pip ] && mkdir -p /root/.pip
                     [ -f /root/.pip/pip.conf ] && mv /root/.pip/pip.conf /root/.pip/pip.conf_bak
@@ -260,18 +260,18 @@ installDepsBySrc() {
                         chown -Rf ${default_user:?}${default_user:?} /home/${default_user:?}/.pip/
                     fi
                 else
-                    echo "${CFAILURE} [ pip-$pip_version install fail !!!] **********************************>>${CEND}"
+                    echo "${CFAILURE}[ pip-$pip_version install fail !!!] **********************************>>${CEND}"
                     echo
                 fi
                 cd .. && rm -rf pip-$pip_version
 
             else
-                echo "${CFAILURE} [ Python-$python2_version install fail !!!]  **********************************>>${CEND}"
+                echo "${CFAILURE}[ Python-$python2_version install fail !!!]  **********************************>>${CEND}"
                 echo
             fi
             rm -rf $script_dir/src/Python-$python2_version
         else
-            echo "${CMSG} [ python2 has been install !!!] ********************************************>>${CEND}"
+            echo "${CMSG}[ python2 has been install !!!] ********************************************>>${CEND}"
             echo
         fi
 

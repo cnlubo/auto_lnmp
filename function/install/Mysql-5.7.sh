@@ -2,7 +2,6 @@
 # shellcheck disable=SC2164
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
-# @CreatDate:                              2016-01-25 13:38:17
 # @file_name:                              Mysql-5.7.sh
 # @Desc                                    mysql-5.7 install scripts
 #----------------------------------------------------------------------------
@@ -16,6 +15,11 @@ Create_Conf() {
     pt=`echo ${MysqlPort:?} % 256 | bc`
     server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
     # create dir
+    MysqlDataPath="${MysqlOptPath:?}/data"
+    MysqlLogPath="$MysqlOptPath/log"
+    MysqlConfigPath="$MysqlOptPath/etc"
+    MysqlTmpPath="$MysqlOptPath/tmp"
+    MysqlRunPath="$MysqlOptPath/run"
     for path in ${MysqlLogPath:?} ${MysqlConfigPath:?} ${MysqlDataPath:?} ${MysqlTmpPath:?} ${MysqlRunPath:?};do
         [ ! -d $path ] && mkdir -p $path
         chmod 755 $path;
@@ -28,11 +32,11 @@ port                                = $MysqlPort
 socket                              = $MysqlRunPath/mysql$MysqlPort.sock
 default_character_set               = UTF8
 no_auto_rehash
-password                            =$dbrootpwd
+password                            =${dbrootpwd:?}
 
 [mysqld]
 ############### GENERAL############
-user                                = $mysql_user
+user                                = ${mysql_user:?}
 port                                = $MysqlPort
 bind_address                        = 0.0.0.0
 character_set_server                = UTF8
@@ -46,7 +50,7 @@ max_sp_recursion_depth              = 255
 log_bin_trust_function_creators     = ON
 explicit_defaults_for_timestamp
 ################DIR################
-basedir                             = $MysqlBasePath
+basedir                             = ${MysqlBasePath:?}
 pid_file                            = $MysqlRunPath/mysql$MysqlPort.pid
 socket                              = $MysqlRunPath/mysql$MysqlPort.sock
 datadir                             = $MysqlDataPath
@@ -115,12 +119,12 @@ thread_stack                       = 512K
 innodb_data_file_path               = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                 = O_DIRECT
 innodb_log_file_size                = 512M
-innodb_buffer_pool_size             = ${innodb_buffer_pool_size}G
+innodb_buffer_pool_size             = ${innodb_buffer_pool_size:?}G
 innodb_log_buffer_size              = 64M
 innodb_lru_scan_depth               = 2048
 innodb_purge_threads                = 4
 innodb_sort_buffer_size             = 2M
-innodb_write_io_threads             = $CpuProNum
+innodb_write_io_threads             = ${CpuProNum:?}
 innodb_buffer_pool_load_at_startup  = 1
 innodb_buffer_pool_dump_at_shutdown = 1
 innodb_lock_wait_timeout            = 5
@@ -140,16 +144,13 @@ EOF
 
 Install_MySQLDB()
 {
-    echo "${CMSG}[Mysql${mysql_5_7_version:?} Installing] **************************************************>>${CEND}";
-
-
+    echo "${CMSG}[ Mysql${mysql_5_7_version:?} Installing ] **************************************************>>${CEND}";
     cd ${script_dir:?}/src
     # shellcheck disable=SC2034
     src_url=http://cdn.mysql.com//Downloads/MySQL-5.7/mysql-$mysql_5_7_version.tar.gz
     [ ! -f mysql-$mysql_5_7_version.tar.gz ] && Download_src
     [ -d mysql-$mysql_5_7_version ] && rm -rf mysql-$mysql_5_7_version
-    tar -zxf mysql-$mysql_5_7_version.tar.gz;
-    cd mysql-$mysql_5_7_version;
+    tar -zxf mysql-$mysql_5_7_version.tar.gz && cd mysql-$mysql_5_7_version
 
     cmake -DCMAKE_INSTALL_PREFIX=$MysqlBasePath \
     -DDEFAULT_CHARSET=utf8mb4 \
@@ -185,15 +186,15 @@ Init_MySQLDB(){
 
     #初始化创建数据库
     chown -R mysql.mysql $MysqlConfigPath/
-    echo "${CMSG}[Initialization Database] **************************************************>>${CEND}"
+    echo "${CMSG}[ Initialization Database ] **************************************************>>${CEND}"
     # 初始化数据库不生成密码    --initialize：root用户生成随机密码 --initialize-insecure：root用户不生成随机密码
     $MysqlBasePath/bin/mysqld --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --user=mysql \
     --basedir=$MysqlBasePath --datadir=$MysqlDataPath --initialize-insecure
     #启动脚本
     mkdir -p ${MysqlOptPath:?}/init.d
     chown -R mysql.mysql $MysqlOptPath/
-    cp $script_dir/template/mysql_start $MysqlOptPath/init.d/mysql$MysqlPort;
-    chmod 775 $MysqlOptPath/init.d/mysql$MysqlPort;
+    cp $script_dir/template/mysql_start $MysqlOptPath/init.d/mysql$MysqlPort
+    chmod 775 $MysqlOptPath/init.d/mysql$MysqlPort
     chown -R mysql.mysql $MysqlOptPath/init.d/
     sed  -i ':a;$!{N;ba};s#basedir=#basedir='''$MysqlBasePath'''#' $MysqlOptPath/init.d/mysql$MysqlPort
     sed  -i ':a;$!{N;ba};s#datadir=#datadir='''$MysqlDataPath'''#' $MysqlOptPath/init.d/mysql$MysqlPort
@@ -223,8 +224,10 @@ Init_MySQLDB(){
 }
 Config_MySQLDB()
 {
-    echo "${CMSG}[config db ] **************************************************>>${CEND}";
-    $MysqlOptPath/init.d/mysql$MysqlPort start;
+    echo "${CMSG}[ config mysql db !!! ] **************************************************>>${CEND}"
+    # 生成数据库root用户随机密码(8位长度包含字母数字和特殊字符)
+    dbrootpwd=`mkpasswd -l 8`
+    $MysqlOptPath/init.d/mysql$MysqlPort start
     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'127.0.0.1' identified by \"$dbrootpwd\" with grant option;"
     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'localhost' identified by \"$dbrootpwd\" with grant option;"
     #打开注释生效validate_password 插件
@@ -234,10 +237,10 @@ Config_MySQLDB()
     $MysqlOptPath/init.d/mysql$MysqlPort stop;
     #启动数据库
     if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
-        echo "${CMSG}[starting db ] **************************************************>>${CEND}";
+        echo "${CMSG}[ starting db ] **************************************************>>${CEND}";
         systemctl start mysql$MysqlPort.service
     else
-        echo "${CMSG}[starting db ] **************************************************>>${CEND}";
+        echo "${CMSG}[ starting db ] **************************************************>>${CEND}";
         service start mysql$MysqlPort
     fi
     rm -rf $script_dir/src/mysql-$mysql_5_7_version;

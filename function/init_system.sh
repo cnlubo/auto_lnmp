@@ -65,7 +65,6 @@ EOF
             installDepsCentOS 2>&1 | tee $script_dir/logs/deps_install.log
             common_setup 2>&1 | tee $script_dir/logs/init_centos.log
             centos_setup 2>&1 | tee -a $script_dir/logs/init_centos.log
-            # $script_dir/include/init_CentOS.sh 2>&1 | tee $script_dir/logs/init_centos.log
         ;;
         "Debian")
             installDepsDebian 2>&1 | tee $script_dir/logs/deps_install.log
