@@ -5,9 +5,10 @@
 # @file_name:                              nginx_install.sh
 # @Desc                                    nginx install scripts
 #----------------------------------------------------------------------------
-Nginx_Install_Main() {
+#Nginx_Install_Main() {
 
-    echo "ok"
+
+#    echo "ok"
 
 
 #   pushd ${oneinstack_dir}/src
@@ -97,4 +98,48 @@ Nginx_Install_Main() {
 #   popd
 #   ldconfig
 #   service nginx start
+# }
+
+select_nginx_install(){
+
+    system_check
+    echo "${CMSG}-----------------------------------------------------------------------${CEND}"
+    cat << EOF
+*  `echo -e "$CBLUE  1) Nginx Stable     "`
+*  `echo -e "$CBLUE  2) Nginx Mainline   "`
+*  `echo -e "$CBLUE  3) Tengine          "`
+*  `echo -e "$CBLUE  4) OpenResty        "`
+*  `echo -e "$CBLUE  5) Back             "`
+*  `echo -e "$CBLUE  6) Quit             "`
+EOF
+    read -p "${CBLUE}Which Version are you want to install:${CEND} " num3
+
+    case $num3 in
+        1)
+            clear
+            select_main_menu
+        ;;
+        2)
+            clear
+            select_main_menu
+        ;;
+        3)
+            clear
+            select_main_menu
+        ;;
+        4)
+            clear
+            select_main_menu
+        ;;
+        5)
+            clear
+            select_main_menu
+        ;;
+        6)
+            clear
+            exit 0
+        ;;
+        *)
+         select_nginx_install
+    esac
 }
