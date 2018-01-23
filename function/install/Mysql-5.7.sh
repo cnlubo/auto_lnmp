@@ -14,6 +14,7 @@ Create_Conf() {
     d=`echo $HostIP|cut -d\. -f4`
     pt=`echo ${MysqlPort:?} % 256 | bc`
     server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
+    dbrootpwd=`mkpasswd -l 8`
     # create dir
     MysqlDataPath="${MysqlOptPath:?}/data"
     MysqlLogPath="$MysqlOptPath/log"
@@ -226,7 +227,6 @@ Config_MySQLDB()
 {
     echo "${CMSG}[ config mysql db !!! ] **************************************************>>${CEND}"
     # 生成数据库root用户随机密码(8位长度包含字母数字和特殊字符)
-    dbrootpwd=`mkpasswd -l 8`
     $MysqlOptPath/init.d/mysql$MysqlPort start
     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'127.0.0.1' identified by \"$dbrootpwd\" with grant option;"
     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'localhost' identified by \"$dbrootpwd\" with grant option;"
