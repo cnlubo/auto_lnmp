@@ -59,8 +59,8 @@ select_main_menu(){
                 main_menu
             ;;
             4)
-                clear
-                main_menu
+                SOURCE_SCRIPT $FunctionPath/nginx_install.sh
+                select_nginx_install
             ;;
             5)
                 clear
