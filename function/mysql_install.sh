@@ -74,25 +74,27 @@ MySQL_Base_Packages_Install(){
     esac
     INSTALL_BASE_PACKAGES $BasePackages
 
-    if [ -f "/usr/local/lib/libjemalloc.so" ];then
-        echo "${CMSG}[ jemalloc has been install !!! ] ****************************>>${CEND}"
-        echo
-    else
-        src_url=https://github.com/jemalloc/jemalloc/releases/download/${jemalloc_version:?}/jemalloc-$jemalloc_version.tar.bz2
-        cd ${script_dir:?}/src
-        [ ! -f jemalloc-$jemalloc_version.tar.bz2 ] && Download_src
-        [ -d jemalloc-$jemalloc_version ] && rm -rf jemalloc-$jemalloc_version
-        tar xvf jemalloc-$jemalloc_version.tar.bz2 && cd jemalloc-$jemalloc_version
-        ./configure && make && make install
-        if [ -f "/usr/local/lib/libjemalloc.so" ];then
-            echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
-            ldconfig
-        else
-            echo "${CFAILURE}[ jemalloc install failed, Please contact the author !!!] ****************************>>${CEND}"
-            kill -9 $$
-        fi
-        cd .. && rm -rf $script_dir/src/jemalloc-$jemalloc_version
-    fi
+    # if [ -f "/usr/local/lib/libjemalloc.so" ];then
+    #     echo "${CMSG}[ jemalloc has been install !!! ] ****************************>>${CEND}"
+    #     echo
+    # else
+    #     src_url=https://github.com/jemalloc/jemalloc/releases/download/${jemalloc_version:?}/jemalloc-$jemalloc_version.tar.bz2
+    #     cd ${script_dir:?}/src
+    #     [ ! -f jemalloc-$jemalloc_version.tar.bz2 ] && Download_src
+    #     [ -d jemalloc-$jemalloc_version ] && rm -rf jemalloc-$jemalloc_version
+    #     tar xvf jemalloc-$jemalloc_version.tar.bz2 && cd jemalloc-$jemalloc_version
+    #     ./configure && make && make install
+    #     if [ -f "/usr/local/lib/libjemalloc.so" ];then
+    #         echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
+    #         ldconfig
+    #     else
+    #         echo "${CFAILURE}[ jemalloc install failed, Please contact the author !!!] ****************************>>${CEND}"
+    #         kill -9 $$
+    #     fi
+    #     cd .. && rm -rf $script_dir/src/jemalloc-$jemalloc_version
+    # fi
+    SOURCE_SCRIPT ${script_dir:?}/include/jemalloc.sh
+    Install_Jemalloc
     #下载boost 源码
     if [ $DbType == 'MySql' ] && [ $DbVersion == '5.7' ];then
         # shellcheck disable=SC2034
