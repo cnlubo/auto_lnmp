@@ -116,7 +116,7 @@ EOF
     case $num3 in
         1)
             SOURCE_SCRIPT ${FunctionPath:?}/install/Nginx.sh
-            Nginx_Stable_Install
+            Nginx_stable_install
             select_nginx_install
         ;;
         2)

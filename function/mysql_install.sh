@@ -138,6 +138,7 @@ EOF
             DbVersion="5.7"
             SOURCE_SCRIPT ${FunctionPath:?}/install/Mysql-5.7.sh
             MySQLDB_Install_Main
+            select_mysql_install
         ;;
         2)
             DbType="MariaDB"
