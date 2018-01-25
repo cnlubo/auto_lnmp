@@ -116,8 +116,8 @@ EOF
 
     case $num3 in
         1)
-            clear
-            select_main_menu
+            SOURCE_SCRIPT ${FunctionPath:?}/install/Nginx.sh
+            Nginx_Stable_Install
         ;;
         2)
             clear
@@ -140,6 +140,6 @@ EOF
             exit 0
         ;;
         *)
-         select_nginx_install
+            select_nginx_install
     esac
 }
