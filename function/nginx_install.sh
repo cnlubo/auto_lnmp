@@ -102,7 +102,6 @@
 
 select_nginx_install(){
 
-    system_check
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     cat << EOF
 *  `echo -e "$CBLUE  1) Nginx Stable     "`
@@ -118,6 +117,7 @@ EOF
         1)
             SOURCE_SCRIPT ${FunctionPath:?}/install/Nginx.sh
             Nginx_Stable_Install
+            select_nginx_install
         ;;
         2)
             clear
