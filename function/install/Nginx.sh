@@ -5,10 +5,14 @@
 # @file_name:                              Nginx.sh
 # @Desc
 #----------------------------------------------------------------------------
+Nginx_Var() {
+    echo ${nginx_install_version:?}
+}
+Nginx_Dependence_Install(){
 
-Nginx_stable_install(){
+    # 依赖安装
 
-    echo -e "${CMSG}[nginx-${ngix_stable_version:?} install begin ]***********************>>${CEND}\n"
+    echo -e "${CMSG}[nginx-${nginx_install_version:?} install begin ]***********************>>${CEND}\n"
     echo -e "${CMSG}[step1 zlib pcre jemalloc openssl ]***********************************>>${CEND}\n"
     cd ${script_dir:?}/src
     # zlib
@@ -48,7 +52,13 @@ Nginx_stable_install(){
     [ -d ngx_brotli ] && rm -rf ngx_brotli
     git clone https://github.com/google/ngx_brotli.git
     cd ngx_brotli && git submodule update --init && cd ..
+
+
+}
+Install_Nginx(){
+
     echo -e "${CMSG}[step3 create user and group ]***********************************>>${CEND}\n"
+
     grep ${run_user:?} /etc/group >/dev/null 2>&1
     if [ ! $? -eq 0 ]; then
         groupadd $run_user
@@ -58,6 +68,85 @@ Nginx_stable_install(){
         useradd -g $run_user  -M -s /sbin/nologin $run_user
     fi
 
+    echo -e "${CMSG}[step4 prepare nginx install ]***********************************>>${CEND}\n"
+    [ -d ${nginx_install_dir:?} ] && rm -rf ${nginx_install_dir:?}
+    cd ${script_dir:?}/src
+    # shellcheck disable=SC2034
+    src_url=https://nginx.org/download/nginx-${nginx_install_version:?}.tar.gz
+    [ ! -f nginx-${nginx_install_version:?}.tar.gz ] && Download_src
+    [ -d nginx-${nginx_install_version:?} ] && rm -rf nginx-${nginx_install_version:?}
+    tar xvf nginx-${nginx_install_version:?}.tar.gz
+    cd nginx-${nginx_install_version:?}
+    ./configure --prefix=${nginx_install_dir:?} \
+    --sbin-path=${nginx_install_dir:?}/sbin/nginx \
+    --conf-path=${nginx_install_dir:?}/conf/nginx.conf \
+    --error-log-path=${nginx_install_dir:?}/logs/error.log \
+    --http-log-path=${nginx_install_dir:?}/logs/access.log \
+    --pid-path=${nginx_install_dir:?}/run/nginx.pid  \
+    --lock-path=${nginx_install_dir:?}/run/nginx.lock \
+    --user=$run_user --group=$run_user --with-http_stub_status_module \
+    --with-http_ssl_module --with-http_gzip_static_module \
+    --with-http_sub_module --with-http_random_index_module \
+    --with-http_addition_module --with-http_realip_module   \
+    --http-client-body-temp-path=${nginx_install_dir:?}/tmp/client/ \
+    --http-proxy-temp-path=${nginx_install_dir:?}/tmp/proxy/ \
+    --http-fastcgi-temp-path=${nginx_install_dir:?}/tmp/fcgi/ \
+    --http-uwsgi-temp-path=${nginx_install_dir:?}/tmp/uwsgi \
+    --http-scgi-temp-path=${nginx_install_dir:?}/tmp/scgi \
+    --with-ld-opt="-ljemalloc" --with-openssl=${script_dir:?}/src/openssl-${openssl_version:?} \
+    --with-pcre=${script_dir:?}/src/pcre-$pcre_version --with-http_v2_module \
+    --add-module=${script_dir:?}/src/ngx_brotli  --with-zlib=${script_dir:?}/src/zlib-${zlib_version:?}
+    # close debug
+    sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
+    #打开UTF8支持
+    sed -i 's@./configure --disable-shared@./configure --disable-shared --enable-utf8 --enable-unicode-properties@' objs/Makefile
+    echo -e "${CMSG}[step5 nginx install ........ ]***********************************>>${CEND}\n"
+    make -j${CpuProNum:?} && make install
+    if [ -e "$nginx_install_dir/conf/nginx.conf" ]; then
+        echo -e "${CMSG}[Nginx installed successfully !!!]***********************************>>${CEND}\n"
+        mkdir -p ${nginx_install_dir:?}/tmp/client
+    else
+        echo -e "${CFAILURE}[Nginx install failed, Please Contact the author !!!]*************>>${CEND}\n"
+        kill -9 $$
+    fi
+}
 
+Config_Nginx(){
 
+    if [ -e $nginx_install_dir/conf/nginx.conf ]; then
+        echo -e "${CMSG}[Step6 configure nginx]***********************************>>${CEND}\n"
+        mkdir -p ${nginx_install_dir:?}/conf.d
+        mv $nginx_install_dir/conf/nginx.conf $nginx_install_dir/conf/nginx.conf_bak
+        cp ${script_dir:?}/template/nginx/nginx_template.conf $nginx_install_dir/conf/nginx.conf
+        # 修改配置
+        sed -i "s@^###user.*@user          $run_user    $run_user;@" $nginx_install_dir/conf/nginx.conf
+        sed -i "s@^###worker_processes.*@worker_processes     2;@" $nginx_install_dir/conf/nginx.conf
+        sed -i "s@^###include.*@include  ${nginx_install_dir:?}/conf.d;@" $nginx_install_dir/conf/nginx.conf
+        #服务脚本
+        # if ( [ $OS == "Ubuntu" ] && [ ${Ubuntu_version:?} -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] );then
+        #     #support Systemd
+        #     [ -L /lib/systemd/system/nginx.service ] && rm -f /lib/systemd/system/nginx.service
+        #     cp $script_dir/template/mysql.service /lib/systemd/system/mysql$MysqlPort.service;
+        #     sed  -i ':a;$!{N;ba};s#PIDFile=#PIDFile='''$MysqlOptPath/run/mysql$MysqlPort.pid'''#' /lib/systemd/system/mysql$MysqlPort.service
+        #     mycnf=''$MysqlOptPath/etc/my$MysqlPort.cnf''
+        #     sed -i ''s#@MysqlBasePath#$MysqlBasePath#g'' /lib/systemd/system/mysql$MysqlPort.service
+        #     sed -i ''s#@defaults-file#$mycnf#g'' /lib/systemd/system/mysql$MysqlPort.service
+        #     systemctl enable mysql$MysqlPort.service
+        #     #echo "${CMSG}[starting db ] **************************************************>>${CEND}";
+        #     #systemctl start mysql$MysqlPort.service #
+        # else
+        #     [ -L /etc/init.d/mysql$MysqlPort ] && rm -f /etc/init.d/mysql$MysqlPort
+        #     ln -s $MysqlOptPath/init.d/mysql$MysqlPort /etc/init.d/mysql$MysqlPort
+        #     #echo "${CMSG}[starting db ] **************************************************>>${CEND}";
+        #     #service start mysql$MysqlPort
+        # fi
+
+    else
+        echo -e "${CFAILURE}[Nginx install failed, Please Contact the author !!!]*************>>${CEND}\n"
+        kill -9 $$
+    fi
+}
+
+Nginx_Install_Main() {
+    Nginx_Dependence_Install && Config_Nginx
 }

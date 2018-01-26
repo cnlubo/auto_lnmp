@@ -31,6 +31,7 @@
 #   [ ! -d "$nginx_install_dir" ] && mkdir -p $nginx_install_dir
 #   ./configure --prefix=$nginx_install_dir --user=$run_user --group=$run_user --with-http_stub_status_module --with-http_v2_module --with-http_ssl_module --with-http_gzip_static_module --with-http_realip_module --with-http_flv_module --with-http_mp4_module --with-openssl=../openssl-$openssl_version --with-pcre=../pcre-$pcre_version --with-pcre-jit --with-ld-opt='-ljemalloc' $nginx_modules_options
 #   make -j ${THREAD} && make install
+#
 #   if [ -e "$nginx_install_dir/conf/nginx.conf" ]; then
 #     popd
 #     rm -rf nginx-$nginx_version
@@ -116,7 +117,9 @@ EOF
     case $num3 in
         1)
             SOURCE_SCRIPT ${FunctionPath:?}/install/Nginx.sh
-            Nginx_stable_install
+            # shellcheck disable=SC2034
+            nginx_install_version=${ngix_stable_version:?}
+            Nginx_Install_Main
             select_nginx_install
         ;;
         2)

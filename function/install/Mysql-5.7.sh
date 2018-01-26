@@ -169,8 +169,7 @@ Install_MySQLDB()
     #-DWITH_FEDERATED_STORAGE_ENGINE=1 \
     #-DWITH_MYISAM_STORAGE_ENGINE=1 \
 
-    make -j$CpuProNum
-    make install
+    make -j$CpuProNum && make install
     chown -R mysql:mysql $MysqlBasePath
     [ -L /usr/bin/mysql ] && rm -f /usr/bin/mysql
     ln -s $MysqlBasePath/bin/mysql /usr/bin/mysql
