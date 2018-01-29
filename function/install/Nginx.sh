@@ -6,7 +6,19 @@
 # @Desc
 #----------------------------------------------------------------------------
 Nginx_Var() {
-    echo ${nginx_install_version:?}
+    # echo ${nginx_install_version:?}
+    #第二种，准确判断pid的信息，
+    #-C 表示的是nginx完整命令，不带匹配的操作
+    #--no-header 表示不要表头的数据
+    #wc -l 表示计数
+    COUNT=$(ps -C nginx --no-header |wc -l)
+    #echo "ps -c|方法:"$COUNT
+    if [ $COUNT -gt 0 ]
+    then
+        echo -e "${CWARNING}[Error nginx is running please stop !!!!]${CEND}\n" && select_nginx_install
+    fi
+
+
 }
 Nginx_Dependence_Install(){
 
@@ -119,9 +131,6 @@ Config_Nginx(){
         mv $nginx_install_dir/conf/nginx.conf $nginx_install_dir/conf/nginx.conf_bak
         cp ${script_dir:?}/template/nginx/nginx_template.conf $nginx_install_dir/conf/nginx.conf
         # 修改配置
-        # sed -i "s@^###user.*@user          $run_user    $run_user;@" $nginx_install_dir/conf/nginx.conf
-        # sed -i "s@^###worker_processes.*@worker_processes     2;@" $nginx_install_dir/conf/nginx.conf
-        # sed -i "s@^###include.*@include  ${nginx_install_dir:?}/conf.d;@" $nginx_install_dir/conf/nginx.conf
         sed -i "s#@run_user#${run_user:?}#g" $nginx_install_dir/conf/nginx.conf
         sed -i "s#@worker_processes#2#g" $nginx_install_dir/conf/nginx.conf
         sed -i "s#@nginx_install_dir#$nginx_install_dir#g" $nginx_install_dir/conf/nginx.conf
@@ -145,7 +154,6 @@ EOF
         cp $script_dir/template/init.d/nginx.centos ${nginx_install_dir:?}/init.d/nginx
         chmod 775 ${nginx_install_dir:?}/init.d/nginx
         sed -i "s#^nginx_basedir=.*#nginx_basedir=${nginx_install_dir:?}#1" ${nginx_install_dir:?}/init.d/nginx
-        # sed  -i ':a;$!{N;ba};s#nginx_basedir=#nginx_basedir='''${nginx_install_dir:?}'''#' ${nginx_install_dir:?}/init.d/nginx
         #
         #systemd
         if ( [ $OS == "Ubuntu" ] && [ ${Ubuntu_version:?} -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] );then
@@ -172,5 +180,5 @@ EOF
 }
 
 Nginx_Install_Main() {
-    Nginx_Dependence_Install && Install_Nginx && Config_Nginx
+    Nginx_Var && Nginx_Dependence_Install && Install_Nginx && Config_Nginx
 }
