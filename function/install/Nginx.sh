@@ -142,7 +142,7 @@ Config_Nginx(){
 EOF
         #启动脚本
         mkdir -p ${nginx_install_dir:?}/init.d
-        cp $script_dir/template/nginx.centos ${nginx_install_dir:?}/init.d/nginx
+        cp $script_dir/template/init.d/nginx.centos ${nginx_install_dir:?}/init.d/nginx
         chmod 775 ${nginx_install_dir:?}/init.d/nginx
         sed -i "s#^nginx_basedir=.*#nginx_basedir=${nginx_install_dir:?}#1" ${nginx_install_dir:?}/init.d/nginx
         # sed  -i ':a;$!{N;ba};s#nginx_basedir=#nginx_basedir='''${nginx_install_dir:?}'''#' ${nginx_install_dir:?}/init.d/nginx
@@ -150,17 +150,19 @@ EOF
         #systemd
         if ( [ $OS == "Ubuntu" ] && [ ${Ubuntu_version:?} -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] );then
 
-            [ -L /lib/systemd/system/nginx.service ] && rm -f /lib/systemd/system/nginx.service
+            [ -L /lib/systemd/system/nginx.service ] && rm -f /lib/systemd/system/nginx.service && systemctl disable nginx.service
             cp $script_dir/template/systemd/nginx.service /lib/systemd/system/nginx.service
             sed -i "s#@nginx_basedir#${nginx_install_dir:?}#g" /lib/systemd/system/nginx.service
             systemctl enable nginx.service
             echo -e "${CMSG}[starting nginx ] **************************************************>>${CEND}\n"
             systemctl start nginx.service
+            echo -e "${CMSG}[start nginx OK ] **************************************************>>${CEND}\n"
         else
             [ -L /etc/init.d/nginx ] && rm -f /etc/init.d/nginx
             ln -s ${nginx_install_dir:?}/init.d/nginx /etc/init.d/nginx
             echo -e "${CMSG}[starting nginx ] **************************************************>>${CEND}\n"
             service start nginx
+            echo -e "${CMSG}[start nginx OK ] **************************************************>>${CEND}\n"
         fi
 
     else
