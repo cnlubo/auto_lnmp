@@ -51,7 +51,7 @@ Nginx_Dependence_Install(){
     cd ${script_dir:?}/src
     [ -d ngx_brotli ] && rm -rf ngx_brotli
     git clone https://github.com/google/ngx_brotli.git
-    cd ngx_brotli && git submodule update --init && cd ..
+    cd ngx_brotli && git submodule update --init
 
 
 }
@@ -170,5 +170,5 @@ EOF
 }
 
 Nginx_Install_Main() {
-    Nginx_Dependence_Install && Config_Nginx
+    Nginx_Dependence_Install && Install_Nginx && Config_Nginx
 }
