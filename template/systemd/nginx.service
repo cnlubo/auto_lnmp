@@ -3,9 +3,9 @@ Description=nginx - high performance web server
 After=network.target remote-fs.target nss-lookup.target
 [Service]
 Type=forking
-PIDFile=/u01/modules/nginx/run/nginx.pid
-ExecStartPre=/u01/modules/nginx/sbin/nginx -t -c /u01/modules/nginx/conf/nginx.conf
-ExecStart=/u01/modules/nginx/sbin/nginx -c /u01/modules/nginx/conf/nginx.conf
+PIDFile=@nginx_basedir/run/nginx.pid
+ExecStartPre=@nginx_basedir/sbin/nginx -t -c @nginx_basedir/conf/nginx.conf
+ExecStart=@nginx_basedir/sbin/nginx -c @nginx_basedir/conf/nginx.conf
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
 PrivateTmp=true

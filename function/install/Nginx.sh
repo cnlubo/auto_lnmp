@@ -94,7 +94,7 @@ Install_Nginx(){
     --http-uwsgi-temp-path=${nginx_install_dir:?}/tmp/uwsgi \
     --http-scgi-temp-path=${nginx_install_dir:?}/tmp/scgi \
     --with-ld-opt="-ljemalloc" --with-openssl=${script_dir:?}/src/openssl-${openssl_version:?} \
-    --with-pcre=${script_dir:?}/src/pcre-$pcre_version --with-http_v2_module \
+    --with-pcre=${script_dir:?}/src/pcre-$pcre_version --with-pcre-jit --with-http_v2_module \
     --add-module=${script_dir:?}/src/ngx_brotli  --with-zlib=${script_dir:?}/src/zlib-${zlib_version:?}
     # close debug
     sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
@@ -119,27 +119,49 @@ Config_Nginx(){
         mv $nginx_install_dir/conf/nginx.conf $nginx_install_dir/conf/nginx.conf_bak
         cp ${script_dir:?}/template/nginx/nginx_template.conf $nginx_install_dir/conf/nginx.conf
         # 修改配置
-        sed -i "s@^###user.*@user          $run_user    $run_user;@" $nginx_install_dir/conf/nginx.conf
-        sed -i "s@^###worker_processes.*@worker_processes     2;@" $nginx_install_dir/conf/nginx.conf
-        sed -i "s@^###include.*@include  ${nginx_install_dir:?}/conf.d;@" $nginx_install_dir/conf/nginx.conf
-        #服务脚本
-        # if ( [ $OS == "Ubuntu" ] && [ ${Ubuntu_version:?} -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] );then
-        #     #support Systemd
-        #     [ -L /lib/systemd/system/nginx.service ] && rm -f /lib/systemd/system/nginx.service
-        #     cp $script_dir/template/mysql.service /lib/systemd/system/mysql$MysqlPort.service;
-        #     sed  -i ':a;$!{N;ba};s#PIDFile=#PIDFile='''$MysqlOptPath/run/mysql$MysqlPort.pid'''#' /lib/systemd/system/mysql$MysqlPort.service
-        #     mycnf=''$MysqlOptPath/etc/my$MysqlPort.cnf''
-        #     sed -i ''s#@MysqlBasePath#$MysqlBasePath#g'' /lib/systemd/system/mysql$MysqlPort.service
-        #     sed -i ''s#@defaults-file#$mycnf#g'' /lib/systemd/system/mysql$MysqlPort.service
-        #     systemctl enable mysql$MysqlPort.service
-        #     #echo "${CMSG}[starting db ] **************************************************>>${CEND}";
-        #     #systemctl start mysql$MysqlPort.service #
-        # else
-        #     [ -L /etc/init.d/mysql$MysqlPort ] && rm -f /etc/init.d/mysql$MysqlPort
-        #     ln -s $MysqlOptPath/init.d/mysql$MysqlPort /etc/init.d/mysql$MysqlPort
-        #     #echo "${CMSG}[starting db ] **************************************************>>${CEND}";
-        #     #service start mysql$MysqlPort
-        # fi
+        # sed -i "s@^###user.*@user          $run_user    $run_user;@" $nginx_install_dir/conf/nginx.conf
+        # sed -i "s@^###worker_processes.*@worker_processes     2;@" $nginx_install_dir/conf/nginx.conf
+        # sed -i "s@^###include.*@include  ${nginx_install_dir:?}/conf.d;@" $nginx_install_dir/conf/nginx.conf
+        sed -i "s#@run_user#${run_user:?}#g" $nginx_install_dir/conf/nginx.conf
+        sed -i "s#@worker_processes#2#g" $nginx_install_dir/conf/nginx.conf
+        sed -i "s#@nginx_install_dir#$nginx_install_dir#g" $nginx_install_dir/conf/nginx.conf
+        # logrotate nginx log
+        cat > /etc/logrotate.d/nginx << EOF
+        $nginx_install_dir/logs/*.log {
+          daily
+          rotate 5
+          missingok
+          dateext
+          compress
+          notifempty
+          sharedscripts
+          postrotate
+            [ -e $nginx_install_dir/run/nginx.pid ] && kill -USR1 \`cat $nginx_install_dir/run/nginx.pid\`
+          endscript
+        }
+EOF
+        #启动脚本
+        mkdir -p ${nginx_install_dir:?}/init.d
+        cp $script_dir/template/nginx.centos ${nginx_install_dir:?}/init.d/nginx
+        chmod 775 ${nginx_install_dir:?}/init.d/nginx
+        sed -i "s#^nginx_basedir=.*#nginx_basedir=${nginx_install_dir:?}#1" ${nginx_install_dir:?}/init.d/nginx
+        # sed  -i ':a;$!{N;ba};s#nginx_basedir=#nginx_basedir='''${nginx_install_dir:?}'''#' ${nginx_install_dir:?}/init.d/nginx
+        #
+        #systemd
+        if ( [ $OS == "Ubuntu" ] && [ ${Ubuntu_version:?} -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] );then
+
+            [ -L /lib/systemd/system/nginx.service ] && rm -f /lib/systemd/system/nginx.service
+            cp $script_dir/template/systemd/nginx.service /lib/systemd/system/nginx.service
+            sed -i "s#@nginx_basedir#${nginx_install_dir:?}#g" /lib/systemd/system/nginx.service
+            systemctl enable nginx.service
+            echo -e "${CMSG}[starting nginx ] **************************************************>>${CEND}\n"
+            systemctl start nginx.service
+        else
+            [ -L /etc/init.d/nginx ] && rm -f /etc/init.d/nginx
+            ln -s ${nginx_install_dir:?}/init.d/nginx /etc/init.d/nginx
+            echo -e "${CMSG}[starting nginx ] **************************************************>>${CEND}\n"
+            service start nginx
+        fi
 
     else
         echo -e "${CFAILURE}[Nginx install failed, Please Contact the author !!!]*************>>${CEND}\n"
