@@ -82,6 +82,7 @@ Install_Tengine(){
     [ -d tengine-${tengine_install_version:?} ] && rm -rf tengine-${tengine_install_version:?}
     tar xvf tengine-${tengine_install_version:?}.tar.gz
     cd tengine-${tengine_install_version:?}
+    # http_stub_status_module 自带的状态页面 默认关闭
 
     ./configure --prefix=${tengine_install_dir:?} \
     --sbin-path=${tengine_install_dir:?}/sbin/nginx \
@@ -121,6 +122,62 @@ Install_Tengine(){
     fi
 }
 
+Config_Tengine(){
+
+    if [ -e $tengine_install_dir/conf/nginx.conf ]; then
+        echo -e "${CMSG}[Step5 configure Tengine]***********************************>>${CEND}\n"
+        mkdir -p ${tengine_install_dir:?}/conf.d
+        mv $tengine_install_dir/conf/nginx.conf $tengine_install_dir/conf/nginx.conf_bak
+        cp ${script_dir:?}/template/nginx/tengine_template.conf $tengine_install_dir/conf/nginx.conf
+        # 修改配置
+        sed -i "s#@run_user#${run_user:?}#g" $tengine_install_dir/conf/nginx.conf
+        sed -i "s#@worker_processes#2#g" $tengine_install_dir/conf/nginx.conf
+        sed -i "s#@tengine_install_dir#$tengine_install_dir#g" $tengine_install_dir/conf/nginx.conf
+        # logrotate nginx log
+        cat > /etc/logrotate.d/tengine << EOF
+        $tengine_install_dir/logs/*.log {
+          daily
+          rotate 5
+          missingok
+          dateext
+          compress
+          notifempty
+          sharedscripts
+          postrotate
+            [ -e $tengine_install_dir/run/nginx.pid ] && kill -USR1 \`cat $tengine_install_dir/run/nginx.pid\`
+          endscript
+        }
+EOF
+        #启动脚本
+        mkdir -p ${tengine_install_dir:?}/init.d
+        cp $script_dir/template/init.d/tengine.centos ${tengine_install_dir:?}/init.d/tengine
+        chmod 775 ${tengine_install_dir:?}/init.d/tengine
+        sed -i "s#^nginx_basedir=.*#nginx_basedir=${tengine_install_dir:?}#1" ${tengine_install_dir:?}/init.d/tengine
+        #
+        #systemd
+        if ( [ $OS == "Ubuntu" ] && [ ${Ubuntu_version:?} -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] );then
+
+            [ -L /lib/systemd/system/tengine.service ] && rm -f /lib/systemd/system/tengine.service && systemctl disable tengine.service
+            cp $script_dir/template/systemd/tengine.service /lib/systemd/system/tengine.service
+            sed -i "s#@nginx_basedir#${tengine_install_dir:?}#g" /lib/systemd/system/tengine.service
+            systemctl enable tengine.service
+            echo -e "${CMSG}[starting Tengine ] **************************************************>>${CEND}\n"
+            systemctl start tengine.service
+            echo -e "${CMSG}[start Tengine OK ] **************************************************>>${CEND}\n"
+        else
+            [ -L /etc/init.d/tengine ] && rm -f /etc/init.d/tengine
+            ln -s ${nginx_install_dir:?}/init.d/tengine /etc/init.d/tengine
+            echo -e "${CMSG}[starting Tengine ] **************************************************>>${CEND}\n"
+            service start tengine
+            echo -e "${CMSG}[start Tengine OK ] **************************************************>>${CEND}\n"
+        fi
+
+    else
+        echo -e "${CFAILURE}[Tengine install failed, Please Contact the author !!!]*************>>${CEND}\n"
+        kill -9 $$
+    fi
+}
+
 Tengine_Install_Main() {
-    Tengine_Var && Tengine_Dep_Install && Install_Tengine
+    Tengine_Var && Tengine_Dep_Install && Install_Tengine && Config_Tengine
 }
