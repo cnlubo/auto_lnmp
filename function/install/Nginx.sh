@@ -20,7 +20,7 @@ Nginx_Var() {
 
 
 }
-Nginx_Dependence_Install(){
+Nginx_Dep_Install(){
 
     # 依赖安装
 
@@ -180,5 +180,5 @@ EOF
 }
 
 Nginx_Install_Main() {
-    Nginx_Var && Nginx_Dependence_Install && Install_Nginx && Config_Nginx
+    Nginx_Var && Nginx_Dep_Install && Install_Nginx && Config_Nginx
 }

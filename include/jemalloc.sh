@@ -26,7 +26,7 @@ Install_Jemalloc() {
             echo "${CFAILURE}[ jemalloc install failed, Please contact the author !!!] ****************************>>${CEND}"
             kill -9 $$
         fi
-        cd .. && rm -rf $script_dir/src/jemalloc-$jemalloc_version
+        # cd .. && rm -rf $script_dir/src/jemalloc-$jemalloc_version
     fi
     # if [ ! -e "/usr/local/lib/libjemalloc.so" ]; then
     #   pushd ${oneinstack_dir}/src

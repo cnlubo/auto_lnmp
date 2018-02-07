@@ -22,17 +22,23 @@ EOF
         1)
             SOURCE_SCRIPT ${FunctionPath:?}/install/Nginx.sh
             # shellcheck disable=SC2034
-            nginx_install_version=${ngix_stable_version:?}
+            nginx_install_version=${nginx_stable_version:?}
             Nginx_Install_Main
             select_nginx_install
         ;;
         2)
-            clear
-            select_main_menu
+            SOURCE_SCRIPT ${FunctionPath:?}/install/Nginx.sh
+            # shellcheck disable=SC2034
+            nginx_install_version=${nginx_stable_version:?}
+            Nginx_Install_Main
+            select_nginx_install
         ;;
         3)
-            clear
-            select_main_menu
+            SOURCE_SCRIPT ${FunctionPath:?}/install/Tengine.sh
+            # shellcheck disable=SC2034
+            tengine_install_version=${Tengine_version:?}
+            Tengine_Install_Main
+            select_nginx_install
         ;;
         4)
             clear
