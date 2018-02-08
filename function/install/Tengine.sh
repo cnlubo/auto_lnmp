@@ -83,6 +83,16 @@ Install_Tengine(){
     tar xvf tengine-${tengine_install_version:?}.tar.gz
     cd tengine-${tengine_install_version:?}
     # http_stub_status_module 自带的状态页面 默认关闭
+    # ./configure --user=nginx --group=nginx --with-file-aio --with-ipv6
+    # --with-http_spdy_module --with-http_v2_module
+    # --with-http_realip_module
+    # --with-http_addition_module=shared --with-http_sub_module=shared --with-http_dav_module --with-http_flv_module=shared --with-http_slice_module=shared --with-http_mp4_module=shared
+    # --with-http_gunzip_module --with-http_gzip_static_module
+    #   --with-http_auth_request_module
+    #   --with-http_concat_module=shared --with-http_random_index_module=shared
+    #   --with-http_secure_link_module=shared --with-http_degradation_module
+    #   --with-http_sysguard_module=shared --with-http_dyups_module
+    #   --with-mail --with-mail_ssl_module --with-jemalloc
 
     ./configure --prefix=${tengine_install_dir:?} \
     --sbin-path=${tengine_install_dir:?}/sbin/nginx \
@@ -92,11 +102,20 @@ Install_Tengine(){
     --pid-path=${tengine_install_dir:?}/run/nginx.pid  \
     --lock-path=${tengine_install_dir:?}/run/nginx.lock \
     --user=$run_user --group=$run_user \
-    --with-http_stub_status_module --with-http_ssl_module \
-    --with-http_gzip_static_module --with-http_sub_module \
-    --with-http_random_index_module --with-http_addition_module \
-    --with-http_realip_module --with-http_v2_module \
+    --with-file-aio \
+    --with-http_v2_module \
+    --with-http_spdy_module \
+    --with-http_realip_module \
+    --with-http_gzip_static_module \
+    --with-http_gunzip_module \
+    --with-http_auth_request_module \
+    --with-http_degradation_module \
+    --with-http_stub_status_module \
+    --with-http_ssl_module \
+    --with-http_addition_module=shared \
+    --with-http_sub_module=shared \
     --with-http_concat_module=shared \
+    --with-http_random_index_module=shared \
     --with-http_sysguard_module=shared \
     --http-client-body-temp-path=${tengine_install_dir:?}/tmp/client/ \
     --http-proxy-temp-path=${tengine_install_dir:?}/tmp/proxy/ \
@@ -105,8 +124,10 @@ Install_Tengine(){
     --http-scgi-temp-path=${tengine_install_dir:?}/tmp/scgi \
     --with-openssl=${script_dir:?}/src/openssl-${openssl_version:?} \
     --with-pcre=${script_dir:?}/src/pcre-$pcre_version --with-pcre-jit \
-    --with-jemalloc=${script_dir:?}/src/jemalloc-${jemalloc_version:?} \
+    --with-jemalloc \
     --with-zlib=${script_dir:?}/src/zlib-${zlib_version:?}
+
+    #--with-jemalloc=${script_dir:?}/src/jemalloc-${jemalloc_version:?} \
     # close debug
     sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
     #打开UTF8支持
