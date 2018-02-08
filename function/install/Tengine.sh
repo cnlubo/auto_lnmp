@@ -104,7 +104,6 @@ Install_Tengine(){
     --user=$run_user --group=$run_user \
     --with-file-aio \
     --with-http_v2_module \
-    --with-http_spdy_module \
     --with-http_realip_module \
     --with-http_gzip_static_module \
     --with-http_gunzip_module \
