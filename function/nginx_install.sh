@@ -9,9 +9,9 @@ select_nginx_install(){
 
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     cat << EOF
-*  `echo -e "$CBLUE  1) Nginx Stable     "`
-*  `echo -e "$CBLUE  2) Nginx Mainline   "`
-*  `echo -e "$CBLUE  3) Tengine          "`
+*  `echo -e "$CBLUE  1) Nginx-${nginx_stable_version:?}   "`
+*  `echo -e "$CBLUE  2) Nginx-${nginx_mainline_version:?} "`
+*  `echo -e "$CBLUE  3) Tengine-${Tengine_version:?}"`
 *  `echo -e "$CBLUE  4) OpenResty        "`
 *  `echo -e "$CBLUE  5) Back             "`
 *  `echo -e "$CBLUE  6) Quit             "`
