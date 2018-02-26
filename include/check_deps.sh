@@ -337,7 +337,15 @@ installDepsBySrc() {
                             sudo -u ${default_user:?} -H mkdir -p /home/${default_user:?}/.oh-my-zsh/custom/themes/
                             sudo -u ${default_user:?} -H ln -f /home/${default_user:?}/.ohmyzsh-powerline/powerline.zsh-theme /home/${default_user:?}/.oh-my-zsh/custom/themes/powerline.zsh-theme
                             ln -s /home/${default_user:?}/.ohmyzsh-powerline /root/.ohmyzsh-powerline
-                            [ ! -d /home/${default_user:?}/fonts ] && sudo -u ${default_user:?} -H git clone https://github.com/powerline/fonts.git /home/${default_user:?}/fonts
+                            # fonts
+                            if [ ! -d /home/${default_user:?}/fonts ]; then
+                                if [ -f $script_dir/src/powerline-fonts.tar.gz ]; then
+                                    cd $script_dir/src && tar xvf powerline-fonts.tar.gz -C /home/${default_user:?}/
+                                    chown -Rf ${default_user:?}:${default_user:?} /home/${default_user:?}/fonts
+                                else
+                                    sudo -u ${default_user:?} -H git clone https://github.com/powerline/fonts.git /home/${default_user:?}/fonts
+                                fi
+                            fi
                             cd /home/${default_user:?}/fonts && sudo -u ${default_user:?} -H git pull && cd $script_dir
                             sudo -u ${default_user:?} -H /home/${default_user:?}/fonts/install.sh
                             ln -s /home/${default_user:?}/fonts /root/fonts
@@ -367,7 +375,14 @@ installDepsBySrc() {
                             mkdir -p /root/.oh-my-zsh/custom/themes/
                             ln -f /root/.ohmyzsh-powerline/powerline.zsh-theme /root/.oh-my-zsh/custom/themes/powerline.zsh-theme
                             # fonts
-                            [ ! -d /root/fonts ] && git clone https://github.com/powerline/fonts.git /root/fonts
+                            if [ ! -d /root/fonts ]; then
+                                if [ -f $script_dir/src/powerline-fonts.tar.gz ]; then
+                                    cd $script_dir/src && tar xvf powerline-fonts.tar.gz -C /root/
+                                    chown -Rf root:root /root/fonts
+                                else
+                                    git clone https://github.com/powerline/fonts.git /root/fonts
+                                fi
+                            fi
                             cd /root/fonts && git pull && cd $script_dir
                             echo "${CMSG}[custom zsh theme install ] ****************************************>>${CEND}"
                             echo
@@ -411,6 +426,8 @@ installDepsBySrc() {
             rm -rf $script_dir/src/zsh-$zsh_version
         fi
         # vim
+        # 卸载系统默认vim
+        yum -y  remove vim-common vim-filesystem
         if [ ! -e "$(which vim)" ] && [ -e "$( which python )" ]; then
             cd $script_dir/src
             echo "${CMSG}[ vim install begin ]  **********************************>>${CEND}"
