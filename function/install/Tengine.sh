@@ -45,7 +45,6 @@ Tengine_Dep_Install(){
     # ./configure --prefix=/usr/local/software/pcre --enable-utf8 --enable-unicode-properties
     # make && make install
     # cd ..
-    #
     # openssl
     # shellcheck disable=SC2034
     src_url=https://www.openssl.org/source/openssl-${openssl_version:?}.tar.gz
@@ -55,6 +54,20 @@ Tengine_Dep_Install(){
     # jemalloc
     SOURCE_SCRIPT ${script_dir:?}/include/jemalloc.sh
     Install_Jemalloc
+    # LuaJIT
+    SOURCE_SCRIPT ${script_dir:?}/include/LuaJIT.sh
+    Install_LuaJIT
+    # ngx_devel_kit
+    src_url=https://github.com/simplresty/ngx_devel_kit/archive/v${ngx_devel_kit_version:?}.tar.gz
+    cd ${script_dir:?}/src
+    [ ! -f v${ngx_devel_kit_version:?}.tar.gz ] && Download_src
+    [ -d ngx_devel_kit-${ngx_devel_kit_version:?} ] && rm -rf ngx_devel_kit-${ngx_devel_kit_version:?}
+    tar xvf v${ngx_devel_kit_version:?}.tar.gz
+    # lua-nginx-module
+    src_url=https://github.com/openresty/lua-nginx-module/archive/v${lua-nginx-module_version:?}.tar.gz
+    [ ! -f v${lua-nginx-module_version:?}.tar.gz ] && Download_src
+    [ -d lua-nginx-module-${lua-nginx-module_version:?} ] && rm -rf lua-nginx-module-${lua-nginx-module_version:?}
+    tar xvf v${ngx_devel_kit_version:?}.tar.gz
     # other
     yum -y install gcc automake autoconf libtool make gcc-c++
 

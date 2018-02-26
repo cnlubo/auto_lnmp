@@ -96,18 +96,24 @@ Install_Nginx(){
     --http-log-path=${nginx_install_dir:?}/logs/access.log \
     --pid-path=${nginx_install_dir:?}/run/nginx.pid  \
     --lock-path=${nginx_install_dir:?}/run/nginx.lock \
-    --user=$run_user --group=$run_user --with-http_stub_status_module \
-    --with-http_ssl_module --with-http_gzip_static_module \
-    --with-http_sub_module --with-http_random_index_module \
-    --with-http_addition_module --with-http_realip_module   \
+    --user=$run_user --group=$run_user \
+    --with-http_stub_status_module \
+    --with-http_ssl_module \
+    --with-http_gzip_static_module \
+    --with-http_sub_module \
+    --with-http_random_index_module \
+    --with-http_addition_module \
+    --with-http_realip_module  \
+    --with-http_v2_module \
     --http-client-body-temp-path=${nginx_install_dir:?}/tmp/client/ \
     --http-proxy-temp-path=${nginx_install_dir:?}/tmp/proxy/ \
     --http-fastcgi-temp-path=${nginx_install_dir:?}/tmp/fcgi/ \
     --http-uwsgi-temp-path=${nginx_install_dir:?}/tmp/uwsgi \
     --http-scgi-temp-path=${nginx_install_dir:?}/tmp/scgi \
     --with-ld-opt="-ljemalloc" --with-openssl=${script_dir:?}/src/openssl-${openssl_version:?} \
-    --with-pcre=${script_dir:?}/src/pcre-$pcre_version --with-pcre-jit --with-http_v2_module \
-    --add-module=${script_dir:?}/src/ngx_brotli  --with-zlib=${script_dir:?}/src/zlib-${zlib_version:?}
+    --with-pcre=${script_dir:?}/src/pcre-$pcre_version --with-pcre-jit \
+    --with-zlib=${script_dir:?}/src/zlib-${zlib_version:?} \
+    --add-module=${script_dir:?}/src/ngx_brotli
     # close debug
     sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
     #打开UTF8支持
