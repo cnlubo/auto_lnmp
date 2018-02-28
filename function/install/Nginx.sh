@@ -115,8 +115,8 @@ Install_Nginx(){
     cd nginx-${nginx_install_version:?}
     if [ ${lua_install:?} = 'y' ]; then
         nginx_modules_options="--with-ld-opt='-Wl,-rpath,/usr/local/luajit/lib' --add-module=${script_dir:?}/src/ngx_devel_kit-${ngx_devel_kit_version:?} --add-module=${script_dir:?}/src/lua-nginx-module-${lua_nginx_module_version:?}"
-        export LUAJIT_LIB=/usr/local/luajitt/lib
-        export LUAJIT_INC=/usr/local/luajitt/include/luajit-2.1
+        export LUAJIT_LIB=/usr/local/luajit/lib
+        export LUAJIT_INC=/usr/local/luajit/include/luajit-2.1
 
     else
         nginx_modules_options=''
