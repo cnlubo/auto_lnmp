@@ -25,7 +25,7 @@ Nginx_Dep_Install(){
     # 依赖安装
 
     echo -e "${CMSG}[nginx-${nginx_install_version:?} install begin ]***********************>>${CEND}\n"
-    echo -e "${CMSG}[zlib pcre jemalloc openssl ]***********************************>>${CEND}\n"
+    echo -e "${CMSG}[zlib pcre jemalloc openssl ]********************************>>${CEND}\n"
     cd ${script_dir:?}/src
     # zlib
     # shellcheck disable=SC2034
@@ -199,7 +199,7 @@ EOF
         #systemd
         if ( [ $OS == "Ubuntu" ] && [ ${Ubuntu_version:?} -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] );then
 
-            [ -L /lib/systemd/system/nginx.service ] && rm -f /lib/systemd/system/nginx.service && systemctl disable nginx.service
+            [ -L /lib/systemd/system/nginx.service ]  && systemctl disable nginx.service && rm -f /lib/systemd/system/nginx.service
             cp $script_dir/template/systemd/nginx.service /lib/systemd/system/nginx.service
             sed -i "s#@nginx_basedir#${nginx_install_dir:?}#g" /lib/systemd/system/nginx.service
             systemctl enable nginx.service
