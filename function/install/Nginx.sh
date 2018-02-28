@@ -25,7 +25,7 @@ Nginx_Dep_Install(){
     # 依赖安装
 
     echo -e "${CMSG}[nginx-${nginx_install_version:?} install begin ]***********************>>${CEND}\n"
-    echo -e "${CMSG}[step1 zlib pcre jemalloc openssl ]***********************************>>${CEND}\n"
+    echo -e "${CMSG}[zlib pcre jemalloc openssl ]***********************************>>${CEND}\n"
     cd ${script_dir:?}/src
     # zlib
     # shellcheck disable=SC2034
@@ -59,17 +59,36 @@ Nginx_Dep_Install(){
     # other
     yum -y install gcc automake autoconf libtool make gcc-c++
     # ngx_brotli
-    echo -e "${CMSG}[step2 support ngx_brotli ]***********************************>>${CEND}\n"
+    echo -e "${CMSG}[support ngx_brotli ]***********************************>>${CEND}\n"
     cd ${script_dir:?}/src
     [ -d ngx_brotli ] && rm -rf ngx_brotli
     git clone https://github.com/google/ngx_brotli.git
     cd ngx_brotli && git submodule update --init
+    if [ ${lua_install:?} = 'y' ]; then
+        echo -e "${CMSG}[ LuaJIT install ]***********************************>>${CEND}\n"
+        cd ${script_dir:?}/src
+        [ -d luajit-2.0 ] && rm -rf luajit-2.0
+        git clone http://luajit.org/git/luajit-2.0.git && cd luajit-2.0 && git checkout v2.1
+        make PREFIX=/usr/local/luajit && make install PREFIX=/usr/local/luajit
+        echo -e "${CMSG}[ ngx_devel_kit（NDK）]***********************************>>${CEND}\n"
+        cd ${script_dir:?}/src
+        src_url=https://github.com/simplresty/ngx_devel_kit/archive/v${ngx_devel_kit_version:?}.tar.gz
+        [ ! -f v${ngx_devel_kit_version:?}.tar.gz ] && Download_src
+        [ -d ngx_devel_kit-${ngx_devel_kit_version:?} ] && rm -rf ngx_devel_kit-${ngx_devel_kit_version:?}
+        tar xvf v${ngx_devel_kit_version:?}.tar.gz
+        echo -e "${CMSG}[ lua-nginx-module（NDK）]***********************************>>${CEND}\n"
+        cd ${script_dir:?}/src
+        src_url=https://github.com/openresty/lua-nginx-module/archive/v${lua_nginx_module_version:?}.tar.gz
+        [ ! -f v${lua_nginx_module_version:?}.tar.gz ] && Download_src
+        [ -d lua-nginx-module-${lua_nginx_module_version:?} ] && rm -rf lua-nginx-module-${lua_nginx_module_version:?}
+        tar xvf v${lua_nginx_module_version:?}.tar.gz
+    fi
 
 
 }
 Install_Nginx(){
 
-    echo -e "${CMSG}[step3 create user and group ]***********************************>>${CEND}\n"
+    echo -e "${CMSG}[create user and group ]***********************************>>${CEND}\n"
 
     grep ${run_user:?} /etc/group >/dev/null 2>&1
     if [ ! $? -eq 0 ]; then
@@ -80,7 +99,7 @@ Install_Nginx(){
         useradd -g $run_user  -M -s /sbin/nologin $run_user
     fi
 
-    echo -e "${CMSG}[step4 prepare nginx install ]***********************************>>${CEND}\n"
+    echo -e "${CMSG}[prepare nginx install ]***********************************>>${CEND}\n"
     [ -d ${nginx_install_dir:?} ] && rm -rf ${nginx_install_dir:?}
     cd ${script_dir:?}/src
     # shellcheck disable=SC2034
@@ -89,6 +108,14 @@ Install_Nginx(){
     [ -d nginx-${nginx_install_version:?} ] && rm -rf nginx-${nginx_install_version:?}
     tar xvf nginx-${nginx_install_version:?}.tar.gz
     cd nginx-${nginx_install_version:?}
+    if [ ${lua_install:?} = 'y' ]; then
+        nginx_modules_options="--with-ld-opt='-Wl,-rpath,/usr/local/luajit/lib' --add-module=${script_dir:?}/src/ngx_devel_kit-${ngx_devel_kit_version:?} --add-module=${script_dir:?}/src/lua-nginx-module-${lua_nginx_module_version:?}"
+        export LUAJIT_LIB=/usr/local/luajitt/lib
+        export LUAJIT_INC=/usr/local/luajitt/include/luajit-2.1
+
+    else
+        nginx_modules_options=''
+    fi
     ./configure --prefix=${nginx_install_dir:?} \
     --sbin-path=${nginx_install_dir:?}/sbin/nginx \
     --conf-path=${nginx_install_dir:?}/conf/nginx.conf \
@@ -113,12 +140,12 @@ Install_Nginx(){
     --with-ld-opt="-ljemalloc" --with-openssl=${script_dir:?}/src/openssl-${openssl_version:?} \
     --with-pcre=${script_dir:?}/src/pcre-$pcre_version --with-pcre-jit \
     --with-zlib=${script_dir:?}/src/zlib-${zlib_version:?} \
-    --add-module=${script_dir:?}/src/ngx_brotli
+    --add-module=${script_dir:?}/src/ngx_brotli $nginx_modules_options
     # close debug
     sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
     #打开UTF8支持
     sed -i 's@./configure --disable-shared@./configure --disable-shared --enable-utf8 --enable-unicode-properties@' objs/Makefile
-    echo -e "${CMSG}[step5 nginx install ........ ]***********************************>>${CEND}\n"
+    echo -e "${CMSG}[nginx install ........ ]***********************************>>${CEND}\n"
     make -j${CpuProNum:?} && make install
     if [ -e "$nginx_install_dir/conf/nginx.conf" ]; then
         echo -e "${CMSG}[Nginx installed successfully !!!]***********************************>>${CEND}\n"
@@ -132,10 +159,14 @@ Install_Nginx(){
 Config_Nginx(){
 
     if [ -e $nginx_install_dir/conf/nginx.conf ]; then
-        echo -e "${CMSG}[Step6 configure nginx]***********************************>>${CEND}\n"
+        echo -e "${CMSG}[configure nginx]***********************************>>${CEND}\n"
         mkdir -p ${nginx_install_dir:?}/conf.d
         mv $nginx_install_dir/conf/nginx.conf $nginx_install_dir/conf/nginx.conf_bak
-        cp ${script_dir:?}/template/nginx/nginx_template.conf $nginx_install_dir/conf/nginx.conf
+        if [ ${lua_install:?} = 'y' ]; then
+            cp ${script_dir:?}/template/nginx/nginx_lua_template.conf $nginx_install_dir/conf/nginx.conf
+        else
+            cp ${script_dir:?}/template/nginx/nginx_template.conf $nginx_install_dir/conf/nginx.conf
+        fi
         # 修改配置
         sed -i "s#@run_user#${run_user:?}#g" $nginx_install_dir/conf/nginx.conf
         sed -i "s#@worker_processes#2#g" $nginx_install_dir/conf/nginx.conf
