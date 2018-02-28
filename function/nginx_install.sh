@@ -30,7 +30,7 @@ EOF
         2)
             SOURCE_SCRIPT ${FunctionPath:?}/install/Nginx.sh
             # shellcheck disable=SC2034
-            nginx_install_version=${nginx_stable_version:?}
+            nginx_install_version=${nginx_mainline_version:?}
             # shellcheck disable=SC2034
             lua_install='y'
             Nginx_Install_Main
