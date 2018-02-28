@@ -73,6 +73,7 @@ Nginx_Dep_Install(){
         cd ${script_dir:?}/src
         [ -d luajit-2.0 ] && rm -rf luajit-2.0
         git clone http://luajit.org/git/luajit-2.0.git && cd luajit-2.0 && git checkout v2.1
+        [ -d usr/local/luajit ] && rm -rf /usr/local/luajit
         make PREFIX=/usr/local/luajit && make install PREFIX=/usr/local/luajit
         echo -e "${CMSG}[ ngx_devel_kit（NDK）]***********************************>>${CEND}\n"
         cd ${script_dir:?}/src
