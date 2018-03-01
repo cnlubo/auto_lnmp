@@ -30,7 +30,7 @@ Tengine_Dep_Install(){
 
 Install_Tengine(){
 
-    echo -e "${CMSG}[step2 create user and group ]***********************************>>${CEND}\n"
+    echo -e "${CMSG}[create user and group ]***********************************>>${CEND}\n"
 
     grep ${run_user:?} /etc/group >/dev/null 2>&1
     if [ ! $? -eq 0 ]; then
@@ -41,7 +41,7 @@ Install_Tengine(){
         useradd -g $run_user  -M -s /sbin/nologin $run_user
     fi
 
-    echo -e "${CMSG}[step3 prepare Tengine install ]***********************************>>${CEND}\n"
+    echo -e "${CMSG}[prepare Tengine install ]***********************************>>${CEND}\n"
     [ -d ${tengine_install_dir:?} ] && rm -rf ${tengine_install_dir:?}
     cd ${script_dir:?}/src
     # shellcheck disable=SC2034
@@ -64,7 +64,7 @@ Install_Tengine(){
 
     if [ ${lua_install:?} = 'y' ]; then
         #nginx_modules_options="--with-ld-opt='-Wl,-rpath,/usr/local/luajit/lib' --add-module=${script_dir:?}/src/ngx_devel_kit-${ngx_devel_kit_version:?} --add-module=${script_dir:?}/src/lua-nginx-module-${lua_nginx_module_version:?}"
-        nginx_modules_options="--with-http_lua_module"
+        nginx_modules_options="--with-http_lua_module=shared"
         export LUAJIT_LIB=/usr/local/luajit/lib
         export LUAJIT_INC=/usr/local/luajit/include/luajit-2.1
 
@@ -159,7 +159,7 @@ EOF
         #systemd
         if ( [ $OS == "Ubuntu" ] && [ ${Ubuntu_version:?} -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] );then
 
-            [ -L /lib/systemd/system/tengine.service ] && systemctl disable tengine.service && rm -f /lib/systemd/system/tengine.service 
+            [ -L /lib/systemd/system/tengine.service ] && systemctl disable tengine.service && rm -f /lib/systemd/system/tengine.service
             cp $script_dir/template/systemd/tengine.service /lib/systemd/system/tengine.service
             sed -i "s#@nginx_basedir#${tengine_install_dir:?}#g" /lib/systemd/system/tengine.service
             systemctl enable tengine.service
