@@ -101,8 +101,8 @@ Install_Tengine(){
     --http-fastcgi-temp-path=${tengine_install_dir:?}/tmp/fcgi/ \
     --http-uwsgi-temp-path=${tengine_install_dir:?}/tmp/uwsgi \
     --http-scgi-temp-path=${tengine_install_dir:?}/tmp/scgi \
-    --with-openssl=${script_dir:?}/src/openssl-${openssl_version:?} \
-    --with-pcre=${script_dir:?}/src/pcre-${pcre_version:?} --with-pcre-jit \
+    --with-openssl=${script_dir:?}/src/openssl-${openssl_version:?} --with-openssl-opt=-fPIC \
+    --with-pcre=${script_dir:?}/src/pcre-${pcre_version:?}--with-pcre-opt=-fPIC --with-pcre-jit \
     --with-jemalloc \
     --with-zlib=${script_dir:?}/src/zlib-${zlib_version:?} $nginx_modules_options
 
