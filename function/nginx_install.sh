@@ -56,20 +56,6 @@ Nginx_Base_Dep_Install() {
     Install_Jemalloc
     # other
     yum -y install gcc automake autoconf libtool make gcc-c++
-    # lua support
-    SOURCE_SCRIPT ${script_dir:?}/include/LuaJIT.sh
-    Install_LuaJIT
-    # ngx_devel_kit
-    src_url=https://github.com/simplresty/ngx_devel_kit/archive/v${ngx_devel_kit_version:?}.tar.gz
-    cd ${script_dir:?}/src
-    [ ! -f v${ngx_devel_kit_version:?}.tar.gz ] && Download_src
-    [ -d ngx_devel_kit-${ngx_devel_kit_version:?} ] && rm -rf ngx_devel_kit-${ngx_devel_kit_version:?}
-    tar xvf v${ngx_devel_kit_version:?}.tar.gz
-    # lua-nginx-module
-    src_url=https://github.com/openresty/lua-nginx-module/archive/v${lua-nginx-module_version:?}.tar.gz
-    [ ! -f v${lua-nginx-module_version:?}.tar.gz ] && Download_src
-    [ -d lua-nginx-module-${lua-nginx-module_version:?} ] && rm -rf lua-nginx-module-${lua-nginx-module_version:?}
-    tar xvf v${ngx_devel_kit_version:?}.tar.gz
     if [ ${lua_install:?} = 'y' ]; then
         SOURCE_SCRIPT ${script_dir:?}/include/LuaJIT.sh
         Install_LuaJIT
