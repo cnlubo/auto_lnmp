@@ -159,7 +159,7 @@ EOF
         #systemd
         if ( [ $OS == "Ubuntu" ] && [ ${Ubuntu_version:?} -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] );then
 
-            [ -L /lib/systemd/system/tengine.service ] && rm -f /lib/systemd/system/tengine.service && systemctl disable tengine.service
+            [ -L /lib/systemd/system/tengine.service ] && systemctl disable tengine.service && rm -f /lib/systemd/system/tengine.service 
             cp $script_dir/template/systemd/tengine.service /lib/systemd/system/tengine.service
             sed -i "s#@nginx_basedir#${tengine_install_dir:?}#g" /lib/systemd/system/tengine.service
             systemctl enable tengine.service
