@@ -5,71 +5,26 @@
 # @file_name:                              Tengine.sh
 # @Desc
 #----------------------------------------------------------------------------
-Tengine_Var() {
-    #第二种，准确判断pid的信息，
-    #-C 表示的是nginx完整命令，不带匹配的操作
-    #--no-header 表示不要表头的数据
-    #wc -l 表示计数
-    COUNT=$(ps -C nginx --no-header |wc -l)
-    #echo "ps -c|方法:"$COUNT
-    if [ $COUNT -gt 0 ]
-    then
-        echo -e "${CWARNING}[Error Nginx  is running please stop !!!!]${CEND}\n" && select_nginx_install
-    fi
-
-
-}
+# Tengine_Var() {
+#     #第二种，准确判断pid的信息，
+#     #-C 表示的是nginx完整命令，不带匹配的操作
+#     #--no-header 表示不要表头的数据
+#     #wc -l 表示计数
+#     COUNT=$(ps -C nginx --no-header |wc -l)
+#     #echo "ps -c|方法:"$COUNT
+#     if [ $COUNT -gt 0 ]
+#     then
+#         echo -e "${CWARNING}[Error Nginx  is running please stop !!!!]${CEND}\n" && select_nginx_install
+#     fi
+#
+#
+# }
 Tengine_Dep_Install(){
 
     # 依赖安装
 
     echo -e "${CMSG}[Tengine-${tengine_install_version:?} install begin ]***********************>>${CEND}\n"
-    echo -e "${CMSG}[step1 zlib pcre jemalloc openssl ]***********************************>>${CEND}\n"
-    cd ${script_dir:?}/src
-    # zlib
-    # shellcheck disable=SC2034
-    src_url=http://zlib.net/zlib-${zlib_version:?}.tar.gz
-    [ ! -f zlib-${zlib_version:?}.tar.gz ] && Download_src
-    [ -d zlib-${zlib_version:?} ] && rm -rf zlib-${zlib_version:?}
-    tar xvf zlib-${zlib_version:?}.tar.gz
-    # && cd zlib-${zlib_version:?}
-    # ./configure --prefix=/usr/local/software/sharelib && make && make install
-    # cd ..
-    # pcre
-    # shellcheck disable=SC2034
-    src_url=https://sourceforge.net/projects/pcre/files/pcre/${pcre_version:?}/pcre-$pcre_version.tar.gz/download
-    [ ! -f pcre-$pcre_version.tar.gz ] && Download_src && mv download pcre-$pcre_version.tar.gz
-    [ -d pcre-$pcre_version ] && rm -rf pcre-$pcre_version
-    tar xvf pcre-$pcre_version.tar.gz
-    # && cd pcre-$pcre_version
-    # ./configure --prefix=/usr/local/software/pcre --enable-utf8 --enable-unicode-properties
-    # make && make install
-    # cd ..
-    # openssl
-    # shellcheck disable=SC2034
-    src_url=https://www.openssl.org/source/openssl-${openssl_version:?}.tar.gz
-    [ ! -f openssl-${openssl_version:?}.tar.gz ] && Download_src
-    [ -d openssl-${openssl_version:?} ] && rm -rf openssl-${openssl_version:?}
-    tar xvf openssl-${openssl_version:?}.tar.gz
-    # jemalloc
-    SOURCE_SCRIPT ${script_dir:?}/include/jemalloc.sh
-    Install_Jemalloc
-    # LuaJIT
-    SOURCE_SCRIPT ${script_dir:?}/include/LuaJIT.sh
-    Install_LuaJIT
-    # ngx_devel_kit
-    src_url=https://github.com/simplresty/ngx_devel_kit/archive/v${ngx_devel_kit_version:?}.tar.gz
-    cd ${script_dir:?}/src
-    [ ! -f v${ngx_devel_kit_version:?}.tar.gz ] && Download_src
-    [ -d ngx_devel_kit-${ngx_devel_kit_version:?} ] && rm -rf ngx_devel_kit-${ngx_devel_kit_version:?}
-    tar xvf v${ngx_devel_kit_version:?}.tar.gz
-    # lua-nginx-module
-    src_url=https://github.com/openresty/lua-nginx-module/archive/v${lua-nginx-module_version:?}.tar.gz
-    [ ! -f v${lua-nginx-module_version:?}.tar.gz ] && Download_src
-    [ -d lua-nginx-module-${lua-nginx-module_version:?} ] && rm -rf lua-nginx-module-${lua-nginx-module_version:?}
-    tar xvf v${ngx_devel_kit_version:?}.tar.gz
-    # other
-    yum -y install gcc automake autoconf libtool make gcc-c++
+
 
 }
 
@@ -107,6 +62,16 @@ Install_Tengine(){
     #   --with-http_sysguard_module=shared --with-http_dyups_module
     #   --with-mail --with-mail_ssl_module --with-jemalloc
 
+    if [ ${lua_install:?} = 'y' ]; then
+        #nginx_modules_options="--with-ld-opt='-Wl,-rpath,/usr/local/luajit/lib' --add-module=${script_dir:?}/src/ngx_devel_kit-${ngx_devel_kit_version:?} --add-module=${script_dir:?}/src/lua-nginx-module-${lua_nginx_module_version:?}"
+        nginx_modules_options="--with-http_lua_module"
+        export LUAJIT_LIB=/usr/local/luajit/lib
+        export LUAJIT_INC=/usr/local/luajit/include/luajit-2.1
+
+    else
+        nginx_modules_options=''
+    fi
+
     ./configure --prefix=${tengine_install_dir:?} \
     --sbin-path=${tengine_install_dir:?}/sbin/nginx \
     --conf-path=${tengine_install_dir:?}/conf/nginx.conf \
@@ -135,9 +100,9 @@ Install_Tengine(){
     --http-uwsgi-temp-path=${tengine_install_dir:?}/tmp/uwsgi \
     --http-scgi-temp-path=${tengine_install_dir:?}/tmp/scgi \
     --with-openssl=${script_dir:?}/src/openssl-${openssl_version:?} \
-    --with-pcre=${script_dir:?}/src/pcre-$pcre_version --with-pcre-jit \
+    --with-pcre=${script_dir:?}/src/pcre-${pcre_version:?} --with-pcre-jit \
     --with-jemalloc \
-    --with-zlib=${script_dir:?}/src/zlib-${zlib_version:?}
+    --with-zlib=${script_dir:?}/src/zlib-${zlib_version:?} $nginx_modules_options
 
     #--with-jemalloc=${script_dir:?}/src/jemalloc-${jemalloc_version:?} \
     # close debug
@@ -161,7 +126,11 @@ Config_Tengine(){
         echo -e "${CMSG}[Step5 configure Tengine]***********************************>>${CEND}\n"
         mkdir -p ${tengine_install_dir:?}/conf.d
         mv $tengine_install_dir/conf/nginx.conf $tengine_install_dir/conf/nginx.conf_bak
-        cp ${script_dir:?}/template/nginx/tengine_template.conf $tengine_install_dir/conf/nginx.conf
+        if [ ${lua_install:?} = 'y' ]; then
+            cp ${script_dir:?}/template/nginx/tengine_lua_template.conf $tengine_install_dir/conf/nginx.conf
+        else
+            cp ${script_dir:?}/template/nginx/tengine_template.conf $tengine_install_dir/conf/nginx.conf
+        fi
         # 修改配置
         sed -i "s#@run_user#${run_user:?}#g" $tengine_install_dir/conf/nginx.conf
         sed -i "s#@worker_processes#2#g" $tengine_install_dir/conf/nginx.conf
@@ -212,5 +181,5 @@ EOF
 }
 
 Tengine_Install_Main() {
-    Tengine_Var && Tengine_Dep_Install && Install_Tengine && Config_Tengine
+    Nginx_Var && Nginx_Base_Dep_Install && Tengine_Dep_Install && Install_Tengine && Config_Tengine
 }
