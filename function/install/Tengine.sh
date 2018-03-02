@@ -5,20 +5,20 @@
 # @file_name:                              Tengine.sh
 # @Desc
 #----------------------------------------------------------------------------
-Tengine_Var() {
-    #第二种，准确判断pid的信息，
-    #-C 表示的是nginx完整命令，不带匹配的操作
-    #--no-header 表示不要表头的数据
-    #wc -l 表示计数
-    COUNT=$(ps -C nginx --no-header |wc -l)
-    #echo "ps -c|方法:"$COUNT
-    if [ $COUNT -gt 0 ]
-    then
-        echo -e "${CWARNING}[Error Nginx  is running please stop !!!!]${CEND}\n" && select_nginx_install
-    fi
-
-
-}
+# Tengine_Var() {
+#     #第二种，准确判断pid的信息，
+#     #-C 表示的是nginx完整命令，不带匹配的操作
+#     #--no-header 表示不要表头的数据
+#     #wc -l 表示计数
+#     COUNT=$(ps -C nginx --no-header |wc -l)
+#     #echo "ps -c|方法:"$COUNT
+#     if [ $COUNT -gt 0 ]
+#     then
+#         echo -e "${CWARNING}[Error Nginx  is running please stop !!!!]${CEND}\n" && select_nginx_install
+#     fi
+#
+#
+# }
 Tengine_Dep_Install(){
 
     # 依赖安装
