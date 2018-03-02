@@ -65,11 +65,12 @@ Install_Tengine(){
     if [ ${lua_install:?} = 'y' ]; then
         #nginx_modules_options="--with-ld-opt='-Wl,-rpath,/usr/local/luajit/lib' --add-module=${script_dir:?}/src/ngx_devel_kit-${ngx_devel_kit_version:?} --add-module=${script_dir:?}/src/lua-nginx-module-${lua_nginx_module_version:?}"
         nginx_modules_options="--with-http_lua_module=shared"
+        nginx_modules_options="--with-http_lua_module"
         export LUAJIT_LIB=/usr/local/luajit/lib
         export LUAJIT_INC=/usr/local/luajit/include/luajit-2.1
         # 替换lua-nginx-module 代码为最新版本
-        mv modules/ngx_http_lua_module modules/ngx_http_lua_module_old
-        cp -ar ${script_dir:?}/src/lua-nginx-module-${lua_nginx_module_version:?} modules/ngx_http_lua_module
+        # mv modules/ngx_http_lua_module modules/ngx_http_lua_module_old
+        # cp -ar ${script_dir:?}/src/lua-nginx-module-${lua_nginx_module_version:?} modules/ngx_http_lua_module
     else
         nginx_modules_options=''
     fi
@@ -101,10 +102,12 @@ Install_Tengine(){
     --http-fastcgi-temp-path=${tengine_install_dir:?}/tmp/fcgi/ \
     --http-uwsgi-temp-path=${tengine_install_dir:?}/tmp/uwsgi \
     --http-scgi-temp-path=${tengine_install_dir:?}/tmp/scgi \
-    --with-openssl=${script_dir:?}/src/openssl-${openssl_version:?} --with-openssl-opt=-fPIC \
-    --with-pcre=${script_dir:?}/src/pcre-${pcre_version:?} --with-pcre-opt=-fPIC --with-pcre-jit \
+    --with-openssl=${script_dir:?}/src/openssl-${openssl_version:?}  \
+    --with-pcre=${script_dir:?}/src/pcre-${pcre_version:?} --with-pcre-jit \
     --with-jemalloc \
     --with-zlib=${script_dir:?}/src/zlib-${zlib_version:?} $nginx_modules_options
+
+    # --with-openssl-opt=-fPIC --with-pcre-opt=-fPIC
 
     #--with-jemalloc=${script_dir:?}/src/jemalloc-${jemalloc_version:?} \
     # close debug
