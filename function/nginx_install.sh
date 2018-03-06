@@ -1,5 +1,5 @@
 #!/bin/bash\
-# shellcheck disable=SC2164
+    # shellcheck disable=SC2164
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
 # @file_name:                              nginx_install.sh
@@ -97,7 +97,7 @@ EOF
             lua_install='n'
             Nginx_Install_Main
             select_nginx_install
-        ;;
+            ;;
         2)
             SOURCE_SCRIPT ${FunctionPath:?}/install/Nginx.sh
             # shellcheck disable=SC2034
@@ -106,7 +106,7 @@ EOF
             lua_install='y'
             Nginx_Install_Main
             select_nginx_install
-        ;;
+            ;;
         3)
             SOURCE_SCRIPT ${FunctionPath:?}/install/Tengine.sh
             # shellcheck disable=SC2034
@@ -114,7 +114,7 @@ EOF
             lua_install='n'
             Tengine_Install_Main
             select_nginx_install
-        ;;
+            ;;
         4)
             SOURCE_SCRIPT ${FunctionPath:?}/install/Tengine.sh
             # shellcheck disable=SC2034
@@ -122,20 +122,23 @@ EOF
             lua_install='y'
             Tengine_Install_Main
             select_nginx_install
-        ;;
+            ;;
 
         5)
-            clear
-            select_main_menu
-        ;;
+            SOURCE_SCRIPT ${FunctionPath:?}/install/OpenResty.sh
+            # shellcheck disable=SC2034
+            OpenResty_install_version=${openresty_version:?}
+            #Tengine_Install_Main
+            select_nginx_install
+            ;;
         6)
             clear
             select_main_menu
-        ;;
+            ;;
         7)
             clear
             exit 0
-        ;;
+            ;;
         *)
             select_nginx_install
     esac
