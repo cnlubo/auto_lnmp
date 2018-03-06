@@ -128,6 +128,7 @@ EOF
             SOURCE_SCRIPT ${FunctionPath:?}/install/OpenResty.sh
             # shellcheck disable=SC2034
             OpenResty_install_version=${openresty_version:?}
+            OpenResty_Install_Main
             select_nginx_install
             ;;
         6)
