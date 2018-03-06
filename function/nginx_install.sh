@@ -83,7 +83,7 @@ select_nginx_install(){
 *  `echo -e "$CBLUE  2) Nginx-${nginx_mainline_version:?} with lua"`
 *  `echo -e "$CBLUE  3) Tengine-${Tengine_version:?}"`
 *  `echo -e "$CBLUE  4) Tengine-${Tengine_version:?} with lua"`
-*  `echo -e "$CBLUE  5) OpenResty        "`
+*  `echo -e "$CBLUE  5) OpenResty-${openresty_version:?}     "`
 *  `echo -e "$CBLUE  6) Back             "`
 *  `echo -e "$CBLUE  7) Quit             "`
 EOF
