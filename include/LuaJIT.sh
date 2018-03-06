@@ -18,10 +18,7 @@ Install_LuaJIT() {
         cd luajit-2.0 && git checkout v${LuaJIT_version:?}
         make && make install PREFIX=/usr/local/luajit
         [ -f /etc/ld.so.conf.d/luajit.conf ] && rm -rf /etc/ld.so.conf.d/luajit.conf
-#         cat > /etc/ld.so.conf.d/luajit.conf << EOF
-# /usr/local/luajit/lib
-# EOF
-        echo "/usr/local/luajit/lib" > /etc/ld.so.conf.d/luajit.conf && ldconfig -V
+        echo "/usr/local/luajit/lib" > /etc/ld.so.conf.d/luajit.conf && ldconfig -v
         if [ $? -eq 0 ];then
             echo "${CMSG} [ LuaJIT-${LuaJIT_version:?} install success ! ] **********************************>>${CEND}"
         else
