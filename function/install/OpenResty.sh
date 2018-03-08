@@ -98,5 +98,6 @@ Config_OpenResty(){
 }
 
 OpenResty_Install_Main() {
-    Nginx_Var && Nginx_Base_Dep_Install && OpenResty_Dep_Install && Install_OpenResty && Config_OpenResty
+    Nginx_Var && Nginx_Base_Dep_Install
+    # && OpenResty_Dep_Install && Install_OpenResty && Config_OpenResty
 }
