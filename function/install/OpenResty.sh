@@ -9,8 +9,7 @@
 OpenResty_Dep_Install(){
 
     # 依赖安装
-
-    echo -e "${CMSG}[OpenResty-${OpenResty_install_version:?} install begin ]***********************>>${CEND}\n"
+    yum -y install readline-devel pcre-devel openssl-devel gcc
 
 
 }
