@@ -75,7 +75,7 @@ Nginx_Base_Dep_Install() {
     src_url=https://dl.google.com/dl/page-speed/psol/${psol_version:?}-x$OS_BIT.tar.gz
     [ ! -f ${psol_version:?}-x$OS_BIT.tar.gz ] && Download_src
     [ -d psol ] && rm -rf psol
-    tar xvf ${pagespeed_version:?}-x$OS_BIT.tar.gz
+    tar xvf ${psol_version:?}-x$OS_BIT.tar.gz
 
     if [ ${lua_install:?} = 'y' ]; then
         SOURCE_SCRIPT ${script_dir:?}/include/LuaJIT.sh
