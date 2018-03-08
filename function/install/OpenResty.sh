@@ -65,7 +65,6 @@ Install_OpenResty(){
         --with-http_realip_module  \
         --with-http_v2_module \
         --with-http_iconv_module \
-        --with-http_postgres_module \
         --with-stream=dynamic \
         --http-client-body-temp-path=${openresty_install_dir:?}/tmp/client/ \
         --http-proxy-temp-path=${openresty_install_dir:?}/tmp/proxy/ \
@@ -76,6 +75,7 @@ Install_OpenResty(){
         --with-pcre=${script_dir:?}/src/pcre-${pcre_version:?} --with-pcre-jit \
         --with-zlib=${script_dir:?}/src/zlib-${zlib_version:?} \
         --with-luajit $nginx_modules_options
+        # --with-http_postgres_module \
     # close debug
     # sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
     #打开UTF8支持
