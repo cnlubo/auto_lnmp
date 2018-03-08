@@ -72,8 +72,8 @@ Nginx_Base_Dep_Install() {
     [ ! -f v${pagespeed_version:?}.tar.gz ] && Download_src
     [ -d incubator-pagespeed-ngx-${pagespeed_version:?} ] && rm -rf incubator-pagespeed-ngx-${pagespeed_version:?}
     tar xvf v${pagespeed_version:?}.tar.gz && cd incubator-pagespeed-ngx-${pagespeed_version:?}
-    src_url=https://dl.google.com/dl/page-speed/psol/${pagespeed_version:?}-x$OS_BIT.tar.gz
-    [ ! -f ${pagespeed_version:?}-x$OS_BIT.tar.gz ] && Download_src
+    src_url=https://dl.google.com/dl/page-speed/psol/${psol_version:?}-x$OS_BIT.tar.gz
+    [ ! -f ${psol_version:?}-x$OS_BIT.tar.gz ] && Download_src
     [ -d psol ] && rm -rf psol
     tar xvf ${pagespeed_version:?}-x$OS_BIT.tar.gz
 
