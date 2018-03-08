@@ -12,15 +12,15 @@ Nginx_Dep_Install(){
 
     echo -e "${CMSG}[nginx-${nginx_install_version:?} install begin ]***********************>>${CEND}\n"
     # ngx_brotli
-    echo -e "${CMSG}[support ngx_brotli ]***********************************>>${CEND}\n"
-    cd ${script_dir:?}/src
-    #[ -d ngx_brotli ] && rm -rf ngx_brotli
-    #git clone https://github.com/google/ngx_brotli.git
-    #cd ngx_brotli && git submodule update --init
-    if  [ ! -d ngx_brotli ]; then
-        git clone https://github.com/google/ngx_brotli.git
-        cd ngx_brotli && git submodule update --init
-    fi
+    # echo -e "${CMSG}[support ngx_brotli ]***********************************>>${CEND}\n"
+    # cd ${script_dir:?}/src
+    # #[ -d ngx_brotli ] && rm -rf ngx_brotli
+    # #git clone https://github.com/google/ngx_brotli.git
+    # #cd ngx_brotli && git submodule update --init
+    # if  [ ! -d ngx_brotli ]; then
+    #     git clone https://github.com/google/ngx_brotli.git
+    #     cd ngx_brotli && git submodule update --init
+    # fi
 }
 Install_Nginx(){
 

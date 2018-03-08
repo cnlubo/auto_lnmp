@@ -54,8 +54,29 @@ Nginx_Base_Dep_Install() {
     # jemalloc
     SOURCE_SCRIPT ${script_dir:?}/include/jemalloc.sh
     Install_Jemalloc
-    # other
-    yum -y install gcc automake autoconf libtool make gcc-c++
+    echo -e "${CMSG}[ngx_brotli ngx-ct ngx_pagespeed ]*************************>>${CEND}\n"
+    cd ${script_dir:?}/src
+    #[ -d ngx_brotli ] && rm -rf ngx_brotli
+    #git clone https://github.com/google/ngx_brotli.git
+    #cd ngx_brotli && git submodule update --init
+    if  [ ! -d ngx_brotli ]; then
+        git clone https://github.com/google/ngx_brotli.git
+        cd ngx_brotli && git submodule update --init
+    fi
+    src_url=https://github.com/grahamedgecombe/nginx-ct/archive/v${ngx_ct_version:?}.tar.gz
+    [ ! -f v${ngx_ct_version:?}.tar.gz ] && Download_src
+    [ -d nginx-ct-${ngx_ct_version:?} ] && rm -rf nginx-ct-${ngx_ct_version:?}
+    tar xvf v${ngx_ct_version:?}.tar.gz
+
+    src_url=https://github.com/apache/incubator-pagespeed-ngx/archive/v${pagespeed_version:?}.tar.gz
+    [ ! -f v${pagespeed_version:?}.tar.gz ] && Download_src
+    [ -d incubator-pagespeed-ngx-${pagespeed_version:?} ] && rm -rf incubator-pagespeed-ngx-${pagespeed_version:?}
+    tar xvf v${pagespeed_version:?}.tar.gz && cd incubator-pagespeed-ngx-${pagespeed_version:?}
+    src_url=https://dl.google.com/dl/page-speed/psol/${pagespeed_version:?}-x$OS_BIT.tar.gz
+    [ ! -f ${pagespeed_version:?}-x$OS_BIT.tar.gz ] && Download_src
+    [ -d psol ] && rm -rf psol
+    tar xvf ${pagespeed_version:?}-x$OS_BIT.tar.gz
+
     if [ ${lua_install:?} = 'y' ]; then
         SOURCE_SCRIPT ${script_dir:?}/include/LuaJIT.sh
         Install_LuaJIT
@@ -73,6 +94,8 @@ Nginx_Base_Dep_Install() {
         [ -d lua-nginx-module-${lua_nginx_module_version:?} ] && rm -rf lua-nginx-module-${lua_nginx_module_version:?}
         tar xvf v${lua_nginx_module_version:?}.tar.gz
     fi
+    # other
+    yum -y install gcc automake autoconf libtool make gcc-c++
 }
 
 select_nginx_install(){
