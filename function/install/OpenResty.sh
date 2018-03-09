@@ -10,9 +10,14 @@ OpenResty_Dep_Install(){
 
     # 依赖安装
     #yum -y install readline-devel pcre-devel openssl-devel gcc
-    echo ""
-
-
+    yum -y install libuuid-devel
+    echo -e "${CMSG}[ stream-lua-nginx-module ]***********************************>>${CEND}\n"
+    cd ${script_dir:?}/src
+    if  [ ! -d stream-lua-nginx-module ]; then
+        git clone https://github.com/openresty/stream-lua-nginx-module.git
+    else
+        cd stream-lua-nginx-module && git pull
+    fi
 }
 
 Install_OpenResty(){
@@ -38,16 +43,6 @@ Install_OpenResty(){
     tar xvf openresty-${openresty_version:?}.tar.gz
     cd openresty-${openresty_version:?}
 
-    # if [ ${lua_install:?} = 'y' ]; then
-    #     nginx_modules_options="--with-ld-opt='-Wl,-rpath,/usr/local/luajit/lib' --add-module=${script_dir:?}/src/ngx_devel_kit-${ngx_devel_kit_version:?} --add-module=${script_dir:?}/src/lua-nginx-module-${lua_nginx_module_version:?}"
-    #     export LUAJIT_LIB=/usr/local/luajit/lib
-    #     export LUAJIT_INC=/usr/local/luajit/include/luajit-2.1
-    #
-    # else
-    #     nginx_modules_options=''
-    # fi
-    nginx_modules_options=" --add-module=${script_dir:?}/src/ngx_brotli --add-module=${script_dir:?}/src/incubator-pagespeed-ngx-${pagespeed_version:?}"
-
     ./configure --prefix=${openresty_install_dir:?} \
         --sbin-path=${openresty_install_dir:?}/sbin/nginx \
         --conf-path=${openresty_install_dir:?}/conf/nginx.conf \
@@ -55,6 +50,7 @@ Install_OpenResty(){
         --http-log-path=${openresty_install_dir:?}/logs/access.log \
         --pid-path=${openresty_install_dir:?}/run/nginx.pid  \
         --lock-path=${openresty_install_dir:?}/run/nginx.lock \
+        --modules-path=${openresty_install_dir:?}/modules \
         --user=$run_user --group=$run_user \
         --with-http_stub_status_module \
         --with-http_ssl_module \
@@ -65,7 +61,7 @@ Install_OpenResty(){
         --with-http_realip_module  \
         --with-http_v2_module \
         --with-http_iconv_module \
-        --with-stream=dynamic \
+        --with-stream --with-stream_ssl_module \
         --http-client-body-temp-path=${openresty_install_dir:?}/tmp/client/ \
         --http-proxy-temp-path=${openresty_install_dir:?}/tmp/proxy/ \
         --http-fastcgi-temp-path=${openresty_install_dir:?}/tmp/fcgi/ \
@@ -74,12 +70,10 @@ Install_OpenResty(){
         --with-ld-opt="-ljemalloc" --with-openssl=${script_dir:?}/src/openssl-${openssl_version:?} \
         --with-pcre=${script_dir:?}/src/pcre-${pcre_version:?} --with-pcre-jit \
         --with-zlib=${script_dir:?}/src/zlib-${zlib_version:?} \
-        --with-luajit $nginx_modules_options
-        # --with-http_postgres_module \
-    # close debug
-    # sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
-    #打开UTF8支持
-    # sed -i 's@./configure --disable-shared@./configure --disable-shared --enable-utf8 --enable-unicode-properties@' objs/Makefile
+        --add-module=${script_dir:?}/src/stream-lua-nginx-module \
+        --add-module=${script_dir:?}/src/ngx_brotli \
+        --add-module=${script_dir:?}/src/incubator-pagespeed-ngx-${pagespeed_version:?}
+
     echo -e "${CMSG}[OpenResty install ........ ]***********************************>>${CEND}\n"
     make -j${CpuProNum:?} && make install
     if [ -e "$openresty_install_dir/conf/nginx.conf" ]; then

@@ -7,6 +7,7 @@
 #----------------------------------------------------------------------------
 
 Nginx_Var() {
+
     # echo ${nginx_install_version:?}
     #第二种，准确判断pid的信息，
     #-C 表示的是nginx完整命令，不带匹配的操作
@@ -54,6 +55,7 @@ Nginx_Base_Dep_Install() {
     # jemalloc
     SOURCE_SCRIPT ${script_dir:?}/include/jemalloc.sh
     Install_Jemalloc
+
     echo -e "${CMSG}[ngx_brotli ngx-ct ngx_pagespeed ]*************************>>${CEND}\n"
     cd ${script_dir:?}/src
     #[ -d ngx_brotli ] && rm -rf ngx_brotli
@@ -152,8 +154,7 @@ EOF
             SOURCE_SCRIPT ${FunctionPath:?}/install/OpenResty.sh
             # shellcheck disable=SC2034
             OpenResty_install_version=${openresty_version:?}
-            lua_install='y'
-            OpenResty_Install_Main
+            OpenResty_Install_Main 2>&1 | tee $script_dir/logs/Install_OpenResty.log
             select_nginx_install
             ;;
         6)
