@@ -79,7 +79,6 @@ Nginx_Base_Dep_Install() {
     mv ${psol_version:?}-x$OS_BIT.tar.gz  incubator-pagespeed-ngx-${pagespeed_version:?}/ && cd incubator-pagespeed-ngx-${pagespeed_version:?}
     [ -d psol ] && rm -rf psol
     tar xvf ${psol_version:?}-x$OS_BIT.tar.gz
-
     if [ ${lua_install:?} = 'y' ]; then
         SOURCE_SCRIPT ${script_dir:?}/include/LuaJIT.sh
         Install_LuaJIT
@@ -154,6 +153,7 @@ EOF
             SOURCE_SCRIPT ${FunctionPath:?}/install/OpenResty.sh
             # shellcheck disable=SC2034
             OpenResty_install_version=${openresty_version:?}
+            lua_install='n'
             OpenResty_Install_Main 2>&1 | tee $script_dir/logs/Install_OpenResty.log
             select_nginx_install
             ;;
