@@ -31,7 +31,7 @@ Nginx_Base_Dep_Install() {
     src_url=http://zlib.net/zlib-${zlib_version:?}.tar.gz
     [ ! -f zlib-${zlib_version:?}.tar.gz ] && Download_src
     [ -d zlib-${zlib_version:?} ] && rm -rf zlib-${zlib_version:?}
-    tar xvf zlib-${zlib_version:?}.tar.gz
+    tar xf zlib-${zlib_version:?}.tar.gz
     # && cd zlib-${zlib_version:?}
     # ./configure --prefix=/usr/local/software/sharelib && make && make install
     # cd ..
@@ -40,7 +40,7 @@ Nginx_Base_Dep_Install() {
     src_url=https://sourceforge.net/projects/pcre/files/pcre/${pcre_version:?}/pcre-$pcre_version.tar.gz/download
     [ ! -f pcre-$pcre_version.tar.gz ] && Download_src && mv download pcre-$pcre_version.tar.gz
     [ -d pcre-$pcre_version ] && rm -rf pcre-$pcre_version
-    tar xvf pcre-$pcre_version.tar.gz
+    tar xf pcre-$pcre_version.tar.gz
     # && cd pcre-$pcre_version
     # ./configure --prefix=/usr/local/software/pcre --enable-utf8 --enable-unicode-properties
     # make && make install
@@ -51,7 +51,7 @@ Nginx_Base_Dep_Install() {
     src_url=https://www.openssl.org/source/openssl-${openssl_version:?}.tar.gz
     [ ! -f openssl-${openssl_version:?}.tar.gz ] && Download_src
     [ -d openssl-${openssl_version:?} ] && rm -rf openssl-${openssl_version:?}
-    tar xvf openssl-${openssl_version:?}.tar.gz
+    tar xf openssl-${openssl_version:?}.tar.gz
     # jemalloc
     SOURCE_SCRIPT ${script_dir:?}/include/jemalloc.sh
     Install_Jemalloc
@@ -68,17 +68,17 @@ Nginx_Base_Dep_Install() {
     src_url=https://github.com/grahamedgecombe/nginx-ct/archive/v${ngx_ct_version:?}.tar.gz
     [ ! -f v${ngx_ct_version:?}.tar.gz ] && Download_src
     [ -d nginx-ct-${ngx_ct_version:?} ] && rm -rf nginx-ct-${ngx_ct_version:?}
-    tar xvf v${ngx_ct_version:?}.tar.gz
+    tar xf v${ngx_ct_version:?}.tar.gz
 
     src_url=https://github.com/apache/incubator-pagespeed-ngx/archive/v${pagespeed_version:?}.tar.gz
     [ ! -f v${pagespeed_version:?}.tar.gz ] && Download_src
     [ -d incubator-pagespeed-ngx-${pagespeed_version:?} ] && rm -rf incubator-pagespeed-ngx-${pagespeed_version:?}
-    tar xvf v${pagespeed_version:?}.tar.gz
+    tar xf v${pagespeed_version:?}.tar.gz
     src_url=https://dl.google.com/dl/page-speed/psol/${psol_version:?}-x$OS_BIT.tar.gz
     [ ! -f ${psol_version:?}-x$OS_BIT.tar.gz ] && Download_src
     mv ${psol_version:?}-x$OS_BIT.tar.gz  incubator-pagespeed-ngx-${pagespeed_version:?}/ && cd incubator-pagespeed-ngx-${pagespeed_version:?}
     [ -d psol ] && rm -rf psol
-    tar xvf ${psol_version:?}-x$OS_BIT.tar.gz
+    tar xf ${psol_version:?}-x$OS_BIT.tar.gz
     if [ ${lua_install:?} = 'y' ]; then
         SOURCE_SCRIPT ${script_dir:?}/include/LuaJIT.sh
         Install_LuaJIT
@@ -87,14 +87,14 @@ Nginx_Base_Dep_Install() {
         src_url=https://github.com/simplresty/ngx_devel_kit/archive/v${ngx_devel_kit_version:?}.tar.gz
         [ ! -f v${ngx_devel_kit_version:?}.tar.gz ] && Download_src
         [ -d ngx_devel_kit-${ngx_devel_kit_version:?} ] && rm -rf ngx_devel_kit-${ngx_devel_kit_version:?}
-        tar xvf v${ngx_devel_kit_version:?}.tar.gz
+        tar xf v${ngx_devel_kit_version:?}.tar.gz
         echo -e "${CMSG}[ lua-nginx-module（NDK）]***********************************>>${CEND}\n"
         cd ${script_dir:?}/src
         # shellcheck disable=SC2034
         src_url=https://github.com/openresty/lua-nginx-module/archive/v${lua_nginx_module_version:?}.tar.gz
         [ ! -f v${lua_nginx_module_version:?}.tar.gz ] && Download_src
         [ -d lua-nginx-module-${lua_nginx_module_version:?} ] && rm -rf lua-nginx-module-${lua_nginx_module_version:?}
-        tar xvf v${lua_nginx_module_version:?}.tar.gz
+        tar xf v${lua_nginx_module_version:?}.tar.gz
     fi
     # other
     yum -y install gcc automake autoconf libtool make gcc-c++
