@@ -16,7 +16,7 @@ Install_Jemalloc() {
         cd ${script_dir:?}/src
         [ ! -f jemalloc-$jemalloc_version.tar.bz2 ] && Download_src
         [ -d jemalloc-$jemalloc_version ] && rm -rf jemalloc-$jemalloc_version
-        tar xvf jemalloc-$jemalloc_version.tar.bz2 && cd jemalloc-$jemalloc_version
+        tar xf jemalloc-$jemalloc_version.tar.bz2 && cd jemalloc-$jemalloc_version
 
         ./configure && make && make install
         if [ -f "/usr/local/lib/libjemalloc.so" ];then
