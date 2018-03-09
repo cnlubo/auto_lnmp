@@ -69,7 +69,7 @@ Install_OpenResty(){
         --http-fastcgi-temp-path=${openresty_install_dir:?}/tmp/fcgi/ \
         --http-uwsgi-temp-path=${openresty_install_dir:?}/tmp/uwsgi \
         --http-scgi-temp-path=${openresty_install_dir:?}/tmp/scgi \
-        --with-ld-opt="-ljemalloc" \
+        --with-ld-opt="-Wl,-rpath,/usr/local/luajit/lib -ljemalloc" \
         --with-openssl=../openssl-${openssl_version:?} \
         --with-pcre=../pcre-${pcre_version:?} --with-pcre-jit \
         --with-zlib=../zlib-${zlib_version:?} \
