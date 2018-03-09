@@ -75,8 +75,7 @@ Install_OpenResty(){
         --with-zlib=../zlib-${zlib_version:?} \
         --with-luajit=/usr/local/luajit \
         --add-module=../ngx_brotli \
-        --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
-        --add-module=../stream-lua-nginx-module
+        --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?} 
 
         # --add-module=../stream-lua-nginx-module \
         # --with-ld-opt="-Wl,-rpath,/usr/local/luajit/lib -ljemalloc" \
