@@ -120,7 +120,7 @@ EOF
             # shellcheck disable=SC2034
             nginx_install_version=${nginx_mainline_version:?}
             lua_install='n'
-            Nginx_Install_Main
+            Nginx_Install_Main 2>&1 | tee $script_dir/logs/Install_Nginx.log
             select_nginx_install
             ;;
         2)
@@ -129,7 +129,7 @@ EOF
             nginx_install_version=${nginx_mainline_version:?}
             # shellcheck disable=SC2034
             lua_install='y'
-            Nginx_Install_Main
+            Nginx_Install_Main 2>&1 | tee $script_dir/logs/Install_Nginx.log
             select_nginx_install
             ;;
         3)
@@ -137,7 +137,7 @@ EOF
             # shellcheck disable=SC2034
             tengine_install_version=${Tengine_version:?}
             lua_install='n'
-            Tengine_Install_Main
+            Tengine_Install_Main 2>&1 | tee $script_dir/logs/Install_Tengine.log
             select_nginx_install
             ;;
         4)
@@ -145,7 +145,7 @@ EOF
             # shellcheck disable=SC2034
             tengine_install_version=${Tengine_version:?}
             lua_install='y'
-            Tengine_Install_Main
+            Tengine_Install_Main 2>&1 | tee $script_dir/logs/Install_Tengine.log
             select_nginx_install
             ;;
 
