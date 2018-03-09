@@ -40,8 +40,10 @@ Install_OpenResty(){
     src_url=https://openresty.org/download/openresty-${openresty_version:?}.tar.gz
     [ ! -f openresty-${openresty_version:?}.tar.gz ] && Download_src
     [ -d openresty-${openresty_version:?} ] && rm -rf openresty-${openresty_version:?}
-    tar xvf openresty-${openresty_version:?}.tar.gz
+    tar xf openresty-${openresty_version:?}.tar.gz
     cd openresty-${openresty_version:?}
+    export LUAJIT_LIB=/usr/local/luajit/lib
+    export LUAJIT_INC=/usr/local/luajit/include/luajit-2.1
 
     ./configure --prefix=${openresty_install_dir:?} \
         --sbin-path=${openresty_install_dir:?}/sbin/nginx \
@@ -67,12 +69,13 @@ Install_OpenResty(){
         --http-fastcgi-temp-path=${openresty_install_dir:?}/tmp/fcgi/ \
         --http-uwsgi-temp-path=${openresty_install_dir:?}/tmp/uwsgi \
         --http-scgi-temp-path=${openresty_install_dir:?}/tmp/scgi \
-        --with-ld-opt="-ljemalloc" --with-openssl=${script_dir:?}/src/openssl-${openssl_version:?} \
-        --with-pcre=${script_dir:?}/src/pcre-${pcre_version:?} --with-pcre-jit \
-        --with-zlib=${script_dir:?}/src/zlib-${zlib_version:?} \
-        --add-module=${script_dir:?}/src/stream-lua-nginx-module \
-        --add-module=${script_dir:?}/src/ngx_brotli \
-        --add-module=${script_dir:?}/src/incubator-pagespeed-ngx-${pagespeed_version:?}
+        --with-ld-opt="-ljemalloc" \
+        --with-openssl=../openssl-${openssl_version:?} \
+        --with-pcre=../pcre-${pcre_version:?} --with-pcre-jit \
+        --with-zlib=../zlib-${zlib_version:?} \
+        --add-module=../stream-lua-nginx-module \
+        --add-module=../ngx_brotli \
+        --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?}
 
     echo -e "${CMSG}[OpenResty install ........ ]***********************************>>${CEND}\n"
     make -j${CpuProNum:?} && make install
