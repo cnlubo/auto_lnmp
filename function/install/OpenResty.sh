@@ -11,6 +11,13 @@ OpenResty_Dep_Install(){
     # 依赖安装
     #yum -y install readline-devel pcre-devel openssl-devel gcc
     yum -y install libuuid-devel
+    echo -e "${CMSG}[ Openssl-${openssl_version:?} ]***********************************>>${CEND}\n"
+    # openssl
+    # shellcheck disable=SC2034
+    src_url=https://www.openssl.org/source/openssl-${openssl_version:?}.tar.gz
+    [ ! -f openssl-${openssl_version:?}.tar.gz ] && Download_src
+    [ -d openssl-${openssl_version:?} ] && rm -rf openssl-${openssl_version:?}
+    tar xf openssl-${openssl_version:?}.tar.gz
     echo -e "${CMSG}[ stream-lua-nginx-module ]***********************************>>${CEND}\n"
     cd ${script_dir:?}/src
     if  [ ! -d stream-lua-nginx-module ]; then
@@ -75,7 +82,7 @@ Install_OpenResty(){
         --with-zlib=../zlib-${zlib_version:?} \
         --with-luajit=/usr/local/luajit \
         --add-module=../ngx_brotli \
-        --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?} 
+        --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?}
 
         # --add-module=../stream-lua-nginx-module \
         # --with-ld-opt="-Wl,-rpath,/usr/local/luajit/lib -ljemalloc" \

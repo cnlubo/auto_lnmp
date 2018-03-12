@@ -10,17 +10,14 @@ Nginx_Dep_Install(){
 
     # 依赖安装
 
-    echo -e "${CMSG}[nginx-${nginx_install_version:?} install begin ]***********************>>${CEND}\n"
-    # ngx_brotli
-    # echo -e "${CMSG}[support ngx_brotli ]***********************************>>${CEND}\n"
-    # cd ${script_dir:?}/src
-    # #[ -d ngx_brotli ] && rm -rf ngx_brotli
-    # #git clone https://github.com/google/ngx_brotli.git
-    # #cd ngx_brotli && git submodule update --init
-    # if  [ ! -d ngx_brotli ]; then
-    #     git clone https://github.com/google/ngx_brotli.git
-    #     cd ngx_brotli && git submodule update --init
-    # fi
+    # echo -e "${CMSG}[nginx-${nginx_install_version:?} install begin ]***********************>>${CEND}\n"
+    echo -e "${CMSG}[ Openssl-${openssl_1.1_version:?} ]***********************************>>${CEND}\n"
+    # openssl
+    # shellcheck disable=SC2034
+    src_url=https://www.openssl.org/source/openssl-${openssl_1.1_version:?}.tar.gz
+    [ ! -f openssl-${openssl_1.1_version:?}.tar.gz ] && Download_src
+    [ -d openssl-${openssl_1.1_version:?} ] && rm -rf openssl-${openssl_1.1_version:?}
+    tar xf openssl-${openssl_1.1_version:?}.tar.gz
 }
 Install_Nginx(){
 
@@ -53,30 +50,32 @@ Install_Nginx(){
         nginx_modules_options=''
     fi
     ./configure --prefix=${nginx_install_dir:?} \
-    --sbin-path=${nginx_install_dir:?}/sbin/nginx \
-    --conf-path=${nginx_install_dir:?}/conf/nginx.conf \
-    --error-log-path=${nginx_install_dir:?}/logs/error.log \
-    --http-log-path=${nginx_install_dir:?}/logs/access.log \
-    --pid-path=${nginx_install_dir:?}/run/nginx.pid  \
-    --lock-path=${nginx_install_dir:?}/run/nginx.lock \
-    --user=$run_user --group=$run_user \
-    --with-http_stub_status_module \
-    --with-http_ssl_module \
-    --with-http_gzip_static_module \
-    --with-http_sub_module \
-    --with-http_random_index_module \
-    --with-http_addition_module \
-    --with-http_realip_module  \
-    --with-http_v2_module \
-    --http-client-body-temp-path=${nginx_install_dir:?}/tmp/client/ \
-    --http-proxy-temp-path=${nginx_install_dir:?}/tmp/proxy/ \
-    --http-fastcgi-temp-path=${nginx_install_dir:?}/tmp/fcgi/ \
-    --http-uwsgi-temp-path=${nginx_install_dir:?}/tmp/uwsgi \
-    --http-scgi-temp-path=${nginx_install_dir:?}/tmp/scgi \
-    --with-ld-opt="-ljemalloc" --with-openssl=${script_dir:?}/src/openssl-${openssl_version:?} \
-    --with-pcre=${script_dir:?}/src/pcre-${pcre_version:?} --with-pcre-jit \
-    --with-zlib=${script_dir:?}/src/zlib-${zlib_version:?} \
-    --add-module=${script_dir:?}/src/ngx_brotli $nginx_modules_options
+        --sbin-path=${nginx_install_dir:?}/sbin/nginx \
+        --conf-path=${nginx_install_dir:?}/conf/nginx.conf \
+        --error-log-path=${nginx_install_dir:?}/logs/error.log \
+        --http-log-path=${nginx_install_dir:?}/logs/access.log \
+        --pid-path=${nginx_install_dir:?}/run/nginx.pid  \
+        --lock-path=${nginx_install_dir:?}/run/nginx.lock \
+        --user=$run_user --group=$run_user \
+        --with-http_stub_status_module \
+        --with-http_ssl_module \
+        --with-http_gzip_static_module \
+        --with-http_sub_module \
+        --with-http_random_index_module \
+        --with-http_addition_module \
+        --with-http_realip_module  \
+        --with-http_v2_module \
+        --http-client-body-temp-path=${nginx_install_dir:?}/tmp/client/ \
+        --http-proxy-temp-path=${nginx_install_dir:?}/tmp/proxy/ \
+        --http-fastcgi-temp-path=${nginx_install_dir:?}/tmp/fcgi/ \
+        --http-uwsgi-temp-path=${nginx_install_dir:?}/tmp/uwsgi \
+        --http-scgi-temp-path=${nginx_install_dir:?}/tmp/scgi \
+        --with-ld-opt="-ljemalloc" --with-openssl=../openssl-${openssl_1.1_version:?} \
+        --with-pcre=../pcre-${pcre_version:?} --with-pcre-jit \
+        --with-zlib=../zlib-${zlib_version:?} \
+        --add-module=../ngx_brotli \
+        --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
+        --add-module=../nginx-ct-${ngx_ct_version:?} $nginx_modules_options
     # close debug
     sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
     #打开UTF8支持
