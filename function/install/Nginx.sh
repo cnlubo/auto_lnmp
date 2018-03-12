@@ -72,7 +72,7 @@ Install_Nginx(){
         --with-pcre=../pcre-${pcre_version:?} --with-pcre-jit \
         --with-zlib=../zlib-${zlib_version:?} \
         --add-dynamic-module=../ngx_brotli \
-        --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
+        --add-dynamic-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
         --add-dynamic-module=../nginx-ct-${ngx_ct_version:?} $nginx_modules_options
     # close debug
     sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
