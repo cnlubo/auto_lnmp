@@ -147,7 +147,7 @@ EOF
         fi
 
     else
-        echo -e "${CFAILURE}[Nginx install failed1, Please Contact the author !!!]*************>>${CEND}\n"
+        echo -e "${CFAILURE}[Nginx install failed2, Please Contact the author !!!]*************>>${CEND}\n"
         kill -9 $$
     fi
 }
