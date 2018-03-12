@@ -11,7 +11,7 @@ Nginx_Dep_Install(){
     # 依赖安装
 
     # echo -e "${CMSG}[nginx-${nginx_install_version:?} install begin ]***********************>>${CEND}\n"
-    echo -e "${CMSG}[ Openssl-${openssl_lastest_version:?} ]***********************************>>${CEND}\n"
+    echo -e "${CMSG}[ Openssl-${openssl_latest_version:?} ]***********************************>>${CEND}\n"
     # openssl
     # shellcheck disable=SC2034
     src_url=https://www.openssl.org/source/openssl-${openssl_latest_version:?}.tar.gz
