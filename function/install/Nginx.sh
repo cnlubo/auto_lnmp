@@ -86,6 +86,7 @@ Install_Nginx(){
     if [ -e "$nginx_install_dir/conf/nginx.conf" ]; then
         echo -e "${CMSG}[Nginx installed successfully !!!]***********************************>>${CEND}\n"
         mkdir -p ${nginx_install_dir:?}/tmp/client
+        Config_Nginx
     else
         echo -e "${CFAILURE}[Nginx install failed, Please Contact the author !!!]*************>>${CEND}\n"
         kill -9 $$
@@ -147,11 +148,12 @@ EOF
         fi
 
     else
-        echo -e "${CFAILURE}[Nginx install failed2, Please Contact the author !!!]*************>>${CEND}\n"
+        echo -e "${CFAILURE}[Nginx install failed, Please Contact the author !!!]*************>>${CEND}\n"
         kill -9 $$
     fi
 }
 
 Nginx_Install_Main() {
-    Nginx_Var && Nginx_Base_Dep_Install && Nginx_Dep_Install && Install_Nginx && Config_Nginx
+    Nginx_Var && Nginx_Base_Dep_Install && Nginx_Dep_Install && Install_Nginx
+    #&& Config_Nginx
 }
