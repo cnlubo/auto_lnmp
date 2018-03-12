@@ -8,9 +8,6 @@
 
 Nginx_Dep_Install(){
 
-    # 依赖安装
-
-    # echo -e "${CMSG}[nginx-${nginx_install_version:?} install begin ]***********************>>${CEND}\n"
     echo -e "${CMSG}[ Openssl-${openssl_latest_version:?} ]***********************************>>${CEND}\n"
     # openssl
     # shellcheck disable=SC2034
@@ -74,9 +71,9 @@ Install_Nginx(){
         --with-ld-opt="-ljemalloc" --with-openssl=../openssl-${openssl_latest_version:?} \
         --with-pcre=../pcre-${pcre_version:?} --with-pcre-jit \
         --with-zlib=../zlib-${zlib_version:?} \
-        --add-module=../ngx_brotli \
+        --add-dynamic-module=../ngx_brotli \
         --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
-        --add-module=../nginx-ct-${ngx_ct_version:?} $nginx_modules_options
+        --add-dynamic-module=../nginx-ct-${ngx_ct_version:?} $nginx_modules_options
     # close debug
     sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
     #打开UTF8支持

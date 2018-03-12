@@ -95,6 +95,13 @@ Nginx_Base_Dep_Install() {
         [ ! -f v${lua_nginx_module_version:?}.tar.gz ] && Download_src
         [ -d lua-nginx-module-${lua_nginx_module_version:?} ] && rm -rf lua-nginx-module-${lua_nginx_module_version:?}
         tar xf v${lua_nginx_module_version:?}.tar.gz
+        echo -e "${CMSG}[ stream-lua-nginx-module ]***********************************>>${CEND}\n"
+        cd ${script_dir:?}/src
+        if  [ ! -d stream-lua-nginx-module ]; then
+            git clone https://github.com/openresty/stream-lua-nginx-module.git
+        else
+            cd stream-lua-nginx-module && git pull
+        fi
     fi
     # other
     yum -y install gcc automake autoconf libtool make gcc-c++
