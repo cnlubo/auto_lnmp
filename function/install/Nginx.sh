@@ -41,8 +41,8 @@ Install_Nginx(){
     cd nginx-${nginx_install_version:?}
     if [ ${lua_install:?} = 'y' ]; then
         nginx_modules_options="--with-ld-opt=-Wl,-rpath,'/usr/local/luajit/lib',-ljemalloc"
-        nginx_modules_options=$nginx_modules_options" --add-module=../ngx_devel_kit-${ngx_devel_kit_version:?}"
-        nginx_modules_options=$nginx_modules_options" --add-module=../lua-nginx-module-${lua_nginx_module_version:?}"
+        nginx_modules_options=$nginx_modules_options" --add-dynamic-module=../ngx_devel_kit-${ngx_devel_kit_version:?}"
+        nginx_modules_options=$nginx_modules_options" --add-dynamic-module=../lua-nginx-module-${lua_nginx_module_version:?}"
         nginx_modules_options=$nginx_modules_options" --with-stream --with-stream_ssl_module"
         nginx_modules_options=$nginx_modules_options" --with-stream_realip_module --with-stream_ssl_preread_module"
         nginx_modules_options=$nginx_modules_options" --add-module=../stream-lua-nginx-module"
@@ -99,7 +99,7 @@ Install_Nginx(){
 Config_Nginx(){
 
     if [ -e $nginx_install_dir/conf/nginx.conf ]; then
-        echo -e "${CMSG}[configure nginx]***********************************>>${CEND}\n"
+        echo -e "${CMSG}[configure nginx]****************************************************>>${CEND}\n"
         mkdir -p ${nginx_install_dir:?}/conf.d
         mv $nginx_install_dir/conf/nginx.conf $nginx_install_dir/conf/nginx.conf_bak
         if [ ${lua_install:?} = 'y' ]; then
