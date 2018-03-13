@@ -43,7 +43,8 @@ Install_Nginx(){
         nginx_modules_options="--with-ld-opt=-Wl,-rpath,'/usr/local/luajit/lib',-ljemalloc"
         nginx_modules_options=$nginx_modules_options" --add-module=../ngx_devel_kit-${ngx_devel_kit_version:?}"
         nginx_modules_options=$nginx_modules_options" --add-module=../lua-nginx-module-${lua_nginx_module_version:?}"
-        nginx_modules_options=$nginx_modules_options" --with-stream --with-stream_ssl_module"
+        nginx_modules_options=$nginx_modules_options" --with-stream --with-stream=dynamic --with-stream_ssl_module"
+        nginx_modules_options=$nginx_modules_options" --with-stream_realip_module --with-stream_ssl_preread_module"
         nginx_modules_options=$nginx_modules_options" --add-module=../stream-lua-nginx-module"
         export LUAJIT_LIB=/usr/local/luajit/lib
         export LUAJIT_INC=/usr/local/luajit/include/luajit-2.1
@@ -77,6 +78,7 @@ Install_Nginx(){
         --add-dynamic-module=../ngx_brotli \
         --add-dynamic-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
         --add-dynamic-module=../nginx-ct-${ngx_ct_version:?} $nginx_modules_options
+
     # close debug
     sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
     #打开UTF8支持
@@ -87,6 +89,7 @@ Install_Nginx(){
         echo -e "${CMSG}[Nginx installed successfully !!!]***********************************>>${CEND}\n"
         mkdir -p ${nginx_install_dir:?}/tmp/client
         Config_Nginx
+        # lsof -n | grep jemalloc 验证是否生效
     else
         echo -e "${CFAILURE}[Nginx install failed, Please Contact the author !!!]*************>>${CEND}\n"
         kill -9 $$
