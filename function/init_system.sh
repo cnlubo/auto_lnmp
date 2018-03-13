@@ -52,7 +52,7 @@ select_system_setup_function(){
         [ -f /etc/sudoers.d/ak47 ] && rm -rf /etc/sudoers.d/ak47
         # echo " $Typical_User   ALL=(ALL)  NOPASSWD: ALL " >> /etc/sudoers.d/ak47 && chmod 400 /etc/sudoers.d/ak47
         cat > /etc/sudoers.d/ak47 << EOF
-Defaults    secure_path = /usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+Defaults    secure_path = /usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 $Typical_User   ALL=(ALL)  NOPASSWD: ALL
 EOF
         chmod 400 /etc/sudoers.d/ak47
