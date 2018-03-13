@@ -40,12 +40,11 @@ Install_Nginx(){
     tar xf nginx-${nginx_install_version:?}.tar.gz
     cd nginx-${nginx_install_version:?}
     if [ ${lua_install:?} = 'y' ]; then
-        nginx_modules_options="--with-ld-opt=-Wl,-rpath,'/usr/local/luajit/lib',ljemalloc"
+        nginx_modules_options="--with-ld-opt=-Wl,-rpath,'/usr/local/luajit/lib',-ljemalloc"
         nginx_modules_options=$nginx_modules_options" --add-module=../ngx_devel_kit-${ngx_devel_kit_version:?}"
         nginx_modules_options=$nginx_modules_options" --add-module=../lua-nginx-module-${lua_nginx_module_version:?}"
         nginx_modules_options=$nginx_modules_options" --with-stream --with-stream_ssl_module"
         nginx_modules_options=$nginx_modules_options" --add-module=../stream-lua-nginx-module"
-        echo $nginx_modules_options
         export LUAJIT_LIB=/usr/local/luajit/lib
         export LUAJIT_INC=/usr/local/luajit/include/luajit-2.1
     else
