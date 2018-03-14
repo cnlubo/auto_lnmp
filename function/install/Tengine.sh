@@ -18,6 +18,7 @@ Tengine_Dep_Install(){
     tar xf openssl-${openssl_latest_version:?}.tar.gz
 
 
+
 }
 
 Install_Tengine(){
@@ -40,7 +41,7 @@ Install_Tengine(){
     src_url=http://tengine.taobao.org/download/tengine-${tengine_install_version:?}.tar.gz
     [ ! -f nginx-${tengine_install_version:?}.tar.gz ] && Download_src
     [ -d tengine-${tengine_install_version:?} ] && rm -rf tengine-${tengine_install_version:?}
-    tar xvf tengine-${tengine_install_version:?}.tar.gz
+    tar xf tengine-${tengine_install_version:?}.tar.gz
     cd tengine-${tengine_install_version:?}
     # http_stub_status_module 自带的状态页面 默认关闭
     # ./configure --user=nginx --group=nginx --with-file-aio --with-ipv6
@@ -56,10 +57,11 @@ Install_Tengine(){
 
     if [ ${lua_install:?} = 'y' ]; then
         #nginx_modules_options="--with-ld-opt='-Wl,-rpath,/usr/local/luajit/lib' --add-module=${script_dir:?}/src/ngx_devel_kit-${ngx_devel_kit_version:?} --add-module=${script_dir:?}/src/lua-nginx-module-${lua_nginx_module_version:?}"
-        nginx_modules_options="--with-http_lua_module=shared"
-        nginx_modules_options="--with-http_lua_module"
         export LUAJIT_LIB=/usr/local/luajit/lib
         export LUAJIT_INC=/usr/local/luajit/include/luajit-2.1
+        nginx_modules_options="--with-ld-opt='-Wl,-rpath,/usr/local/luajit/lib'"
+        nginx_modules_options=$nginx_modules_options" --with-http_lua_module=shared"
+        nginx_modules_options=$nginx_modules_options" --add-dynamic-module=../ngx_devel_kit-${ngx_devel_kit_version:?}"
         # 替换lua-nginx-module 代码为最新版本
         mv modules/ngx_http_lua_module modules/ngx_http_lua_module_old
         cp -ar ${script_dir:?}/src/lua-nginx-module-${lua_nginx_module_version:?} modules/ngx_http_lua_module
@@ -94,14 +96,12 @@ Install_Tengine(){
         --http-fastcgi-temp-path=${tengine_install_dir:?}/tmp/fcgi/ \
         --http-uwsgi-temp-path=${tengine_install_dir:?}/tmp/uwsgi \
         --http-scgi-temp-path=${tengine_install_dir:?}/tmp/scgi \
-        --with-openssl=${script_dir:?}/src/openssl-${openssl_version:?}  \
-        --with-pcre=${script_dir:?}/src/pcre-${pcre_version:?} --with-pcre-jit \
+        --with-openssl=../openssl-${openssl_version:?}  \
+        --with-pcre=../pcre-${pcre_version:?} --with-pcre-jit \
         --with-jemalloc \
-        --with-zlib=${script_dir:?}/src/zlib-${zlib_version:?} $nginx_modules_options
-
-    # --with-openssl-opt=-fPIC --with-pcre-opt=-fPIC
-
-    #--with-jemalloc=${script_dir:?}/src/jemalloc-${jemalloc_version:?} \
+        --with-zlib=../zlib-${zlib_version:?} \
+        --add-dynamic-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
+        --add-dynamic-module=../nginx-ct-${ngx_ct_version:?} $nginx_modules_options
         # close debug
     sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
     #打开UTF8支持

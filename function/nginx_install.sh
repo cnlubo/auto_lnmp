@@ -80,6 +80,7 @@ Nginx_Base_Dep_Install() {
     [ -d psol ] && rm -rf psol
     tar xf ${psol_version:?}-x$OS_BIT.tar.gz
     if [ ${lua_install:?} = 'y' ]; then
+        yum -y install readline readline-deve
         SOURCE_SCRIPT ${script_dir:?}/include/LuaJIT.sh
         Install_LuaJIT
         echo -e "${CMSG}[ ngx_devel_kit（NDK）]***********************************>>${CEND}\n"
