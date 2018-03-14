@@ -99,7 +99,8 @@ Install_Tengine(){
         --with-openssl=../openssl-${openssl_version:?}  \
         --with-pcre=../pcre-${pcre_version:?} --with-pcre-jit \
         --with-jemalloc \
-        --with-zlib=../zlib-${zlib_version:?}
+        --with-zlib=../zlib-${zlib_version:?} \
+        --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?} $nginx_modules_options
         #\
         #--add-dynamic-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
         #--add-dynamic-module=../nginx-ct-${ngx_ct_version:?} $nginx_modules_options
@@ -113,7 +114,7 @@ Install_Tengine(){
         echo -e "${CMSG}[Tengine installed successfully !!!]***********************************>>${CEND}\n"
         mkdir -p ${tengine_install_dir:?}/tmp/client
         # install ngx_pagespeed
-        $tengine_install_dir/sbin/dso_tool --add-module=${script_dir:?}/src/incubator-pagespeed-ngx-${pagespeed_version:?}
+        #$tengine_install_dir/sbin/dso_tool --add-module=${script_dir:?}/src/incubator-pagespeed-ngx-${pagespeed_version:?}
 
     else
         echo -e "${CFAILURE}[Tengine install failed, Please Contact the author !!!]*************>>${CEND}\n"
