@@ -55,21 +55,32 @@ Nginx_Base_Dep_Install() {
     # jemalloc
     SOURCE_SCRIPT ${script_dir:?}/include/jemalloc.sh
     Install_Jemalloc
+    if [ $Nginx_install == 'Nginx' ] || [ $Nginx_install == 'Tengine' ]; then
 
-    echo -e "${CMSG}[ngx_brotli ngx-ct ngx_pagespeed ]*************************>>${CEND}\n"
-    cd ${script_dir:?}/src
-    #[ -d ngx_brotli ] && rm -rf ngx_brotli
-    #git clone https://github.com/google/ngx_brotli.git
-    #cd ngx_brotli && git submodule update --init
-    if  [ ! -d ngx_brotli ]; then
-        git clone https://github.com/google/ngx_brotli.git
-        cd ngx_brotli && git submodule update --init
+        echo -e "${CMSG}[ Openssl-${openssl_latest_version:?} ]***********************************>>${CEND}\n"
+        # shellcheck disable=SC2034
+        cd ${script_dir:?}/src
+        src_url=https://www.openssl.org/source/openssl-${openssl_latest_version:?}.tar.gz
+        [ ! -f openssl-${openssl_latest_version:?}.tar.gz ] && Download_src
+        [ -d openssl-${openssl_latest_version:?} ] && rm -rf openssl-${openssl_latest_version:?}
+        tar xf openssl-${openssl_latest_version:?}.tar.gz
+        echo -e "${CMSG}[ngx_brotli ngx-ct ]*************************>>${CEND}\n"
+        #[ -d ngx_brotli ] && rm -rf ngx_brotli
+        #git clone https://github.com/google/ngx_brotli.git
+        #cd ngx_brotli && git submodule update --init
+        if  [ ! -d ngx_brotli ]; then
+            git clone https://github.com/google/ngx_brotli.git
+            cd ngx_brotli && git submodule update --init
+        fi
+        src_url=https://github.com/grahamedgecombe/nginx-ct/archive/v${ngx_ct_version:?}.tar.gz
+        [ ! -f v${ngx_ct_version:?}.tar.gz ] && Download_src
+        [ -d nginx-ct-${ngx_ct_version:?} ] && rm -rf nginx-ct-${ngx_ct_version:?}
+        tar xf v${ngx_ct_version:?}.tar.gz
+
     fi
-    src_url=https://github.com/grahamedgecombe/nginx-ct/archive/v${ngx_ct_version:?}.tar.gz
-    [ ! -f v${ngx_ct_version:?}.tar.gz ] && Download_src
-    [ -d nginx-ct-${ngx_ct_version:?} ] && rm -rf nginx-ct-${ngx_ct_version:?}
-    tar xf v${ngx_ct_version:?}.tar.gz
 
+    echo -e "${CMSG}[ ngx_pagespeed ]*************************>>${CEND}\n"
+    cd ${script_dir:?}/src
     src_url=https://github.com/apache/incubator-pagespeed-ngx/archive/v${pagespeed_version:?}.tar.gz
     [ ! -f v${pagespeed_version:?}.tar.gz ] && Download_src
     [ -d incubator-pagespeed-ngx-${pagespeed_version:?} ] && rm -rf incubator-pagespeed-ngx-${pagespeed_version:?}
@@ -82,6 +93,7 @@ Nginx_Base_Dep_Install() {
     echo -e "${CMSG}[ echo-nginx-module ]*************************>>${CEND}\n"
     [ -d echo-nginx-module ] && rm -rf echo-nginx-module
     git clone https://github.com/openresty/echo-nginx-module.git
+
     if [ ${lua_install:?} = 'y' ]; then
         yum -y install readline readline-deve
         SOURCE_SCRIPT ${script_dir:?}/include/LuaJIT.sh
@@ -129,6 +141,7 @@ EOF
             SOURCE_SCRIPT ${FunctionPath:?}/install/Nginx.sh
             # shellcheck disable=SC2034
             nginx_install_version=${nginx_mainline_version:?}
+            Nginx_install='Nginx'
             lua_install='n'
             Nginx_Install_Main 2>&1 | tee $script_dir/logs/Install_Nginx.log
             select_nginx_install
@@ -137,6 +150,7 @@ EOF
             SOURCE_SCRIPT ${FunctionPath:?}/install/Nginx.sh
             # shellcheck disable=SC2034
             nginx_install_version=${nginx_mainline_version:?}
+            Nginx_install='Nginx'
             # shellcheck disable=SC2034
             lua_install='y'
             Nginx_Install_Main 2>&1 | tee $script_dir/logs/Install_Nginx.log
@@ -146,6 +160,7 @@ EOF
             SOURCE_SCRIPT ${FunctionPath:?}/install/Tengine.sh
             # shellcheck disable=SC2034
             tengine_install_version=${Tengine_version:?}
+            Nginx_install='Tengine'
             lua_install='y'
             Tengine_Install_Main 2>&1 | tee $script_dir/logs/Install_Tengine.log
             select_nginx_install
@@ -155,6 +170,7 @@ EOF
             SOURCE_SCRIPT ${FunctionPath:?}/install/OpenResty.sh
             # shellcheck disable=SC2034
             OpenResty_install_version=${openresty_version:?}
+            Nginx_install='OpenResty'
             lua_install='n'
             OpenResty_Install_Main 2>&1 | tee $script_dir/logs/Install_OpenResty.log
             select_nginx_install

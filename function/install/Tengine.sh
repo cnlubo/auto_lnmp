@@ -8,17 +8,15 @@
 
 Tengine_Dep_Install(){
 
-    echo -e "${CMSG}[ Openssl-${openssl_latest_version:?} ]***********************************>>${CEND}\n"
-    # openssl
-    # shellcheck disable=SC2034
-    cd ${script_dir:?}/src
-    src_url=https://www.openssl.org/source/openssl-${openssl_latest_version:?}.tar.gz
-    [ ! -f openssl-${openssl_latest_version:?}.tar.gz ] && Download_src
-    [ -d openssl-${openssl_latest_version:?} ] && rm -rf openssl-${openssl_latest_version:?}
-    tar xf openssl-${openssl_latest_version:?}.tar.gz
-
-
-
+    # echo -e "${CMSG}[ Openssl-${openssl_latest_version:?} ]***********************************>>${CEND}\n"
+    # # openssl
+    # # shellcheck disable=SC2034
+    # cd ${script_dir:?}/src
+    # src_url=https://www.openssl.org/source/openssl-${openssl_latest_version:?}.tar.gz
+    # [ ! -f openssl-${openssl_latest_version:?}.tar.gz ] && Download_src
+    # [ -d openssl-${openssl_latest_version:?} ] && rm -rf openssl-${openssl_latest_version:?}
+    # tar xf openssl-${openssl_latest_version:?}.tar.gz
+    echo ""
 }
 
 Install_Tengine(){
@@ -44,19 +42,7 @@ Install_Tengine(){
     tar xf tengine-${tengine_install_version:?}.tar.gz
     cd tengine-${tengine_install_version:?}
     # http_stub_status_module 自带的状态页面 默认关闭
-    # ./configure --user=nginx --group=nginx --with-file-aio --with-ipv6
-    # --with-http_spdy_module --with-http_v2_module
-    # --with-http_realip_module
-    # --with-http_addition_module=shared --with-http_sub_module=shared --with-http_dav_module --with-http_flv_module=shared --with-http_slice_module=shared --with-http_mp4_module=shared
-    # --with-http_gunzip_module --with-http_gzip_static_module
-    #   --with-http_auth_request_module
-    #   --with-http_concat_module=shared --with-http_random_index_module=shared
-    #   --with-http_secure_link_module=shared --with-http_degradation_module
-    #   --with-http_sysguard_module=shared --with-http_dyups_module
-    #   --with-mail --with-mail_ssl_module --with-jemalloc
-
     if [ ${lua_install:?} = 'y' ]; then
-        #nginx_modules_options="--with-ld-opt='-Wl,-rpath,/usr/local/luajit/lib' --add-module=${script_dir:?}/src/ngx_devel_kit-${ngx_devel_kit_version:?} --add-module=${script_dir:?}/src/lua-nginx-module-${lua_nginx_module_version:?}"
         export LUAJIT_LIB=/usr/local/luajit/lib
         export LUAJIT_INC=/usr/local/luajit/include/luajit-2.1
         nginx_modules_options="--with-ld-opt='-Wl,-rpath,/usr/local/luajit/lib'"
@@ -98,11 +84,7 @@ Install_Tengine(){
         --with-jemalloc \
         --with-zlib=../zlib-${zlib_version:?} \
         --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?} $nginx_modules_options
-
-        # --with-http_stub_status_module \
-        # --with-http_gunzip_module \
-        # --with-http_auth_request_module \
-        # close debug
+    # close debug
     sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
     #打开UTF8支持
     # sed -i 's@./configure --disable-shared@./configure --disable-shared --enable-utf8 --enable-unicode-properties@' objs/Makefile
@@ -111,8 +93,8 @@ Install_Tengine(){
     if [ -e "$tengine_install_dir/conf/nginx.conf" ]; then
         echo -e "${CMSG}[Tengine installed successfully !!!]***********************************>>${CEND}\n"
         mkdir -p ${tengine_install_dir:?}/tmp/client
-        # install ngx_pagespeed
-        #$tengine_install_dir/sbin/dso_tool --add-module=${script_dir:?}/src/incubator-pagespeed-ngx-${pagespeed_version:?}
+        # install echo-nginx-module
+        $tengine_install_dir/sbin/dso_tool --add-module=${script_dir:?}/src/echo-nginx-module
         Config_Tengine
     else
         echo -e "${CFAILURE}[Tengine install failed, Please Contact the author !!!]*************>>${CEND}\n"

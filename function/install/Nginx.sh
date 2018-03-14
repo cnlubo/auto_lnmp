@@ -8,15 +8,15 @@
 
 Nginx_Dep_Install(){
 
-    echo -e "${CMSG}[ Openssl-${openssl_latest_version:?} ]***********************************>>${CEND}\n"
-    # openssl
-    # shellcheck disable=SC2034
-    cd ${script_dir:?}/src
-    src_url=https://www.openssl.org/source/openssl-${openssl_latest_version:?}.tar.gz
-    [ ! -f openssl-${openssl_latest_version:?}.tar.gz ] && Download_src
-    [ -d openssl-${openssl_latest_version:?} ] && rm -rf openssl-${openssl_latest_version:?}
-    tar xf openssl-${openssl_latest_version:?}.tar.gz
-
+    # echo -e "${CMSG}[ Openssl-${openssl_latest_version:?} ]***********************************>>${CEND}\n"
+    # # openssl
+    # # shellcheck disable=SC2034
+    # cd ${script_dir:?}/src
+    # src_url=https://www.openssl.org/source/openssl-${openssl_latest_version:?}.tar.gz
+    # [ ! -f openssl-${openssl_latest_version:?}.tar.gz ] && Download_src
+    # [ -d openssl-${openssl_latest_version:?} ] && rm -rf openssl-${openssl_latest_version:?}
+    # tar xf openssl-${openssl_latest_version:?}.tar.gz
+    echo ""
 }
 Install_Nginx(){
 
