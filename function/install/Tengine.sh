@@ -61,7 +61,7 @@ Install_Tengine(){
         export LUAJIT_INC=/usr/local/luajit/include/luajit-2.1
         nginx_modules_options="--with-ld-opt='-Wl,-rpath,/usr/local/luajit/lib'"
         nginx_modules_options=$nginx_modules_options" --with-http_lua_module=shared"
-        nginx_modules_options=$nginx_modules_options" --add-dynamic-module=../ngx_devel_kit-${ngx_devel_kit_version:?}"
+        nginx_modules_options=$nginx_modules_options" --add-module=../ngx_devel_kit-${ngx_devel_kit_version:?}"
         # 替换lua-nginx-module 代码为最新版本
         mv modules/ngx_http_lua_module modules/ngx_http_lua_module_old
         cp -ar ${script_dir:?}/src/lua-nginx-module-${lua_nginx_module_version:?} modules/ngx_http_lua_module
@@ -99,9 +99,10 @@ Install_Tengine(){
         --with-openssl=../openssl-${openssl_version:?}  \
         --with-pcre=../pcre-${pcre_version:?} --with-pcre-jit \
         --with-jemalloc \
-        --with-zlib=../zlib-${zlib_version:?} \
-        --add-dynamic-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
-        --add-dynamic-module=../nginx-ct-${ngx_ct_version:?} $nginx_modules_options
+        --with-zlib=../zlib-${zlib_version:?}
+        #\
+        #--add-dynamic-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
+        #--add-dynamic-module=../nginx-ct-${ngx_ct_version:?} $nginx_modules_options
         # close debug
     sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
     #打开UTF8支持
@@ -111,6 +112,9 @@ Install_Tengine(){
     if [ -e "$tengine_install_dir/conf/nginx.conf" ]; then
         echo -e "${CMSG}[Tengine installed successfully !!!]***********************************>>${CEND}\n"
         mkdir -p ${tengine_install_dir:?}/tmp/client
+        # install ngx_pagespeed
+        $tengine_install_dir/sbin/dso_tool --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?}
+
     else
         echo -e "${CFAILURE}[Tengine install failed, Please Contact the author !!!]*************>>${CEND}\n"
         kill -9 $$
