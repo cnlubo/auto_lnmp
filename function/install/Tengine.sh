@@ -96,7 +96,7 @@ Install_Tengine(){
         --http-fastcgi-temp-path=${tengine_install_dir:?}/tmp/fcgi/ \
         --http-uwsgi-temp-path=${tengine_install_dir:?}/tmp/uwsgi \
         --http-scgi-temp-path=${tengine_install_dir:?}/tmp/scgi \
-        --with-openssl=../openssl-${openssl_version:?}  \
+        --with-openssl=../openssl-${openssl_latest_version:?} \
         --with-pcre=../pcre-${pcre_version:?} --with-pcre-jit \
         --with-jemalloc \
         --with-zlib=../zlib-${zlib_version:?} \
@@ -116,7 +116,7 @@ Install_Tengine(){
         mkdir -p ${tengine_install_dir:?}/tmp/client
         # install ngx_pagespeed
         #$tengine_install_dir/sbin/dso_tool --add-module=${script_dir:?}/src/incubator-pagespeed-ngx-${pagespeed_version:?}
-
+        Config_Tengine
     else
         echo -e "${CFAILURE}[Tengine install failed, Please Contact the author !!!]*************>>${CEND}\n"
         kill -9 $$
@@ -184,5 +184,5 @@ EOF
 }
 
 Tengine_Install_Main() {
-    Nginx_Var && Nginx_Base_Dep_Install && Tengine_Dep_Install && Install_Tengine && Config_Tengine
+    Nginx_Var && Nginx_Base_Dep_Install && Tengine_Dep_Install && Install_Tengine
 }
