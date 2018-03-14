@@ -81,10 +81,7 @@ Install_Tengine(){
         --with-http_v2_module \
         --with-http_realip_module \
         --with-http_gzip_static_module \
-        --with-http_gunzip_module \
-        --with-http_auth_request_module \
         --with-http_degradation_module \
-        --with-http_stub_status_module \
         --with-http_ssl_module \
         --with-http_addition_module=shared \
         --with-http_sub_module=shared \
@@ -101,6 +98,10 @@ Install_Tengine(){
         --with-jemalloc \
         --with-zlib=../zlib-${zlib_version:?} \
         --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?} $nginx_modules_options
+
+        # --with-http_stub_status_module \
+        # --with-http_gunzip_module \
+        # --with-http_auth_request_module \
         # close debug
     sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
     #打开UTF8支持

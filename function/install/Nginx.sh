@@ -16,6 +16,7 @@ Nginx_Dep_Install(){
     [ ! -f openssl-${openssl_latest_version:?}.tar.gz ] && Download_src
     [ -d openssl-${openssl_latest_version:?} ] && rm -rf openssl-${openssl_latest_version:?}
     tar xf openssl-${openssl_latest_version:?}.tar.gz
+
 }
 Install_Nginx(){
 
@@ -76,6 +77,7 @@ Install_Nginx(){
         --with-pcre=../pcre-${pcre_version:?} --with-pcre-jit \
         --with-zlib=../zlib-${zlib_version:?} \
         --add-dynamic-module=../ngx_brotli \
+        --add-dynamic-module=../echo-nginx-module \
         --add-dynamic-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
         --add-dynamic-module=../nginx-ct-${ngx_ct_version:?} $nginx_modules_options
 

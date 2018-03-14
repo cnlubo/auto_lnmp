@@ -79,6 +79,9 @@ Nginx_Base_Dep_Install() {
     mv ${psol_version:?}-x$OS_BIT.tar.gz  incubator-pagespeed-ngx-${pagespeed_version:?}/ && cd incubator-pagespeed-ngx-${pagespeed_version:?}
     [ -d psol ] && rm -rf psol
     tar xf ${psol_version:?}-x$OS_BIT.tar.gz
+    echo -e "${CMSG}[ echo-nginx-module ]*************************>>${CEND}\n"
+    [ -d echo-nginx-module ] && rm -rf echo-nginx-module
+    git clone https://github.com/openresty/echo-nginx-module.git
     if [ ${lua_install:?} = 'y' ]; then
         yum -y install readline readline-deve
         SOURCE_SCRIPT ${script_dir:?}/include/LuaJIT.sh
