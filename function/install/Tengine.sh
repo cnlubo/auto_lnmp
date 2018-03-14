@@ -60,7 +60,7 @@ Install_Tengine(){
         export LUAJIT_LIB=/usr/local/luajit/lib
         export LUAJIT_INC=/usr/local/luajit/include/luajit-2.1
         nginx_modules_options="--with-ld-opt='-Wl,-rpath,/usr/local/luajit/lib'"
-        nginx_modules_options=$nginx_modules_options" --with-http_lua_module=shared"
+        nginx_modules_options=$nginx_modules_options" --with-http_lua_module"
         nginx_modules_options=$nginx_modules_options" --add-module=../ngx_devel_kit-${ngx_devel_kit_version:?}"
         # 替换lua-nginx-module 代码为最新版本
         mv modules/ngx_http_lua_module modules/ngx_http_lua_module_old
