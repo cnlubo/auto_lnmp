@@ -109,7 +109,7 @@ Config_Nginx(){
         fi
         # 修改配置
         sed -i "s#@run_user#${run_user:?}#g" $nginx_install_dir/conf/nginx.conf
-        sed -i "s#@worker_processes#2#g" $nginx_install_dir/conf/nginx.conf
+        # sed -i "s#@worker_processes#2#g" $nginx_install_dir/conf/nginx.conf
         sed -i "s#@nginx_install_dir#$nginx_install_dir#g" $nginx_install_dir/conf/nginx.conf
         # logrotate nginx log
         cat > /etc/logrotate.d/nginx << EOF

@@ -100,11 +100,7 @@ Install_Tengine(){
         --with-pcre=../pcre-${pcre_version:?} --with-pcre-jit \
         --with-jemalloc \
         --with-zlib=../zlib-${zlib_version:?} \
-        --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
-        --add-module=../nginx-ct-${ngx_ct_version:?} $nginx_modules_options
-        #\
-        #--add-dynamic-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
-        #--add-dynamic-module=../nginx-ct-${ngx_ct_version:?} $nginx_modules_options
+        --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?} $nginx_modules_options
         # close debug
     sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
     #打开UTF8支持
@@ -136,7 +132,7 @@ Config_Tengine(){
         fi
         # 修改配置
         sed -i "s#@run_user#${run_user:?}#g" $tengine_install_dir/conf/nginx.conf
-        sed -i "s#@worker_processes#2#g" $tengine_install_dir/conf/nginx.conf
+        # sed -i "s#@worker_processes#2#g" $tengine_install_dir/conf/nginx.conf
         sed -i "s#@tengine_install_dir#$tengine_install_dir#g" $tengine_install_dir/conf/nginx.conf
         # logrotate nginx log
         cat > /etc/logrotate.d/tengine << EOF
