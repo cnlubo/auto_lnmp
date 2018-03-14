@@ -114,11 +114,10 @@ select_nginx_install(){
     cat << EOF
 *  `echo -e "$CBLUE  1) Nginx-${nginx_mainline_version:?}   "`
 *  `echo -e "$CBLUE  2) Nginx-${nginx_mainline_version:?} with lua"`
-*  `echo -e "$CBLUE  3) Tengine-${Tengine_version:?}"`
-*  `echo -e "$CBLUE  4) Tengine-${Tengine_version:?} with lua"`
-*  `echo -e "$CBLUE  5) OpenResty-${openresty_version:?}     "`
-*  `echo -e "$CBLUE  6) Back             "`
-*  `echo -e "$CBLUE  7) Quit             "`
+*  `echo -e "$CBLUE  3) Tengine-${Tengine_version:?} "`
+*  `echo -e "$CBLUE  4) OpenResty-${openresty_version:?}     "`
+*  `echo -e "$CBLUE  5) Back             "`
+*  `echo -e "$CBLUE  6) Quit             "`
 EOF
     read -p "${CBLUE}Which Version are you want to install:${CEND} " num3
 
@@ -144,20 +143,12 @@ EOF
             SOURCE_SCRIPT ${FunctionPath:?}/install/Tengine.sh
             # shellcheck disable=SC2034
             tengine_install_version=${Tengine_version:?}
-            lua_install='n'
-            Tengine_Install_Main 2>&1 | tee $script_dir/logs/Install_Tengine.log
-            select_nginx_install
-            ;;
-        4)
-            SOURCE_SCRIPT ${FunctionPath:?}/install/Tengine.sh
-            # shellcheck disable=SC2034
-            tengine_install_version=${Tengine_version:?}
             lua_install='y'
             Tengine_Install_Main 2>&1 | tee $script_dir/logs/Install_Tengine.log
             select_nginx_install
             ;;
 
-        5)
+        4)
             SOURCE_SCRIPT ${FunctionPath:?}/install/OpenResty.sh
             # shellcheck disable=SC2034
             OpenResty_install_version=${openresty_version:?}
@@ -165,11 +156,11 @@ EOF
             OpenResty_Install_Main 2>&1 | tee $script_dir/logs/Install_OpenResty.log
             select_nginx_install
             ;;
-        6)
+        5)
             clear
             select_main_menu
             ;;
-        7)
+        6)
             clear
             exit 0
             ;;
