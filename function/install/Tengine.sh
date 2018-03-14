@@ -113,7 +113,7 @@ Install_Tengine(){
         echo -e "${CMSG}[Tengine installed successfully !!!]***********************************>>${CEND}\n"
         mkdir -p ${tengine_install_dir:?}/tmp/client
         # install ngx_pagespeed
-        $tengine_install_dir/sbin/dso_tool --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?}
+        $tengine_install_dir/sbin/dso_tool --add-module=${script_dir:?}/src/incubator-pagespeed-ngx-${pagespeed_version:?}
 
     else
         echo -e "${CFAILURE}[Tengine install failed, Please Contact the author !!!]*************>>${CEND}\n"
