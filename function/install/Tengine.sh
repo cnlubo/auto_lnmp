@@ -100,7 +100,8 @@ Install_Tengine(){
         --with-pcre=../pcre-${pcre_version:?} --with-pcre-jit \
         --with-jemalloc \
         --with-zlib=../zlib-${zlib_version:?} \
-        --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?} $nginx_modules_options
+        --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
+        --add-module=../nginx-ct-${ngx_ct_version:?} $nginx_modules_options
         #\
         #--add-dynamic-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
         #--add-dynamic-module=../nginx-ct-${ngx_ct_version:?} $nginx_modules_options
