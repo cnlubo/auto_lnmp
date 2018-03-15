@@ -11,13 +11,13 @@ OpenResty_Dep_Install(){
     # 依赖安装
     #yum -y install readline-devel pcre-devel openssl-devel gcc
     yum -y install libuuid-devel
-    echo -e "${CMSG}[ Openssl-${openssl_version:?} ]***********************************>>${CEND}\n"
-    # openssl
-    # shellcheck disable=SC2034
-    src_url=https://www.openssl.org/source/openssl-${openssl_version:?}.tar.gz
-    [ ! -f openssl-${openssl_version:?}.tar.gz ] && Download_src
-    [ -d openssl-${openssl_version:?} ] && rm -rf openssl-${openssl_version:?}
-    tar xf openssl-${openssl_version:?}.tar.gz
+    # echo -e "${CMSG}[ Openssl-${openssl_version:?} ]***********************************>>${CEND}\n"
+    # # openssl
+    # # shellcheck disable=SC2034
+    # src_url=https://www.openssl.org/source/openssl-${openssl_version:?}.tar.gz
+    # [ ! -f openssl-${openssl_version:?}.tar.gz ] && Download_src
+    # [ -d openssl-${openssl_version:?} ] && rm -rf openssl-${openssl_version:?}
+    # tar xf openssl-${openssl_version:?}.tar.gz
 
 }
 
@@ -71,7 +71,7 @@ Install_OpenResty(){
         --http-uwsgi-temp-path=${openresty_install_dir:?}/tmp/uwsgi \
         --http-scgi-temp-path=${openresty_install_dir:?}/tmp/scgi \
         --with-ld-opt=" -ljemalloc" \
-        --with-openssl=../openssl-${openssl_version:?} \
+        --with-openssl=../openssl-${openssl_latest_version:?} \
         --with-pcre=../pcre-${pcre_version:?} --with-pcre-jit \
         --with-zlib=../zlib-${zlib_version:?} \
         --with-luajit \

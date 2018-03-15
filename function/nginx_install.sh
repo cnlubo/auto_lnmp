@@ -24,7 +24,7 @@ Nginx_Var() {
 
 Nginx_Base_Dep_Install() {
 
-    echo -e "${CMSG}[zlib pcre jemalloc openssl ]********************************>>${CEND}\n"
+    echo -e "${CMSG}[zlib pcre jemalloc ]********************************>>${CEND}\n"
     cd ${script_dir:?}/src
     # zlib
     # shellcheck disable=SC2034
@@ -55,15 +55,20 @@ Nginx_Base_Dep_Install() {
     # jemalloc
     SOURCE_SCRIPT ${script_dir:?}/include/jemalloc.sh
     Install_Jemalloc
+    cd ${script_dir:?}/src
+    src_url=https://www.openssl.org/source/openssl-${openssl_latest_version:?}.tar.gz
+    [ ! -f openssl-${openssl_latest_version:?}.tar.gz ] && Download_src
+    [ -d openssl-${openssl_latest_version:?} ] && rm -rf openssl-${openssl_latest_version:?}
+    tar xf openssl-${openssl_latest_version:?}.tar.gz
     if [ $Nginx_install == 'Nginx' ] || [ $Nginx_install == 'Tengine' ]; then
 
         echo -e "${CMSG}[ Openssl-${openssl_latest_version:?} ]***********************************>>${CEND}\n"
         # shellcheck disable=SC2034
         cd ${script_dir:?}/src
-        src_url=https://www.openssl.org/source/openssl-${openssl_latest_version:?}.tar.gz
-        [ ! -f openssl-${openssl_latest_version:?}.tar.gz ] && Download_src
-        [ -d openssl-${openssl_latest_version:?} ] && rm -rf openssl-${openssl_latest_version:?}
-        tar xf openssl-${openssl_latest_version:?}.tar.gz
+        # src_url=https://www.openssl.org/source/openssl-${openssl_latest_version:?}.tar.gz
+        # [ ! -f openssl-${openssl_latest_version:?}.tar.gz ] && Download_src
+        # [ -d openssl-${openssl_latest_version:?} ] && rm -rf openssl-${openssl_latest_version:?}
+        # tar xf openssl-${openssl_latest_version:?}.tar.gz
         echo -e "${CMSG}[ngx_brotli ngx-ct ]*************************>>${CEND}\n"
         #[ -d ngx_brotli ] && rm -rf ngx_brotli
         #git clone https://github.com/google/ngx_brotli.git
