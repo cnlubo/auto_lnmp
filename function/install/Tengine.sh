@@ -118,6 +118,7 @@ Config_Tengine(){
         # sed -i "s#@worker_processes#2#g" $tengine_install_dir/conf/nginx.conf
         sed -i "s#@tengine_install_dir#$tengine_install_dir#g" $tengine_install_dir/conf/nginx.conf
         # logrotate nginx log
+        [ -f /etc/logrotate.d/tengine ] && rm -rf /etc/logrotate.d/tengine
         cat > /etc/logrotate.d/tengine << EOF
         $tengine_install_dir/logs/*.log {
           daily
