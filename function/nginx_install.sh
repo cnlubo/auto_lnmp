@@ -55,20 +55,28 @@ Nginx_Base_Dep_Install() {
     # jemalloc
     SOURCE_SCRIPT ${script_dir:?}/include/jemalloc.sh
     Install_Jemalloc
-    cd ${script_dir:?}/src
-    src_url=https://www.openssl.org/source/openssl-${openssl_latest_version:?}.tar.gz
-    [ ! -f openssl-${openssl_latest_version:?}.tar.gz ] && Download_src
-    [ -d openssl-${openssl_latest_version:?} ] && rm -rf openssl-${openssl_latest_version:?}
-    tar xf openssl-${openssl_latest_version:?}.tar.gz
+    # openssl
     if [ $Nginx_install == 'Nginx' ] || [ $Nginx_install == 'Tengine' ]; then
 
         echo -e "${CMSG}[ Openssl-${openssl_latest_version:?} ]***********************************>>${CEND}\n"
         # shellcheck disable=SC2034
         cd ${script_dir:?}/src
-        # src_url=https://www.openssl.org/source/openssl-${openssl_latest_version:?}.tar.gz
-        # [ ! -f openssl-${openssl_latest_version:?}.tar.gz ] && Download_src
-        # [ -d openssl-${openssl_latest_version:?} ] && rm -rf openssl-${openssl_latest_version:?}
-        # tar xf openssl-${openssl_latest_version:?}.tar.gz
+        src_url=https://www.openssl.org/source/openssl-${openssl_latest_version:?}.tar.gz
+        [ ! -f openssl-${openssl_latest_version:?}.tar.gz ] && Download_src
+        [ -d openssl-${openssl_latest_version:?} ] && rm -rf openssl-${openssl_latest_version:?}
+        tar xf openssl-${openssl_latest_version:?}.tar.gz
+    else
+        echo -e "${CMSG}[ Openssl-${openssl_version:?} ]***********************************>>${CEND}\n"
+        # openssl
+        # shellcheck disable=SC2034
+        cd ${script_dir:?}/src
+        src_url=https://www.openssl.org/source/openssl-${openssl_version:?}.tar.gz
+        [ ! -f openssl-${openssl_version:?}.tar.gz ] && Download_src
+        [ -d openssl-${openssl_version:?} ] && rm -rf openssl-${openssl_version:?}
+        tar xf openssl-${openssl_version:?}.tar.gz
+    fi
+    # ngx_brotli ngx-ct
+    if [ $Nginx_install == 'Nginx' ] || [ $Nginx_install == 'OpenResty' ]; then
         echo -e "${CMSG}[ngx_brotli ngx-ct ]*************************>>${CEND}\n"
         #[ -d ngx_brotli ] && rm -rf ngx_brotli
         #git clone https://github.com/google/ngx_brotli.git
@@ -81,11 +89,11 @@ Nginx_Base_Dep_Install() {
         [ ! -f v${ngx_ct_version:?}.tar.gz ] && Download_src
         [ -d nginx-ct-${ngx_ct_version:?} ] && rm -rf nginx-ct-${ngx_ct_version:?}
         tar xf v${ngx_ct_version:?}.tar.gz
-        
+    fi
+    if [ $Nginx_install == 'Nginx' ] || [ $Nginx_install == 'Tengine' ]; then
         echo -e "${CMSG}[ echo-nginx-module ]*************************>>${CEND}\n"
         [ -d echo-nginx-module ] && rm -rf echo-nginx-module
         git clone https://github.com/openresty/echo-nginx-module.git
-
     fi
 
     echo -e "${CMSG}[ ngx_pagespeed ]*************************>>${CEND}\n"

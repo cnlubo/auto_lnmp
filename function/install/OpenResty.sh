@@ -11,14 +11,7 @@ OpenResty_Dep_Install(){
     # 依赖安装
     #yum -y install readline-devel pcre-devel openssl-devel gcc
     yum -y install libuuid-devel
-    echo -e "${CMSG}[ Openssl-${openssl_version:?} ]***********************************>>${CEND}\n"
-    # openssl
-    # shellcheck disable=SC2034
-    cd ${script_dir:?}/src
-    src_url=https://www.openssl.org/source/openssl-${openssl_version:?}.tar.gz
-    [ ! -f openssl-${openssl_version:?}.tar.gz ] && Download_src
-    [ -d openssl-${openssl_version:?} ] && rm -rf openssl-${openssl_version:?}
-    tar xf openssl-${openssl_version:?}.tar.gz
+
 
 }
 
@@ -65,7 +58,7 @@ Install_OpenResty(){
         --with-http_realip_module  \
         --with-http_v2_module \
         --with-http_iconv_module \
-        --with-stream --with-stream_ssl_module \
+        --with-stream=dynamic --with-stream_ssl_module \
         --http-client-body-temp-path=${openresty_install_dir:?}/tmp/client/ \
         --http-proxy-temp-path=${openresty_install_dir:?}/tmp/proxy/ \
         --http-fastcgi-temp-path=${openresty_install_dir:?}/tmp/fcgi/ \
@@ -76,8 +69,11 @@ Install_OpenResty(){
         --with-pcre=../pcre-${pcre_version:?} --with-pcre-jit \
         --with-zlib=../zlib-${zlib_version:?} \
         --with-luajit \
-        --add-module=../ngx_brotli \
-        --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?}
+        --add-dynamic-module=../ngx_brotli \
+        --add-dynamic-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
+        --add-dynamic-module=../nginx-ct-${ngx_ct_version:?}
+        #--add-module=../ngx_brotli \
+        #--add-module=../incubator-pagespeed-ngx-${pagespeed_version:?}
         # --with-ld-opt="-Wl,-rpath,/usr/local/luajit/lib -ljemalloc" \
         # --with-luajit=/usr/local/luajit \
 
