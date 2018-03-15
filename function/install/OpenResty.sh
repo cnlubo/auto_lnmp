@@ -69,7 +69,7 @@ Install_OpenResty(){
         --with-pcre=../pcre-${pcre_version:?} --with-pcre-jit \
         --with-zlib=../zlib-${zlib_version:?} \
         --with-luajit \
-        --add-module=../ngx_brotli \
+        --add-dynamic-module=../ngx_brotli \
         --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
         --add-module=../nginx-ct-${ngx_ct_version:?}
     #--add-module=../ngx_brotli \
