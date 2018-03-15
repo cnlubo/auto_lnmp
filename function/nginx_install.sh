@@ -77,6 +77,7 @@ Nginx_Base_Dep_Install() {
     fi
     # ngx_brotli ngx-ct
     if [ $Nginx_install == 'Nginx' ] || [ $Nginx_install == 'OpenResty' ]; then
+
         echo -e "${CMSG}[ngx_brotli ngx-ct ]*************************>>${CEND}\n"
         #[ -d ngx_brotli ] && rm -rf ngx_brotli
         #git clone https://github.com/google/ngx_brotli.git
@@ -90,7 +91,9 @@ Nginx_Base_Dep_Install() {
         [ -d nginx-ct-${ngx_ct_version:?} ] && rm -rf nginx-ct-${ngx_ct_version:?}
         tar xf v${ngx_ct_version:?}.tar.gz
     fi
+    # echo-nginx-module
     if [ $Nginx_install == 'Nginx' ] || [ $Nginx_install == 'Tengine' ]; then
+
         echo -e "${CMSG}[ echo-nginx-module ]*************************>>${CEND}\n"
         [ -d echo-nginx-module ] && rm -rf echo-nginx-module
         git clone https://github.com/openresty/echo-nginx-module.git
