@@ -70,8 +70,8 @@ Install_OpenResty(){
         --with-zlib=../zlib-${zlib_version:?} \
         --with-luajit \
         --add-module=../ngx_brotli \
-        --add-dynamic-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
-        --add-dynamic-module=../nginx-ct-${ngx_ct_version:?}
+        --add-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
+        --add-module=../nginx-ct-${ngx_ct_version:?}
     #--add-module=../ngx_brotli \
         #--add-module=../incubator-pagespeed-ngx-${pagespeed_version:?}
     # --with-ld-opt="-Wl,-rpath,/usr/local/luajit/lib -ljemalloc" \
