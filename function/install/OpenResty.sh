@@ -47,6 +47,7 @@ Install_OpenResty(){
         --http-log-path=${openresty_install_dir:?}/logs/access.log \
         --pid-path=${openresty_install_dir:?}/run/nginx.pid  \
         --lock-path=${openresty_install_dir:?}/run/nginx.lock \
+        --modules-path=${openresty_install_dir:?}/modules \
         --user=$run_user --group=$run_user \
         --with-http_stub_status_module \
         --with-http_ssl_module \
