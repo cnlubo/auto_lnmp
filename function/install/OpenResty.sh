@@ -39,7 +39,7 @@ Install_OpenResty(){
     cd openresty-${openresty_version:?}
     #export LUAJIT_LIB=/usr/local/luajit/lib
     #export LUAJIT_INC=/usr/local/luajit/include/luajit-2.1
-
+    # --modules-path=${openresty_install_dir:?}/modules \
     ./configure --prefix=${openresty_install_dir:?} \
         --sbin-path=${openresty_install_dir:?}/sbin/nginx \
         --conf-path=${openresty_install_dir:?}/conf/nginx.conf \
@@ -47,7 +47,6 @@ Install_OpenResty(){
         --http-log-path=${openresty_install_dir:?}/logs/access.log \
         --pid-path=${openresty_install_dir:?}/run/nginx.pid  \
         --lock-path=${openresty_install_dir:?}/run/nginx.lock \
-        --modules-path=${openresty_install_dir:?}/modules \
         --user=$run_user --group=$run_user \
         --with-http_stub_status_module \
         --with-http_ssl_module \
