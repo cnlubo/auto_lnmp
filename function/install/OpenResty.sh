@@ -69,15 +69,15 @@ Install_OpenResty(){
         --with-pcre=../pcre-${pcre_version:?} --with-pcre-jit \
         --with-zlib=../zlib-${zlib_version:?} \
         --with-luajit \
-        --add-dynamic-module=../ngx_brotli \
+        --add-module=../ngx_brotli \
         --add-dynamic-module=../incubator-pagespeed-ngx-${pagespeed_version:?} \
         --add-dynamic-module=../nginx-ct-${ngx_ct_version:?}
-        #--add-module=../ngx_brotli \
+    #--add-module=../ngx_brotli \
         #--add-module=../incubator-pagespeed-ngx-${pagespeed_version:?}
-        # --with-ld-opt="-Wl,-rpath,/usr/local/luajit/lib -ljemalloc" \
+    # --with-ld-opt="-Wl,-rpath,/usr/local/luajit/lib -ljemalloc" \
         # --with-luajit=/usr/local/luajit \
 
-    echo -e "${CMSG}[OpenResty install ........ ]***********************************>>${CEND}\n"
+        echo -e "${CMSG}[OpenResty install ........ ]***********************************>>${CEND}\n"
     make -j${CpuProNum:?} && make install
     if [ -e "$openresty_install_dir/conf/nginx.conf" ]; then
         echo -e "${CMSG}[OpenResty installed successfully !!!]***********************************>>${CEND}\n"
