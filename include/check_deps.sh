@@ -237,7 +237,7 @@ installDepsBySrc() {
                 src_url=https://github.com/pypa/pip/archive/${pip_version:?}.tar.gz
                 [ ! -f $pip_version.tar.gz ] && Download_src
                 [ -d pip-$pip_version ] && rm -rf pip-$pip_version
-                tar xvf $pip_version.tar.gz
+                tar xf $pip_version.tar.gz
                 cd pip-$pip_version
                 python setup.py install
                 if [ $? -eq 0 ];then
