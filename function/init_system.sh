@@ -9,7 +9,7 @@ SOURCE_SCRIPT ${script_dir:?}/include/configure_os.sh
 
 select_system_setup_function(){
 
-    echo "${CMSG}[Initialization $OS] **************************************************>>${CEND}";
+    echo "${CMSG}[Initialization $OS] **************************************************>>${CEND}\n";
     # modify ssh port
     if [ -e "/etc/ssh/sshd_config" ]; then
         [ -z "`grep ^Port /etc/ssh/sshd_config`" ] && ssh_port=22 || ssh_port=`grep ^Port /etc/ssh/sshd_config | awk '{print $2}'`
@@ -21,7 +21,7 @@ select_system_setup_function(){
             if [ $SSH_PORT -eq 22 ] || [ $SSH_PORT -gt 1024 ] && [ $SSH_PORT -lt 65535 ]; then
                 break
             else
-                echo "${CWARNING}input error! Input range: 22,1025~65534${CEND}"
+                echo "${CWARNING}input error! Input range: 22,1025~65534${CEND}\n"
             fi
         done
 
@@ -38,7 +38,7 @@ select_system_setup_function(){
     Typical_User="${Typical_User:=$default_user}"
     id $Typical_User >/dev/null 2>&1
     if [ $? -eq 0 ]; then
-        echo "${CWARNING}[ Input user($Typical_User) exist !!!] *******************************>>${CEND}"
+        echo "${CWARNING}[ Input user($Typical_User) exist !!!] *******************************>>${CEND}\n"
     else
         # 创建用户设置密码
         useradd $Typical_User
@@ -46,7 +46,7 @@ select_system_setup_function(){
         default_pass=`mkpasswd -l 8`
         echo ${default_pass:?} | passwd $Typical_User --stdin  &>/dev/null
         echo
-        echo "${CRED}[system user $Typical_User passwd:${default_pass:?} !!!!! ] *******************************>>${CEND}" | tee $script_dir/logs/pp.log
+        echo "${CRED}[system user $Typical_User passwd:${default_pass:?} !!!!! ] **********>>${CEND}\n" | tee $script_dir/logs/pp.log
         echo
         # sudo 权限
         [ -f /etc/sudoers.d/ak47 ] && rm -rf /etc/sudoers.d/ak47
@@ -78,6 +78,6 @@ EOF
 
     # 源代码安装软件
     installDepsBySrc 2>&1 | tee $script_dir/logs/soft_install.log
-    echo "${CMSG} [ Initialization $OS OK please reboot] ***********************************************>>${CEND}";
+    echo "${CMSG} [ Initialization $OS OK please reboot] ***********************>>${CEND}\n";
     select_main_menu
 }

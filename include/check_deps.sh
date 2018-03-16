@@ -143,8 +143,7 @@ installDepsBySrc() {
             Git_version=$U_V1.$U_V2.$U_V3
         fi
         if [ $Git_version != ${git_version:?} ] || [ ! -e "$( which git )" ]; then
-            echo "${CMSG} [ git$git_version install begin ] *************************************>>${CEND}"
-            echo
+            echo "${CMSG} [ git$git_version install begin ] **************************>>${CEND}\n"
             cd ${script_dir:?}/src
             src_url=https://www.kernel.org/pub/software/scm/git/git-$git_version.tar.gz
             [ -d git-$git_version ] && rm -rf git-$git_version
@@ -156,19 +155,14 @@ installDepsBySrc() {
             [ -d /usr/local/git ] && rm -rf /usr/local/git
             make prefix=/usr/local/git all && make prefix=/usr/local/git install
             if [ $? -eq 0 ];then
-                echo "${CMSG} [ git$git_version install success ! ] **********************************>>${CEND}"
-                echo
+                echo "${CMSG} [ git$git_version install success ! ] *******************>>${CEND}\n"
                 rm -rf /usr/bin/git*  && ln -s /usr/local/git/bin/* /usr/bin/
             else
-                echo "${CFAILURE} [ git$git_version install fail ! ] **********************************>>${CEND}"
-                echo
+                echo "${CFAILURE} [ git$git_version install fail ! ] *******************>>${CEND}\n"
             fi
-            cd ..
-            rm -rf git-$git_version
+            cd .. && rm -rf git-$git_version
         else
-            echo "${CMSG} [ git has been  install !] ***********************************************>>${CEND}"
-            echo
-
+            echo "${CMSG} [ git has been  install !] *************************************>>${CEND}\n"
         fi
         # python
         if [ -e "$( which python )" ]; then
@@ -179,8 +173,7 @@ installDepsBySrc() {
         fi
         if [ "$Python_version" != "${python2_version:?}" ] || [ ! -e "$( which python )" ] ; then
             cd $script_dir/src
-            echo "${CMSG} [ Python-$python2_version install begin ] *************************************>>${CEND}"
-            echo
+            echo "${CMSG} [ Python-$python2_version install begin ] **************************>>${CEND}\n"
             src_url=https://www.python.org/ftp/python/$python2_version/Python-$python2_version.tar.xz
             [ -d Python-$python2_version ] && rm -rf Python-$python2_version
             [ ! -f Python-$python2_version.tar.xz ] && Download_src
@@ -192,11 +185,9 @@ installDepsBySrc() {
             ./configure --enable-shared  --enable-unicode=ucs4 --prefix=/usr/local/python$python2_version LDFLAGS="-Wl,-rpath /usr/local/python$python2_version/lib"
             make && make install
             if [ $? -eq 0 ];then
-                echo "${CMSG} [ Python-$python2_version install success ! ] **********************************>>${CEND}"
-                echo
+                echo "${CMSG} [ Python-$python2_version install success ! ] ********************>>${CEND}\n"
                 # 替换默认python
-                echo "${CMSG} [ Update System Python begin ] **********************************>>${CEND}"
-                echo
+                echo "${CMSG} [ Update System Python begin ] **********************************>>${CEND}\n"
                 if [ "${CentOS_RHEL_version}" == '7' ]; then
                     if [ -h /usr/bin/python2.7 ]; then
                         rm -rf /usr/bin/python2.7
@@ -212,8 +203,7 @@ installDepsBySrc() {
                         sed -i "1c #\!  /usr/bin/python2.7.5" /usr/libexec/urlgrabber-ext-down
                     fi
                 fi
-                echo "${CMSG} [ setuptools vs pip install begin ] **********************************>>${CEND}"
-                echo
+                echo "${CMSG} [ setuptools vs pip install begin ] *****************************>>${CEND}\n"
                 # setuptools
                 cd $script_dir/src
                 src_url=https://github.com/pypa/setuptools/archive/${setuptools_version:?}.tar.gz
@@ -222,14 +212,12 @@ installDepsBySrc() {
                 tar xf $setuptools_version.tar.gz && cd setuptools-$setuptools_version
                 python bootstrap.py && python setup.py install
                 if [ $? -eq 0 ];then
-                    echo "${CMSG} [ setuptools-$setuptools_version install success !!!] **********************************>>${CEND}"
-                    echo
+                    echo "${CMSG} [ setuptools-$setuptools_version install success !!!] ***********>>${CEND}\n"
                     rm -rf /usr/bin/easy_install*
                     ln -s /usr/local/python$python2_version/bin/easy_install /usr/bin/easy_install
                     ln -s /usr/local/python$python2_version/bin/easy_install-2.7 /usr/bin/easy_install-2.7
                 else
-                    echo "${CFAILURE} [ setuptools-$setuptools_version install fail !!!] **********************************>>${CEND}"
-                    echo
+                    echo "${CFAILURE} [ setuptools-$setuptools_version install fail !!!] **********>>${CEND}\n"
                 fi
                 cd .. && rm -rf setuptools-$setuptools_version
                 # pip
@@ -239,15 +227,13 @@ installDepsBySrc() {
                 tar xf $pip_version.tar.gz && cd pip-$pip_version
                 python setup.py install
                 if [ $? -eq 0 ];then
-                    echo "${CMSG} [ pip-$pip_version install success !!!]**********************************>>${CEND}"
-                    echo
+                    echo "${CMSG} [ pip-$pip_version install success !!!]************************>>${CEND}\n"
                     rm -rf /usr/bin/pip*
                     ln -s /usr/local/python$python2_version/bin/pip /usr/bin/pip
                     ln -s /usr/local/python$python2_version/bin/pip2 /usr/bin/pip2
                     ln -s /usr/local/python$python2_version/bin/pip2.7 /usr/bin/pip2.7
                     # pip镜像
-                    echo "${CMSG}[ setup pip.conf ]**********************************>>${CEND}"
-                    echo
+                    echo "${CMSG}[ setup pip.conf ]**********************************>>${CEND}\n"
                     [ ! -d /root/.pip ] && mkdir -p /root/.pip
                     [ -f /root/.pip/pip.conf ] && mv /root/.pip/pip.conf /root/.pip/pip.conf_bak
                     cp ${script_dir:?}/config/pip.conf /root/.pip/pip.conf
@@ -255,22 +241,19 @@ installDepsBySrc() {
                     if [ $? -eq 0 ]; then
                         [ -d /home/${default_user:?}/.pip ] && rm -rf /home/${default_user:?}/.pip
                         mkdir -p /home/${default_user:?}/.pip && cp ${script_dir:?}/config/pip.conf /home/${default_user:?}/.pip/pip.conf
-                        chown -Rf ${default_user:?}${default_user:?} /home/${default_user:?}/.pip/
+                        chown -Rf ${default_user:?}:${default_user:?} /home/${default_user:?}/.pip/
                     fi
                 else
-                    echo "${CFAILURE}[ pip-$pip_version install fail !!!] **********************************>>${CEND}"
-                    echo
+                    echo "${CFAILURE}[ pip-$pip_version install fail !!!] ******************>>${CEND}\n"
                 fi
                 cd .. && rm -rf pip-$pip_version
 
             else
-                echo "${CFAILURE}[ Python-$python2_version install fail !!!]  **********************************>>${CEND}"
-                echo
+                echo "${CFAILURE}[ Python-$python2_version install fail !!!]  *****************>>${CEND}\n"
             fi
             rm -rf $script_dir/src/Python-$python2_version
         else
-            echo "${CMSG}[ python2 has been install !!!] ********************************************>>${CEND}"
-            echo
+            echo "${CMSG}[ python2 has been install !!!] **************************************>>${CEND}\n"
         fi
 
         # zsh
@@ -285,8 +268,7 @@ installDepsBySrc() {
             cd zsh-$zsh_version
             ./configure && make && make install
             if [ $? -eq 0 ];then
-                echo "${CMSG} [ zsh $zsh_version install success !!!] **********************************${CEND}"
-                echo
+                echo "${CMSG} [ zsh $zsh_version install success !!!] **********************************${CEND}\n"
                 # zsh 加入到ect shells 中
                 if [ "$(grep -c /usr/local/bin/zsh /etc/shells)" -eq 0 ]; then
                     echo "/usr/local/bin/zsh" | tee -a /etc/shells
@@ -309,26 +291,22 @@ installDepsBySrc() {
                     fi
                     # Oh My Zsh
                     if [ -d $root_zsh ] || [ -d $normal_zsh ]; then
-                        echo "${CRED}[root or ${default_user:?} already have Oh My Zsh installed !!! ] **********************************${CEND}"
-                        echo "${CRED}[You'll need to remove $ZSH if you want to re-install !!! ] ******************${CEND}"
+                        echo "${CRED}[root or ${default_user:?} already have Oh My Zsh installed !!! ] ***************${CEND}\n"
+                        echo "${CRED}[You'll need to remove $ZSH if you want to re-install !!! ] ***************${CEND}\n"
 
                     else
-                        echo "${CMSG} [Oh My Zsh install ] ************************************>>${CEND}"
-                        echo
+                        echo "${CMSG} [Oh My Zsh install ] ************************>>${CEND}\n"
                         if [ $default_user_exists -eq 1 ]; then
                             sudo -u ${default_user:?} -H git clone --depth=1 https://github.com/robbyrussell/oh-my-zsh.git $normal_zsh
                             ln -s $normal_zsh $root_zsh
                             if [ -f /home/${default_user:?}/.zshrc ] || [ -h /home/${default_user:?}/.zshrc ]; then
-                                echo "${CMSG}[Found /home/${default_user:?}/.zshrc. Backing up to /home/${default_user:?}/.zshrc.pre-oh-my-zsh ] *****${CEND}"
-                                echo
+                                echo "${CMSG}[Found /home/${default_user:?}/.zshrc. Backing up to /home/${default_user:?}/.zshrc.pre-oh-my-zsh ] *****${CEND}\n"
                                 sudo -u ${default_user:?} -H mv /home/${default_user:?}/.zshrc /home/${default_user:?}/.zshrc.pre-oh-my-zsh
                             fi
-                            echo  "${CMSG}[Using the Oh My Zsh template file and adding it to /home/${default_user:?}/.zshrc] *****${CEND}"
-                            echo
+                            echo  "${CMSG}[Using the Oh My Zsh template file and adding it to /home/${default_user:?}/.zshrc] *****${CEND}\n"
                             sudo -u ${default_user:?} -H cp $normal_zsh/templates/zshrc.zsh-template /home/${default_user:?}/.zshrc
                             sudo -u ${default_user:?} -H sed -i "/^export ZSH=/c export ZSH=$normal_zsh" /home/${default_user:?}/.zshrc
-                            echo "${CMSG}[powerline install ] ****************************************>>${CEND}"
-                            echo
+                            echo "${CMSG}[powerline install ] ****************************>>${CEND}\n"
                             [ -d /home/${default_user:?}/.ohmyzsh-powerline ] && sudo -u ${default_user:?} -H rm -rf /home/${default_user:?}/.ohmyzsh-powerline
                             [ -d /root/.ohmyzsh-powerline ] && rm -rf /root/.ohmyzsh-powerline
                             sudo -u ${default_user:?} -H git clone git://github.com/jeremyFreeAgent/oh-my-zsh-powerline-theme /home/${default_user:?}/.ohmyzsh-powerline
@@ -348,8 +326,7 @@ installDepsBySrc() {
                             sudo -u ${default_user:?} -H /home/${default_user:?}/fonts/install.sh
                             ln -s /home/${default_user:?}/fonts /root/fonts
                             # zsh theme
-                            echo "${CMSG}[custom zsh theme install ] ****************************************>>${CEND}"
-                            echo
+                            echo "${CMSG}[custom zsh theme install ] *********************>>${CEND}\n"
                             [ -d /home/${default_user:?}/.oh-my-zsh/custom/themes ] && sudo -u ${default_user:?} -H mkdir -p /home/${default_user:?}/.oh-my-zsh/custom/themes
                             sudo -u ${default_user:?} -H cp $script_dir/template/zsh/ak47.zsh-theme /home/${default_user:?}/.oh-my-zsh/custom/themes/
                             # 修改配置文件
@@ -367,8 +344,7 @@ installDepsBySrc() {
                             fi
                         else
                             git clone --depth=1 https://github.com/robbyrussell/oh-my-zsh.git $root_zsh
-                            echo "${CMSG}[ powerline install ] **********************************${CEND}"
-                            echo
+                            echo "${CMSG}[ powerline install ] ***********************>>${CEND}\n"
                             git clone git://github.com/jeremyFreeAgent/oh-my-zsh-powerline-theme /root/.ohmyzsh-powerline
                             mkdir -p /root/.oh-my-zsh/custom/themes/
                             ln -f /root/.ohmyzsh-powerline/powerline.zsh-theme /root/.oh-my-zsh/custom/themes/powerline.zsh-theme
@@ -382,14 +358,13 @@ installDepsBySrc() {
                                 fi
                             fi
                             cd /root/fonts && git pull && cd $script_dir
-                            echo "${CMSG}[custom zsh theme install ] ****************************************>>${CEND}"
-                            echo
+                            echo "${CMSG}[custom zsh theme install ] *****************************>>${CEND}\n"
                             [ -d /root/.oh-my-zsh/custom/themes ] && mkdir -p /root/.oh-my-zsh/custom/themes
                             cp $script_dir/template/zsh/ak47.zsh-theme /root/.oh-my-zsh/custom/themes/
                         fi
 
                         if [ -f /root/.zshrc ] || [ -h /root/.zshrc ]; then
-                            echo "${CMSG} [ Found /root/.zshrc. Backing up to /root/.zshrc.pre-oh-my-zsh ] **********************************${CEND}"
+                            echo "${CMSG} [ Found /root/.zshrc. Backing up to /root/.zshrc.pre-oh-my-zsh ] *******>>${CEND}\n"
                             mv /root/.zshrc /root/.zshrc.pre-oh-my-zsh
                         fi
                         cp $root_zsh/templates/zshrc.zsh-template /root/.zshrc
@@ -407,20 +382,17 @@ installDepsBySrc() {
                             # 删除原有设置
                             sed -i  "/#/b;/plugins=(/,/)/c plugins=(git z wd extract)" /root/.zshrc
                         fi
-                        echo "${CMSG}[ Oh My Zsh install success !!!] **********************************${CEND}"
+                        echo "${CMSG}[ Oh My Zsh install success !!!] ****************>>${CEND}\n"
                     fi
                 else
-                    echo "${CRED}[ zsh $zsh_version is not installed!! Please install zsh first!!!] **********************************${CEND}"
-
+                    echo "${CRED}[ zsh $zsh_version is not installed!! Please install zsh first!!!] *************>>${CEND}\n"
                 fi
                 unset CHECK_ZSH_INSTALLED
                 unset normal_zsh
                 unset root_zsh
             else
-                echo "${CFAILURE} [ zsh $zsh_version install fail !!!] **********************************${CEND}"
-                echo
+                echo "${CFAILURE} [ zsh $zsh_version install fail !!!] ***************${CEND}\n"
             fi
-            cd $script_dir
             rm -rf $script_dir/src/zsh-$zsh_version
         fi
         # vim
@@ -428,8 +400,7 @@ installDepsBySrc() {
         yum -y  remove vim-common vim-filesystem
         if [ ! -e "$(which vim)" ] && [ -e "$( which python )" ]; then
             cd $script_dir/src
-            echo "${CMSG}[ vim install begin ]  **********************************>>${CEND}"
-            echo
+            echo "${CMSG}[ vim install begin ]  **********************>>${CEND}\n"
             yum -y install ncurses-devel perl-ExtUtils-Embed lua-devel
             [ ! -d vim ] && git clone https://github.com/vim/vim.git
             cd vim && git pull
@@ -439,14 +410,11 @@ installDepsBySrc() {
             --enable-perlinterp --enable-rubyinterp --enable-luainterp --enable-cscope --enable-xim --with-x  --with-luajit
             make CFLAGS="-O2 -D_FORTIFY_SOURCE=1" && make install
             if [ $? -eq 0 ];then
-                echo "${CMSG}[ vim install success !!!]**********************************>>${CEND}"
-                echo
+                echo "${CMSG}[ vim install success !!!]*************************>>${CEND}\n"
                 [ -h /usr/local/bin/vim ] && rm -rf /usr/local/bin/vim
                 ln -s /usr/local/vim/bin/vim /usr/local/bin/vim
-                echo "${CMSG}[ vim plugins install begin ]**********************************>>${CEND}"
-                echo
-                echo "${CMSG}[ Step1:backing up current vim config ]************************>>${CEND}"
-                echo
+                echo "${CMSG}[ vim plugins install begin ]**********************>>${CEND}\n"
+                echo "${CMSG}[ Step1:backing up current vim config ]************>>${CEND}\n"
                 today=`date +%Y%m%d`
                 home_path=/home/${default_user:?}
                 for i in $home_path/.vim $home_path/.vimrc $home_path/.gvimrc $home_path/.vimrc.bundles
@@ -465,8 +433,7 @@ installDepsBySrc() {
                 do
                     [ -L $i ] && unlink $i
                 done
-                echo "${CMSG}[ Step2: setting up ]********************************************>>${CEND}"
-                echo
+                echo "${CMSG}[ Step2: setting up ]******************************>>${CEND}\n"
                 [ -d /opt/modules/vim ] && rm -rf /opt/modules/vim
                 mkdir -p /opt/modules/vim
                 mkdir -p /opt/modules/vim/autoload
@@ -485,8 +452,7 @@ installDepsBySrc() {
                 ln -s /opt/modules/vim/vimrc.bundles /root/.vimrc.bundles
                 ln -s /opt/modules/vim /root/.vim
 
-                echo "${CMSG}[ Step3: update/install plugins using Vim-plug]*********************>>${CEND}"
-                echo
+                echo "${CMSG}[ Step3: update/install plugins using Vim-plug]*********>>${CEND}\n"
                 system_shell=$SHELL
                 export SHELL="/bin/sh"
                 yum -y install ctags
@@ -494,21 +460,17 @@ installDepsBySrc() {
                 https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
                 sudo  -u ${default_user:?} -H  vim -u $home_path/.vimrc.bundles +PlugInstall! +PlugClean! +qall
                 export SHELL=$system_shell
-                echo "${CMSG}[ vim plugins install done !!!]**************************************>>${CEND}"
-                echo
+                echo "${CMSG}[ vim plugins install done !!!]********************>>${CEND}\n"
             else
-                echo "${CFAILURE}[ vim install fail !!!] ****************************************>>${CEND}"
-                echo
+                echo "${CFAILURE}[ vim install fail !!!] ***********************>>${CEND}\n"
             fi
         else
-            echo "${CMSG} [ vim  has been  install !!!] *****************************************>>${CEND}"
-            echo
+            echo "${CMSG} [ vim  has been  install !!!] **************************>>${CEND}\n"
         fi
 
         # tmux
         if [ ! -e "$(which tmux)" ]; then
-            echo "${CMSG} [ tmux install begin ] **********************************>>${CEND}"
-            echo
+            echo "${CMSG} [ tmux install begin ] **********************************>>${CEND}\n"
             yum -y install ncurses-devel automake
             # Install libevent first
             cd $script_dir/src
@@ -520,27 +482,20 @@ installDepsBySrc() {
             cd  libevent-${libevent_version}
             ./configure && make && make install
             if [ $? -eq 0 ];then
-                echo "${CMSG} [ libevent-${libevent_version} install success !!!] **********************************>>${CEND}"
-                echo
+                echo "${CMSG} [ libevent-${libevent_version} install success !!!] *******>>${CEND}\n"
             else
-                echo "${CFAILURE} [ libevent-${libevent_version} install fail !!!] **********************************>>${CEND}"
-                echo
+                echo "${CFAILURE} [ libevent-${libevent_version} install fail !!!] ********>>${CEND}\n"
             fi
-            cd ..
-            rm -rf libevent-${libevent_version}
+            cd .. && rm -rf libevent-${libevent_version}
             # tmux install
             [ ! -d tmux ] && git clone https://github.com/tmux/tmux.git
-            cd tmux
-            git pull
-            sh autogen.sh
+            cd tmux && git pull && sh autogen.sh
             CFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib" ./configure
             make && make install
             if [ $? -eq 0 ];then
-                echo "${CMSG}[tmux install success !!!] **********************************${CEND}"
-                echo
+                echo "${CMSG}[tmux install success !!!] ************************${CEND}\n"
             else
-                echo "${CFAILURE}[tmux install fail !!!] **********************************${CEND}"
-                echo
+                echo "${CFAILURE}[tmux install fail !!!] **********************${CEND}\n"
             fi
             unset LDFLAGS
             if [ "${OS_BIT}" == "64" ]; then
@@ -551,7 +506,7 @@ installDepsBySrc() {
                 ln -s /usr/local/lib/libevent-2.1.so.6 /usr/lib/libevent-2.1.so.6
             fi
         else
-            echo "${CMSG}[tmux has been  install !!!] ***********************************************>>${CEND}"
+            echo "${CMSG}[tmux has been  install !!!] *************************>>${CEND}\n"
         fi
     elif [ "${OS}" == "Ubuntu" ]; then
         # Install tmux
@@ -565,8 +520,7 @@ installDepsBySrc() {
             rm -rf htop-${htop_version}
         fi
     else
-        echo
-        echo "No need to install software from source packages."
+        echo "${CMSG}[No need to install software from source packages] ************>>${CEND}\n"
     fi
 
 
