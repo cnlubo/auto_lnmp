@@ -78,7 +78,6 @@ EOF
 
     # 源代码安装软件
     installDepsBySrc 2>&1 | tee $script_dir/logs/soft_install.log
-    echo
     echo "${CMSG} [ Initialization $OS OK please reboot] ***********************************************>>${CEND}";
     select_main_menu
 }
