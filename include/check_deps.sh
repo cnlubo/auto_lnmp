@@ -219,8 +219,7 @@ installDepsBySrc() {
                 src_url=https://github.com/pypa/setuptools/archive/${setuptools_version:?}.tar.gz
                 [ ! -f $setuptools_version.tar.gz ] && Download_src
                 [ -d setuptools-$setuptools_version ] && rm -rf setuptools-$setuptools_version
-                tar xf $setuptools_version.tar.gz
-                cd setuptools-$setuptools_version
+                tar xf $setuptools_version.tar.gz && cd setuptools-$setuptools_version
                 python bootstrap.py && python setup.py install
                 if [ $? -eq 0 ];then
                     echo "${CMSG} [ setuptools-$setuptools_version install success !!!] **********************************>>${CEND}"
@@ -237,8 +236,7 @@ installDepsBySrc() {
                 src_url=https://github.com/pypa/pip/archive/${pip_version:?}.tar.gz
                 [ ! -f $pip_version.tar.gz ] && Download_src
                 [ -d pip-$pip_version ] && rm -rf pip-$pip_version
-                tar xf $pip_version.tar.gz
-                cd pip-$pip_version
+                tar xf $pip_version.tar.gz && cd pip-$pip_version
                 python setup.py install
                 if [ $? -eq 0 ];then
                     echo "${CMSG} [ pip-$pip_version install success !!!]**********************************>>${CEND}"
