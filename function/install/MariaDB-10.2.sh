@@ -18,6 +18,7 @@ Create_Conf() {
     d=`echo ${HostIP:?}cut -d\. -f4`
     pt=`echo ${MysqlPort:?} % 256 | bc`
     server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
+    dbrootpwd=`mkpasswd -l 8`
     # create dir
     MysqlDataPath="${MysqlOptPath:?}/data"
     MysqlLogPath="$MysqlOptPath/log"
