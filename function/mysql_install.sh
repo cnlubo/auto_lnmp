@@ -105,21 +105,21 @@ EOF
         1)
             DbType="MySql"
             DbVersion="5.7"
-            SOURCE_SCRIPT ${FunctionPath:?}/install/Mysql-5.7.sh 2>&1 | tee $script_dir/logs/Install_MySql5.7.log
-            MySQLDB_Install_Main
+            SOURCE_SCRIPT ${FunctionPath:?}/install/Mysql-5.7.sh
+            MySQLDB_Install_Main 2>&1 | tee $script_dir/logs/Install_MySql5.7.log
             select_mysql_install
             ;;
         2)
             DbType="MariaDB"
             DbVersion="10.2"
-            SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.2.sh 2>&1 | tee $script_dir/logs/Install_MariaDB_10.2.log
-            MariaDB_Install_Main
+            SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.2.sh
+            MariaDB_10_2_Install_Main 2>&1 | tee $script_dir/logs/Install_MariaDB_10.2.log
             ;;
         3)
             DbType="MariaDB"
             DbVersion="10.1"
-            SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh 2>&1 | tee $script_dir/logs/Install_MariaDB_10.1.log
-            MariaDB_Install_Main
+            SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
+            MariaDB_10_2_Install_Main 2>&1 | tee $script_dir/logs/Install_MariaDB_10.1.log
             ;;
         4)
             clear

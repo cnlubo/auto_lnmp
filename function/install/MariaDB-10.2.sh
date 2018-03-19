@@ -239,7 +239,7 @@ EOF
 
 }
 
-MariaDB_Install_Main(){
+MariaDB_10_2_Install_Main(){
 
     MySQL_Var&&MySQL_Base_Packages_Install&&Install_MariaDB&&Create_Conf&&Init_MariaDB&&Config_MariaDB
 
