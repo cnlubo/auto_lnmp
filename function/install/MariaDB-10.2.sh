@@ -1,24 +1,25 @@
 #!/bin/bash
+# shellcheck disable=SC2164
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
 # @CreateDate:                             2016-01-25 13:38:17
 # @file_name:                              MariaDB-10.2.sh
 # @Last Modified by:                       ak47
 # @Last Modified time:                     2016-02-18 11:23:53
-# @Desc                                    mariadb-10.0 install scripts
+# @Desc                                    mariadb-10.2 install scripts
 #----------------------------------------------------------------------------
 
 Create_Conf() {
 
-    HostIP=`python $script_dir/py2/get_local_ip.py`
-    a=`echo $HostIP|cut -d\. -f1`
-    b=`echo $HostIP|cut -d\. -f2`
-    c=`echo $HostIP|cut -d\. -f3`
-    d=`echo $HostIP|cut -d\. -f4`
-    pt=`echo $MysqlPort % 256 | bc`
+    HostIP=`python ${script_dir:?}/py2/get_local_ip.py`
+    # a=`echo ${HostIP:?}|cut -d\. -f1`
+    b=`echo ${HostIP:?}|cut -d\. -f2`
+    c=`echo ${HostIP:?}|cut -d\. -f3`
+    d=`echo ${HostIP:?}cut -d\. -f4`
+    pt=`echo ${MysqlPort:?} % 256 | bc`
     server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
     # create dir
-    for path in $MysqlLogPath $MysqlConfigPath $MysqlDataPath $MysqlTmpPath $MysqlRunPath;do
+    for path in ${MysqlLogPath:?} ${MysqlConfigPath:?} ${MysqlDataPath:?} ${MysqlTmpPath:?} ${MysqlRunPath:?};do
         [ ! -d $path ] && mkdir -p $path
         chmod 755 $path;
         chown -R mysql:mysql $path;
@@ -31,28 +32,27 @@ port                               = $MysqlPort
 socket                             = $MysqlRunPath/mysql$MysqlPort.sock
 default_character_set              = UTF8
 no_auto_rehash
-password=$dbrootpwd
+password                           =${dbrootpwd:?}
 
 [mysqld]
 ############### GENERAL############
-user                               = $mysql_user
+user                               = ${mysql_user:?}
 port                               = $MysqlPort
 default_storage_engine             = InnoDB
 bind_address                       = 0.0.0.0
 character_set_server               = UTF8
 old_passwords                      = 0
 performance_schema                 = 1
-connect_timeout                    = 8
 lower_case_table_names             = 1
-join_buffer_size                   = 8M
-sort_buffer_size                   = 8M
+join_buffer_size                   = 1M
+sort_buffer_size                   = 1M
 server_id                          = $server_id
-thread_handling                    = pool-of-threads  #open thread pool only support by percona and mariadb
+thread_handling                    = pool-of-threads
 max_sp_recursion_depth             = 255
 log_bin_trust_function_creators    = ON
 
 ################DIR################
-basedir                            = $MysqlBasePath
+basedir                            = ${MysqlBasePath:?}
 pid_file                           = $MysqlRunPath/mysql$MysqlPort.pid
 socket                             = $MysqlRunPath/mysql$MysqlPort.sock
 datadir                            = $MysqlDataPath
@@ -85,7 +85,6 @@ safe_user_create                   = 1
 ################  BINARY LOGGING##########
 expire_logs_days                   = 7
 sync_binlog                        = 1
-binlog_checksum                    = CRC32
 binlog_format                      = row
 
 ############### REPLICATION ###############
@@ -116,15 +115,12 @@ innodb_data_file_path              = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                = O_DIRECT
 innodb_log_files_in_group          = 4
 innodb_log_file_size               = 512M
-innodb_buffer_pool_size            = ${innodb_buffer_pool_size}G
+innodb_buffer_pool_size            = ${innodb_buffer_pool_size:?}G
 innodb_log_buffer_size             = 64M
-innodb_lru_scan_depth              = 2048
-innodb_online_alter_log_max_size   = 2G
-innodb_purge_threads               = 4
+# innodb_lru_scan_depth              = 2048
+# innodb_purge_threads               = 4 # 4 (>= MariaDB 10.2.2) 1 (>=MariaDB 10.0 to <= MariaDB 10.2.1) 0 (MariaDB 5.5)
 innodb_sort_buffer_size            = 2M
-innodb_thread_concurrency          = 10    #A recommended value is 2 times the number of CPUs plus the number of disk
-innodb_use_native_aio              = 0
-innodb_write_io_threads            = $CpuProNum
+
 
 ################# LOGGING####################### #
 log_queries_not_using_indexes      = 1
@@ -141,46 +137,36 @@ EOF
 
 Install_MariaDB()
 {
-    echo "${CMSG}[mariadb${mariadb_10_2_version} Installing] **************************************************>>${CEND}";
+    echo -e "${CMSG}[mariadb${mariadb_10_2_version:?} Installing] **************>>${CEND}\n"
+    # shellcheck disable=SC2034
     src_url=https://mirrors.tuna.tsinghua.edu.cn/mariadb//mariadb-$mariadb_10_2_version/source/mariadb-$mariadb_10_2_version.tar.gz
-    Download_src
     cd $script_dir/src
+    [ ! -f mariadb-$mariadb_10_2_version.tar.gz ] && Download_src
     [ -d mariadb-$mariadb_10_2_version ] && rm -rf mariadb-$mariadb_10_2_version
-    tar -zxf mariadb-$mariadb_10_2_version.tar.gz;
-    cd mariadb-$mariadb_10_2_version;
+    tar -zxf mariadb-$mariadb_10_2_version.tar.gz && cd mariadb-$mariadb_10_2_version
     #编译参数
     cmake -DCMAKE_INSTALL_PREFIX=$MysqlBasePath \
-    -DDEFAULT_CHARSET=utf8mb4 \
-    -DDEFAULT_COLLATION=utf8mb4_general_ci \
-    -DWITH_EXTRA_CHARSETS=all \
-    -DENABLED_LOCAL_INFILE=1 \
-    -DWITH_SSL=bundled \
-    -DWITH_EMBEDDED_SERVER=1 \
-    -DBUILD_CONFIG=mysql_release \
-    -DCMAKE_EXE_LINKER_FLAGS="-ljemalloc" \
-    -DWITH_SAFEMALLOC=OFF
-    #-DWITH_INNOBASE_STORAGE_ENGINE=1 \
-    #-DWITH_XTRADB_STORAGE_ENGINE=1 \
-    #     ./configure --prefix=/usr/local/mysql --enable-assembler \
-    # --with-extra-charsets=complex  --enable-thread-safe-client  --with-big-tables \
-    # --with-plugin-maria --with-aria-tmp-tables --without-plugin-innodb_plugin \
-    # --with-mysqld-ldflags=-static --with-client-ldflags=-static --with-readline \
-    # --with-ssl --with-plugins=max-no-ndb --with-embedded-server --with-libevent \
-    # --with-mysqld-ldflags=-all-static  --with-client-ldflags=-all-static \
-    # --with-zlib-dir=bundled --enable-local-infile
-    make -j$CpuProNum
-    make install;
+        -DDEFAULT_CHARSET=utf8mb4 \
+        -DDEFAULT_COLLATION=utf8mb4_general_ci \
+        -DWITH_EXTRA_CHARSETS=all \
+        -DENABLED_LOCAL_INFILE=1 \
+        -DWITH_SSL=bundled \
+        -DWITH_EMBEDDED_SERVER=1 \
+        -DCMAKE_EXE_LINKER_FLAGS="-ljemalloc" \
+        -DWITH_SAFEMALLOC=OFF
 
-    chown -R mysql:mysql $MysqlBasePath;
+    make -j${CpuProNum:?} && make install
+    chown -R mysql:mysql $MysqlBasePath
 
     [ -L /usr/bin/mysql ] && rm -f /usr/bin/mysql;
     ln -s $MysqlBasePath/bin/mysql /usr/bin/mysql;
-    [ -L /usr/bin/mysqladmin ] && rm -f /usr/bin/mysqladmin;
-    ln -s $MysqlBasePath/bin/mysqladmin /usr/bin/mysqladmin;
-    echo PATH='$PATH:'$MysqlBasePath/bin >>/etc/profile
-    echo export PATH >>/etc/profile
-    echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/etc/profile
-    source /etc/profile
+    [ -L /usr/bin/mysqladmin ] && rm -f /usr/bin/mysqladmin
+    ln -s $MysqlBasePath/bin/mysqladmin /usr/bin/mysqladmin
+
+    #echo PATH='$PATH:'$MysqlBasePath/bin >>/etc/profile
+    #echo export PATH >>/etc/profile
+    #echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/etc/profile
+    #source /etc/profile
 
 }
 Init_MariaDB(){
@@ -188,14 +174,14 @@ Init_MariaDB(){
     chown -R mysql.mysql $MysqlConfigPath/
     chmod 777 $MysqlBasePath/scripts/mysql_install_db
     #初始化数据库
-    echo "${CMSG}[Initialization Database] **************************************************>>${CEND}"
+    echo -e "${CMSG}[Initialization Database] **********************************>>${CEND}\n"
     $MysqlBasePath/scripts/mysql_install_db --user=mysql --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf \
-    --basedir=$MysqlBasePath --datadir=$MysqlDataPath;
+        --basedir=$MysqlBasePath --datadir=$MysqlDataPath;
     # 启动脚本
-    mkdir -p $MysqlOptPath/init.d
+    mkdir -p ${MysqlOptPath:?}/init.d
     chown -R mysql.mysql $MysqlOptPath/
-    cp $script_dir/template/mysql_start $MysqlOptPath/init.d/mysql$MysqlPort;
-    chmod 775 $MysqlOptPath/init.d/mysql$MysqlPort;
+    cp $script_dir/template/mysql_start $MysqlOptPath/init.d/mysql$MysqlPort
+    chmod 775 $MysqlOptPath/init.d/mysql$MysqlPort
     chown -R mysql.mysql $MysqlOptPath/init.d/
     sed  -i ':a;$!{N;ba};s#basedir=#basedir='''$MysqlBasePath'''#' $MysqlOptPath/init.d/mysql$MysqlPort
     sed  -i ':a;$!{N;ba};s#datadir=#datadir='''$MysqlDataPath'''#' $MysqlOptPath/init.d/mysql$MysqlPort
@@ -204,7 +190,7 @@ Init_MariaDB(){
     sed  -i ':a;$!{N;ba};s#mysqld_pid_file_path=#mysqld_pid_file_path='''$MysqlRunPath/mysql$MysqlPort\.pid'''#' $MysqlOptPath/init.d/mysql$MysqlPort
 
     #启动服务脚本
-    if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
+    if ( [ $OS == "Ubuntu" ] && [ ${Ubuntu_version:?} -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] );then
         #support Systemd
         [ -L /lib/systemd/system/mariadb$MysqlPort.service ] && rm -f /lib/systemd/system/mariadb$MysqlPort.service
         cp $script_dir/template/mariadb.service /lib/systemd/system/mariadb$MysqlPort.service
@@ -225,11 +211,11 @@ Init_MariaDB(){
 }
 Config_MariaDB(){
 
-    echo "${CMSG}[config db ] **************************************************>>${CEND}";
+    echo -e "${CMSG}[config db ] *******************************>>${CEND}\n"
     $MysqlOptPath/init.d/mysql$MysqlPort start;
     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'127.0.0.1' identified by \"$dbrootpwd\" with grant option;"
     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'localhost' identified by \"$dbrootpwd\" with grant option;"
-mysql -uroot -S $MysqlRunPath/mysql$MysqlPort.sock -p$dbrootpwd <<EOF
+    mysql -uroot -S $MysqlRunPath/mysql$MysqlPort.sock -p$dbrootpwd <<EOF
     USE mysql;
     delete from user where Password='';
     DELETE FROM user WHERE user='';
@@ -240,17 +226,16 @@ mysql -uroot -S $MysqlRunPath/mysql$MysqlPort.sock -p$dbrootpwd <<EOF
     FLUSH PRIVILEGES;
 EOF
     $MysqlOptPath/init.d/mysql$MysqlPort stop;
-    echo "${CMSG}[config db ] **************************************************>>${CEND}";
     #启动数据库
+    echo -e "${CMSG}[starting db ] ********************************>>${CEND}\n"
+
     if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
-        echo "${CMSG}[starting db ] **************************************************>>${CEND}";
         systemctl start mariadb$MysqlPort.service
     else
-        echo "${CMSG}[starting db ] **************************************************>>${CEND}";
         service start mariadb$MysqlPort
     fi
-    rm -rf $script_dir/src/mariadb-$mariadb_10_2_version;
-    echo "${CRED}[db root user passwd:$dbrootpwd ] *******************************>>${CEND}";
+    rm -rf $script_dir/src/mariadb-$mariadb_10_2_version
+    echo -e "${CRED}[db root user passwd:$dbrootpwd ] *******************************>>${CEND}\n"
 
 }
 

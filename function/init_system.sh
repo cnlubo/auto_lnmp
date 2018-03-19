@@ -31,6 +31,8 @@ select_system_setup_function(){
         elif [ -n "`grep ^Port /etc/ssh/sshd_config`" ]; then
             sed -i "s@^Port.*@Port $SSH_PORT@" /etc/ssh/sshd_config
         fi
+        # 禁止root 用户登陆
+        PermitRootLogin no
     fi
     # 创建默认普通用户
     echo
@@ -46,7 +48,7 @@ select_system_setup_function(){
         default_pass=`mkpasswd -l 8`
         echo ${default_pass:?} | passwd $Typical_User --stdin  &>/dev/null
         echo
-        echo -e "${CRED}[system user $Typical_User passwd:${default_pass:?} !!!!! ] **********>>${CEND}\n" | tee $script_dir/logs/pp.log
+        echo "${CRED}[system user $Typical_User passwd:${default_pass:?} !!!!! ] **********>>${CEND}" | tee $script_dir/logs/pp.log
         echo
         # sudo 权限
         [ -f /etc/sudoers.d/ak47 ] && rm -rf /etc/sudoers.d/ak47

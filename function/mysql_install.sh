@@ -22,77 +22,50 @@ MySQL_Var(){
                 read -p "Please input MySQL BaseDirectory(default:/u01/MariaDB)" MysqlBasePath
                 MysqlBasePath="${MysqlBasePath:=/u01/MariaDB}"
             }
-        ;;
+            ;;
         "MySql")
             {
                 read -p "Please input MySQL BaseDirectory(default:/u01/Mysql)" MysqlBasePath
                 MysqlBasePath="${MysqlBasePath:=/u01/Mysql}"
             }
-        ;;
+            ;;
         *)
-        echo "unknow Dbtype";;
+            echo "unknow Dbtype" ;;
     esac
     read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort)" MysqlOptPath
-    #echo $MysqlBasePath
     MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort}"
-    # MysqlDataPath="${MysqlOptPath}/data"
-    # MysqlLogPath="$MysqlOptPath/log"
-    # MysqlConfigPath="$MysqlOptPath/etc"
-    # MysqlTmpPath="$MysqlOptPath/tmp"
-    # MysqlRunPath="$MysqlOptPath/run"
-    # setting innodb_buffer_pool_size
     innodb_buffer_pool_size=`expr $RamTotalG \* 80 / 102400`
     read -p "Please input innodb_buffer_pool_size (default:${innodb_buffer_pool_size}G)" innodb_buffer_pool_size
 
 }
 MySQL_Base_Packages_Install(){
+
+    echo -e "${CMSG}[remove old mysql and install BasePackages] *****************************>>${CEND}\n"
     case  $OS in
         "CentOS")
             {
-                echo '[remove old mysql] **************************************************>>'
                 yum -y remove mysql-server mysql
                 BasePackages="wget gcc gcc-c++ autoconf libxml2-devel zlib-devel libjpeg-devel \
-                libpng-devel glibc-devel glibc-static glib2-devel  bzip2 bzip2-devel openssl-devel \
-                ncurses-devel bison cmake make libaio-devel expect gnutls-devel"
+                    libpng-devel glibc-devel glibc-static glib2-devel  bzip2 bzip2-devel openssl-devel \
+                    ncurses-devel bison cmake make libaio-devel expect gnutls-devel"
                 if [ $DbType == 'MariaDB' ];then
                     BasePackages=${BasePackages}" gnutls-devel"
                 fi
             }
-        ;;
+            ;;
         "Ubuntu")
             {
-                echo '[remove old mysql] **************************************************>>';
-                apt-get -y remove mysql-client mysql-server mysql-common mariadb-server ;
+                apt-get -y remove mysql-client mysql-server mysql-common mariadb-server
                 BasePackages="wget gcc g++ cmake libjpeg-dev libxml2 libxml2-dev libpng-dev \
-                autoconf make bison zlibc bzip2 libncurses5-dev libncurses5 libssl-dev axel libaio-dev";
+                    autoconf make bison zlibc bzip2 libncurses5-dev libncurses5 libssl-dev axel libaio-dev"
             }
-        ;;
+            ;;
 
         *)
-            echo "${CMSG}[ not supported System !!! ] **********************************>>${CEND}"
-        ;;
+            echo -e "${CMSG}[ not supported System !!! ] ***********************>>${CEND}\n"
+            ;;
     esac
     INSTALL_BASE_PACKAGES $BasePackages
-
-    # if [ -f "/usr/local/lib/libjemalloc.so" ];then
-    #     echo "${CMSG}[ jemalloc has been install !!! ] ****************************>>${CEND}"
-    #     echo
-    # else
-    #     src_url=https://github.com/jemalloc/jemalloc/releases/download/${jemalloc_version:?}/jemalloc-$jemalloc_version.tar.bz2
-    #     cd ${script_dir:?}/src
-    #     [ ! -f jemalloc-$jemalloc_version.tar.bz2 ] && Download_src
-    #     [ -d jemalloc-$jemalloc_version ] && rm -rf jemalloc-$jemalloc_version
-    #     tar xvf jemalloc-$jemalloc_version.tar.bz2 && cd jemalloc-$jemalloc_version
-    #     ./configure && make && make install
-    #     if [ -f "/usr/local/lib/libjemalloc.so" ];then
-    #         echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
-    #         ldconfig
-    #     else
-    #         echo "${CFAILURE}[ jemalloc install failed, Please contact the author !!!] ****************************>>${CEND}"
-    #         kill -9 $$
-    #     fi
-    #     cd .. && rm -rf $script_dir/src/jemalloc-$jemalloc_version
-    # fi
     SOURCE_SCRIPT ${script_dir:?}/include/jemalloc.sh
     Install_Jemalloc
     #下载boost 源码
@@ -114,12 +87,6 @@ MySQL_Base_Packages_Install(){
     if [ ! $? -eq 0 ]; then
         useradd -g $mysql_user  -M -s /sbin/nologin $mysql_user
     fi
-    # #create dir
-    # for path in $MysqlLogPath $MysqlConfigPath $MysqlDataPath $MysqlTmpPath $MysqlRunPath;do
-    #     [ ! -d $path ] && mkdir -p $path
-    #     chmod 755 $path;
-    #     chown -R mysql:mysql $path;
-    # done
 }
 select_mysql_install(){
 
@@ -138,30 +105,30 @@ EOF
         1)
             DbType="MySql"
             DbVersion="5.7"
-            SOURCE_SCRIPT ${FunctionPath:?}/install/Mysql-5.7.sh
+            SOURCE_SCRIPT ${FunctionPath:?}/install/Mysql-5.7.sh 2>&1 | tee $script_dir/logs/Install_MySql5.7.log
             MySQLDB_Install_Main
             select_mysql_install
-        ;;
+            ;;
         2)
             DbType="MariaDB"
             DbVersion="10.2"
-            SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.2.sh
+            SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.2.sh 2>&1 | tee $script_dir/logs/Install_MariaDB_10.2.log
             MariaDB_Install_Main
-        ;;
+            ;;
         3)
             DbType="MariaDB"
             DbVersion="10.1"
-            SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
+            SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh 2>&1 | tee $script_dir/logs/Install_MariaDB_10.1.log
             MariaDB_Install_Main
-        ;;
+            ;;
         4)
             clear
             select_main_menu
-        ;;
+            ;;
         5)
             clear
             exit 0
-        ;;
+            ;;
         *)
             select_mysql_install
     esac

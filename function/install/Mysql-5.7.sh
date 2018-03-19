@@ -42,9 +42,10 @@ port                                = $MysqlPort
 bind_address                        = 0.0.0.0
 character_set_server                = UTF8
 lower_case_table_names              = 1
-join_buffer_size                    = 8M
-sort_buffer_size                    = 8M
+join_buffer_size                    = 1M
+sort_buffer_size                    = 1M
 server_id                           = $server_id
+thread_handling                     = loaded-dynamically
 gtid_mode                           = ON
 enforce_gtid_consistency            = ON
 max_sp_recursion_depth              = 255
@@ -122,15 +123,15 @@ innodb_flush_method                 = O_DIRECT
 innodb_log_file_size                = 512M
 innodb_buffer_pool_size             = ${innodb_buffer_pool_size:?}G
 innodb_log_buffer_size              = 64M
-innodb_lru_scan_depth               = 2048
-innodb_purge_threads                = 4
+# innodb_lru_scan_depth               = 2048
+# innodb_purge_threads                = 4
 innodb_sort_buffer_size             = 2M
-innodb_write_io_threads             = ${CpuProNum:?}
-innodb_buffer_pool_load_at_startup  = 1
-innodb_buffer_pool_dump_at_shutdown = 1
-innodb_lock_wait_timeout            = 5
-innodb_io_capacity                  = 200
-innodb_undo_tablespaces             = 3
+# innodb_write_io_threads             = ${CpuProNum:?}
+# innodb_buffer_pool_load_at_startup  = 1
+# innodb_buffer_pool_dump_at_shutdown = 1
+# innodb_lock_wait_timeout            = 5
+# innodb_io_capacity                  = 200
+# innodb_undo_tablespaces             = 3
 ################# LOGGING#########################################
 slow_query_log                         = 1
 general_log                            = 0
@@ -176,10 +177,10 @@ Install_MySQLDB()
     [ -L /usr/bin/mysqladmin ] && rm -f /usr/bin/mysqladmin
     ln -s $MysqlBasePath/bin/mysqladmin /usr/bin/mysqladmin
     #环境变量设置
-    echo PATH='$PATH:'$MysqlBasePath/bin >>/etc/profile
-    echo export PATH >>/etc/profile
-    echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/etc/profile
-    source /etc/profile
+    #echo PATH='$PATH:'$MysqlBasePath/bin >>/etc/profile
+    #echo export PATH >>/etc/profile
+    #echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/etc/profile
+    #source /etc/profile
 
 }
 Init_MySQLDB(){
