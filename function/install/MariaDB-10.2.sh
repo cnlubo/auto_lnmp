@@ -19,6 +19,11 @@ Create_Conf() {
     pt=`echo ${MysqlPort:?} % 256 | bc`
     server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
     # create dir
+    MysqlDataPath="${MysqlOptPath:?}/data"
+    MysqlLogPath="$MysqlOptPath/log"
+    MysqlConfigPath="$MysqlOptPath/etc"
+    MysqlTmpPath="$MysqlOptPath/tmp"
+    MysqlRunPath="$MysqlOptPath/run"
     for path in ${MysqlLogPath:?} ${MysqlConfigPath:?} ${MysqlDataPath:?} ${MysqlTmpPath:?} ${MysqlRunPath:?};do
         [ ! -d $path ] && mkdir -p $path
         chmod 755 $path;
@@ -241,7 +246,8 @@ EOF
 
 MariaDB_10_2_Install_Main(){
 
-    MySQL_Var&&MySQL_Base_Packages_Install&&Install_MariaDB&&Create_Conf&&Init_MariaDB&&Config_MariaDB
+    MySQL_Var&&Create_Conf&&Init_MariaDB&&Config_MariaDB
+    # &&MySQL_Base_Packages_Install&&Install_MariaDB
 
 
 
