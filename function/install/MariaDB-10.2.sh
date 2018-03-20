@@ -47,7 +47,7 @@ user                               = ${mysql_user:?}
 port                               = $MysqlPort
 bind_address                       = 0.0.0.0
 character_set_server               = UTF8
-performance_schema                 = 0 #  如果设置为1 初始化数据库时失败
+# performance_schema                 = 0 #  如果设置为1 初始化数据库时失败
 lower_case_table_names             = 1
 join_buffer_size                   = 1M
 sort_buffer_size                   = 1M
@@ -111,7 +111,7 @@ thread_stack                       = 512K
 
 innodb_data_file_path              = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                = O_DIRECT
-# innodb_log_files_in_group          = 4
+innodb_log_files_in_group          = 2
 innodb_log_file_size               = 512M
 innodb_buffer_pool_size            = ${innodb_buffer_pool_size:?}
 innodb_log_buffer_size             = 64M # 16777216 (16MB) >= MariaDB 10.1.9, 8388608 (8MB) <= MariaDB 10.1.8
@@ -239,7 +239,8 @@ EOF
 
 MariaDB_10_2_Install_Main(){
 
-    MySQL_Var&&MySQL_Base_Packages_Install&&Install_MariaDB&&Create_Conf&&Init_MariaDB&&Config_MariaDB
+    MySQL_Var&&Create_Conf&&Init_MariaDB&&Config_MariaDB
+    # &&MySQL_Base_Packages_Install&&Install_MariaDB
 
 
 
