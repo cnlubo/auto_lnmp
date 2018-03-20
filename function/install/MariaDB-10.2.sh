@@ -53,8 +53,6 @@ join_buffer_size                   = 1M
 sort_buffer_size                   = 1M
 server_id                          = $server_id
 thread_handling                    = pool-of-threads
-# max_sp_recursion_depth             = 255
-# log_bin_trust_function_creators    = ON
 
 ################DIR################
 basedir                            = ${MysqlBasePath:?}
@@ -80,10 +78,8 @@ max_connect_errors                 = 65536
 skip_name_resolve
 sql_mode                           = STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY
 sysdate_is_now                     = 1
-# innodb                             = FORCE
 # innodb_strict_mode                 = 1   # Default Value: ON (>= MariaDB 10.2.2 OFF (<= MariaDB 10.2.1)
 skip_ssl                           # disable_ssl
-# safe_user_create                   = 1
 
 ################  BINARY LOGGING##########
 expire_logs_days                   = 7
@@ -98,7 +94,6 @@ sync_master_info                   = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaD
 sync_relay_log                     = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaDB 10.1.6) 1 is the safest, but slowest
 sync_relay_log_info                = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaDB 10.1.6) 1 is the safest, but slowest
 relay_log_recovery                 = 1
-# slave-parallel-threads             = 8
 master_verify_checksum             = 1
 # binlog-commit-wait-count           = 4
 # binlog-commit-wait-usec            = 10000
@@ -116,7 +111,7 @@ thread_stack                       = 512K
 
 innodb_data_file_path              = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                = O_DIRECT
-innodb_log_files_in_group          = 4
+# innodb_log_files_in_group          = 4
 innodb_log_file_size               = 512M
 innodb_buffer_pool_size            = ${innodb_buffer_pool_size:?}
 innodb_log_buffer_size             = 64M # 16777216 (16MB) >= MariaDB 10.1.9, 8388608 (8MB) <= MariaDB 10.1.8
@@ -228,24 +223,23 @@ Config_MariaDB(){
     reset master;
     FLUSH PRIVILEGES;
 EOF
-    $MysqlOptPath/init.d/mysql$MysqlPort stop;
+    $MysqlOptPath/init.d/mysql$MysqlPort stop
     #启动数据库
     echo -e "${CMSG}[starting db ] ********************************>>${CEND}\n"
 
-    # if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
-    #     systemctl start mariadb$MysqlPort.service
-    # else
-    #     service start mariadb$MysqlPort
-    # fi
-    # rm -rf $script_dir/src/mariadb-$mariadb_10_2_version
+    if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
+        systemctl start mariadb$MysqlPort.service
+    else
+        service start mariadb$MysqlPort
+    fi
+    rm -rf $script_dir/src/mariadb-$mariadb_10_2_version
     echo -e "${CRED}[db root user passwd:$dbrootpwd ] *******************************>>${CEND}\n"
 
 }
 
 MariaDB_10_2_Install_Main(){
 
-    MySQL_Var&&Create_Conf&&Init_MariaDB&&Config_MariaDB
-    # &&MySQL_Base_Packages_Install&&Install_MariaDB
+    MySQL_Var&&MySQL_Base_Packages_Install&&Install_MariaDB&&Create_Conf&&Init_MariaDB&&Config_MariaDB
 
 
 
