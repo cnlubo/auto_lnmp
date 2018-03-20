@@ -13,7 +13,7 @@ Create_Conf() {
 
     HostIP=`python ${script_dir:?}/py2/get_local_ip.py`
     echo $HostIP
-    # a=`echo ${HostIP:?}|cut -d\. -f1`
+    a=`echo ${HostIP:?}|cut -d\. -f1`
     b=`echo ${HostIP:?}|cut -d\. -f2`
     c=`echo ${HostIP:?}|cut -d\. -f3`
     d=`echo ${HostIP:?}cut -d\. -f4`
@@ -119,7 +119,7 @@ innodb_data_file_path              = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                = O_DIRECT
 innodb_log_files_in_group          = 4
 innodb_log_file_size               = 512M
-innodb_buffer_pool_size            = ${innodb_buffer_pool_size:?}G
+innodb_buffer_pool_size            = ${innodb_buffer_pool_size:?}
 innodb_log_buffer_size             = 64M # 16777216 (16MB) >= MariaDB 10.1.9, 8388608 (8MB) <= MariaDB 10.1.8
 # innodb_lru_scan_depth              = 2048
 # innodb_purge_threads               = 4 # 4 (>= MariaDB 10.2.2) 1 (>=MariaDB 10.0 to <= MariaDB 10.2.1) 0 (MariaDB 5.5)
