@@ -19,7 +19,6 @@ Create_Conf() {
     d=`echo ${HostIP:?}|cut -d\. -f4`
     pt=`echo ${MysqlPort:?} % 256 | bc`
     server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
-    echo $server_id
     dbrootpwd=`mkpasswd -l 8`
     # create dir
     MysqlDataPath="${MysqlOptPath:?}/data"
@@ -48,12 +47,12 @@ user                               = ${mysql_user:?}
 port                               = $MysqlPort
 bind_address                       = 0.0.0.0
 character_set_server               = UTF8
-performance_schema                 = 1 #  disabled by default for performance reasons
+performance_schema                 = 0 #  如果设置为1 初始化数据库时失败
 lower_case_table_names             = 1
-# join_buffer_size                   = 1M
-# sort_buffer_size                   = 1M
+join_buffer_size                   = 1M
+sort_buffer_size                   = 1M
 server_id                          = $server_id
-# thread_handling                    = pool-of-threads
+thread_handling                    = pool-of-threads
 # max_sp_recursion_depth             = 255
 # log_bin_trust_function_creators    = ON
 
