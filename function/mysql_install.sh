@@ -34,7 +34,7 @@ MySQL_Var(){
     esac
     read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort)" MysqlOptPath
     MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort}"
-    innodb_buffer_pool_size=`expr $RamTotalG \* 80 / 102400`
+    innodb_buffer_pool_size=`expr $RamTotalG \* 50 / 102400`
     read -p "Please input innodb_buffer_pool_size (default:${innodb_buffer_pool_size}G)" innodb_buffer_pool_size
 
 }

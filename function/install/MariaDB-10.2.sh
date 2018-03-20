@@ -12,12 +12,14 @@
 Create_Conf() {
 
     HostIP=`python ${script_dir:?}/py2/get_local_ip.py`
+    echo $HostIP
     # a=`echo ${HostIP:?}|cut -d\. -f1`
     b=`echo ${HostIP:?}|cut -d\. -f2`
     c=`echo ${HostIP:?}|cut -d\. -f3`
     d=`echo ${HostIP:?}cut -d\. -f4`
     pt=`echo ${MysqlPort:?} % 256 | bc`
     server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
+    echo $server_id
     dbrootpwd=`mkpasswd -l 8`
     # create dir
     MysqlDataPath="${MysqlOptPath:?}/data"
@@ -44,18 +46,16 @@ password                           =${dbrootpwd:?}
 ############### GENERAL############
 user                               = ${mysql_user:?}
 port                               = $MysqlPort
-default_storage_engine             = InnoDB
 bind_address                       = 0.0.0.0
 character_set_server               = UTF8
-old_passwords                      = 0
-performance_schema                 = 1
+performance_schema                 = 1 #  disabled by default for performance reasons
 lower_case_table_names             = 1
-join_buffer_size                   = 1M
-sort_buffer_size                   = 1M
+# join_buffer_size                   = 1M
+# sort_buffer_size                   = 1M
 server_id                          = $server_id
-thread_handling                    = pool-of-threads
-max_sp_recursion_depth             = 255
-log_bin_trust_function_creators    = ON
+# thread_handling                    = pool-of-threads
+# max_sp_recursion_depth             = 255
+# log_bin_trust_function_creators    = ON
 
 ################DIR################
 basedir                            = ${MysqlBasePath:?}
@@ -74,46 +74,44 @@ log_error                          = $MysqlLogPath/alert.log
 slow_query_log_file                = $MysqlLogPath/slow.log
 general_log_file                   = $MysqlLogPath/general.log
 
-################MyISAM#############
-
 ################ SAFETY############
 
-max_allowed_packet                 = 16M
+# max_allowed_packet                 = 16M  # >= MariaDB 10.2.4 default 16m
 max_connect_errors                 = 65536
 skip_name_resolve
 sql_mode                           = STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY
 sysdate_is_now                     = 1
-innodb                             = FORCE
-innodb_strict_mode                 = 1
-skip_ssl
-safe_user_create                   = 1
+# innodb                             = FORCE
+# innodb_strict_mode                 = 1   # Default Value: ON (>= MariaDB 10.2.2 OFF (<= MariaDB 10.2.1)
+skip_ssl                           # disable_ssl
+# safe_user_create                   = 1
 
 ################  BINARY LOGGING##########
 expire_logs_days                   = 7
 sync_binlog                        = 1
-binlog_format                      = row
+# binlog_format                      = row # Default Value: MIXED (>= MariaDB 10.2.4) STATEMENT (<= MariaDB 10.2.3)
 
 ############### REPLICATION ###############
 read_only                          = 1
 skip_slave_start                   = 1
 log_slave_updates                  = 1
-sync_master_info                   = 1
-sync_relay_log                     = 1
-sync_relay_log_info                = 1
+sync_master_info                   = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaDB 10.1.6) 1 is the safest, but slowest
+sync_relay_log                     = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaDB 10.1.6) 1 is the safest, but slowest
+sync_relay_log_info                = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaDB 10.1.6) 1 is the safest, but slowest
 relay_log_recovery                 = 1
-slave-parallel-threads             = 8
+# slave-parallel-threads             = 8
 master_verify_checksum             = 1
-binlog-commit-wait-count           = 4
-binlog-commit-wait-usec            = 10000
+# binlog-commit-wait-count           = 4
+# binlog-commit-wait-usec            = 10000
 
 ############## CACHES AND LIMITS ##########
-query_cache_type                   = 0
+# query_cache_type                   = 0   # Default Value: OFF (>= MariaDB 10.1.7), ON (<= MariaDB 10.1.6)
 query_cache_size                   = 0
 max_connections                    = 8192
 max_user_connections               = 8000
 open_files_limit                   = 65535
 table_definition_cache             = 65536
-slave_net_timeout                  = 5
+# slave_net_timeout                  = 5  # 60 (1 minute) (>= MariaDB 10.2.4) 3600 (1 hour) (<= MariaDB 10.2.3)
 thread_stack                       = 512K
 ##################INNODB####################################### #
 
@@ -122,7 +120,7 @@ innodb_flush_method                = O_DIRECT
 innodb_log_files_in_group          = 4
 innodb_log_file_size               = 512M
 innodb_buffer_pool_size            = ${innodb_buffer_pool_size:?}G
-innodb_log_buffer_size             = 64M
+innodb_log_buffer_size             = 64M # 16777216 (16MB) >= MariaDB 10.1.9, 8388608 (8MB) <= MariaDB 10.1.8
 # innodb_lru_scan_depth              = 2048
 # innodb_purge_threads               = 4 # 4 (>= MariaDB 10.2.2) 1 (>=MariaDB 10.0 to <= MariaDB 10.2.1) 0 (MariaDB 5.5)
 innodb_sort_buffer_size            = 2M
@@ -133,7 +131,7 @@ log_queries_not_using_indexes      = 1
 slow_query_log                     = 1
 general_log                        = 0
 log_slow_admin_statements          = 1
-long_query_time                    = 1
+long_query_time                    = 3
 transaction_isolation              = READ-COMMITTED
 
 
@@ -182,7 +180,7 @@ Init_MariaDB(){
     #初始化数据库
     echo -e "${CMSG}[Initialization Database] **********************************>>${CEND}\n"
     $MysqlBasePath/scripts/mysql_install_db --user=mysql --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf \
-        --basedir=$MysqlBasePath --datadir=$MysqlDataPath;
+        --basedir=$MysqlBasePath --datadir=$MysqlDataPath
     # 启动脚本
     mkdir -p ${MysqlOptPath:?}/init.d
     chown -R mysql.mysql $MysqlOptPath/
@@ -235,12 +233,12 @@ EOF
     #启动数据库
     echo -e "${CMSG}[starting db ] ********************************>>${CEND}\n"
 
-    if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
-        systemctl start mariadb$MysqlPort.service
-    else
-        service start mariadb$MysqlPort
-    fi
-    rm -rf $script_dir/src/mariadb-$mariadb_10_2_version
+    # if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
+    #     systemctl start mariadb$MysqlPort.service
+    # else
+    #     service start mariadb$MysqlPort
+    # fi
+    # rm -rf $script_dir/src/mariadb-$mariadb_10_2_version
     echo -e "${CRED}[db root user passwd:$dbrootpwd ] *******************************>>${CEND}\n"
 
 }
