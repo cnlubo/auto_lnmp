@@ -8,7 +8,6 @@
 
 Nginx_Var() {
 
-    # echo ${nginx_install_version:?}
     #第二种，准确判断pid的信息，
     #-C 表示的是nginx完整命令，不带匹配的操作
     #--no-header 表示不要表头的数据
