@@ -8,17 +8,17 @@
 system_check(){
 
     # 检查是否存在运行的mysql进程
-    #PIDCHECK=`ps aux|grep mysqld|grep -v grep` 
+    #PIDCHECK=`ps aux|grep mysqld|grep -v grep`
     #PID="$?"
     COUNT=$(ps aux|grep mysqld|grep -v grep |wc -l)
     if [ $COUNT -gt 0 ]
     then
-        echo -e "${CWARNING}[Error MySQL is running please stop !!!!]${CEND}\n" && exit
+        echo -e "${CWARNING}[Error MySQL is running please stop !!!!]${CEND}\n" && select_main_menu
     fi
 
     # 检查其它信息
-    [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && exit
-    [ ${RamTotalG:?} -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install mysql.\nThis script need memory more than 1G.\n${CEND}" && exit
+    [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && select_main_menu
+    [ ${RamTotalG:?} -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install mysql.\nThis script need memory more than 1G.\n${CEND}" && select_main_menu
 }
 
 MySQL_Var(){
