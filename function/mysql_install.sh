@@ -47,7 +47,7 @@ MySQL_Var(){
     esac
     read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort)" MysqlOptPath
     MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort}"
-    innodb_buffer_pool_size=`expr $RamTotal \* 80 / 1024`
+    innodb_buffer_pool_size=`expr $RamTotal \* 80 / 102400`
     read -p "Please input innodb_buffer_pool_size (default:${innodb_buffer_pool_size}G)" innodb_buffer_pool_size
     # 生成server_id
     HostIP=`python ${script_dir:?}/py2/get_local_ip.py`
