@@ -7,15 +7,6 @@
 #------------------------------------------------------------------
 system_check(){
 
-    # 检查是否存在运行的mysql进程
-    COUNT=$(ps aux|grep mysqld|grep -v grep |wc -l)
-    if [ $COUNT -gt 0 ]
-    then
-        echo
-        echo -e "${CWARNING}[Error MySQL is running please stop !!!!]${CEND}\n" && exit
-    fi
-
-    # 检查其它信息
     echo
     [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && exit
     echo
@@ -24,6 +15,14 @@ system_check(){
 
 MySQL_Var(){
 
+
+    # 检查是否存在运行的mysql进程
+    COUNT=$(ps aux|grep mysqld|grep -v grep |wc -l)
+    if [ $COUNT -gt 0 ]
+    then
+        echo
+        echo -e "${CWARNING}[Error MySQL is running please stop !!!!]${CEND}\n" && exit
+    fi
     # 生成数据库root用户随机密码(8位长度包含字母数字和特殊字符)
     # shellcheck disable=SC2034
     dbrootpwd=`mkpasswd -l 8`
@@ -66,7 +65,7 @@ MySQL_Var(){
     MysqlRunPath="$MysqlOptPath/run"
     for path in ${MysqlLogPath:?} ${MysqlConfigPath:?} ${MysqlDataPath:?} ${MysqlTmpPath:?} ${MysqlRunPath:?};do
         # [ ! -d $path ] && mkdir -p $path
-        [ -d $parh ] && rm -rf $parh
+        [ -d $path ] && rm -rf $path
         mkdir -p $path && chmod 755 $path && chown -R mysql:mysql $path
     done
 
