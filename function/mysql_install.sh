@@ -66,7 +66,7 @@ MySQL_Var(){
     MysqlRunPath="$MysqlOptPath/run"
     for path in ${MysqlLogPath:?} ${MysqlConfigPath:?} ${MysqlDataPath:?} ${MysqlTmpPath:?} ${MysqlRunPath:?};do
         # [ ! -d $path ] && mkdir -p $path
-        [ -d ${parh:?} ] && rm -rf ${parh:?}
+        [ -d $parh ] && rm -rf $parh
         mkdir -p $path && chmod 755 $path && chown -R mysql:mysql $path
     done
 
