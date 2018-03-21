@@ -19,7 +19,7 @@ system_check(){
     echo
     [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && exit
     echo
-    [ ${RamTotalG:?} -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install mySQL.\nThis script need memory more than 1G.\n${CEND}" && exit
+    [ ${RamTotal:?} -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install mySQL.\nThis script need memory more than 1G.\n${CEND}" && exit
 }
 
 MySQL_Var(){
@@ -47,7 +47,7 @@ MySQL_Var(){
     esac
     read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort)" MysqlOptPath
     MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort}"
-    innodb_buffer_pool_size=`expr $RamTotalG \* 50 / 102400`
+    innodb_buffer_pool_size=`expr $RamTotal \* 80 / 1024`
     read -p "Please input innodb_buffer_pool_size (default:${innodb_buffer_pool_size}G)" innodb_buffer_pool_size
     # 生成server_id
     HostIP=`python ${script_dir:?}/py2/get_local_ip.py`

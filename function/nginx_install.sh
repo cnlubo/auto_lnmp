@@ -16,7 +16,7 @@ Nginx_Var() {
     #echo "ps -c|方法:"$COUNT
     if [ $COUNT -gt 0 ]
     then
-        echo -e "${CWARNING}[Error nginx or Tengine is running please stop !!!!]${CEND}\n" && select_nginx_install
+        echo -e "${CWARNING}[Error nginx or Tengine is running please stop !!!!]${CEND}\n" && exit
     fi
 
 }

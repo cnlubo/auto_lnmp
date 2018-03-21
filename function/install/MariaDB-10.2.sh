@@ -32,12 +32,13 @@ Create_Conf() {
     #     chown -R mysql:mysql $path;
     # done
     # create my.cnf
-    cat > $MysqlConfigPath/my$MysqlPort.cnf << EOF
+    cat > ${MysqlConfigPath:?}/my${MysqlPort:?}.cnf << EOF
 [mysql]
 ############## CLIENT #############
 port                               = $MysqlPort
-socket                             = $MysqlRunPath/mysql$MysqlPort.sock
+socket                             = ${MysqlRunPath:?}/mysql$MysqlPort.sock
 default_character_set              = UTF8
+#default_character_set              = utf8mb4
 no_auto_rehash
 password                           =${dbrootpwd:?}
 
@@ -46,23 +47,27 @@ password                           =${dbrootpwd:?}
 user                               = ${mysql_user:?}
 port                               = $MysqlPort
 bind_address                       = 0.0.0.0
-character_set_server               = UTF8
-# performance_schema                 = 0 #  如果设置为1 初始化数据库时失败
+# character_set_server               = UTF8
+character_set_server               = utf8mb4
+collation-server                   = utf8mb4_unicode_ci
+init_connect                       = 'SET NAMES utf8mb4' # 初始化连接都设置为utf8mb4
+skip-character-set-client-handshake  =true               # 忽略客户端字符集设置,使用init_connect设置
+# performance_schema                 = 0                 #  如果设置为1 初始化数据库时失败
 lower_case_table_names             = 1
 join_buffer_size                   = 1M
 sort_buffer_size                   = 1M
-server_id                          = $server_id
+server_id                          = ${server_id:?}
 thread_handling                    = pool-of-threads
 
 ################DIR################
 basedir                            = ${MysqlBasePath:?}
 pid_file                           = $MysqlRunPath/mysql$MysqlPort.pid
 socket                             = $MysqlRunPath/mysql$MysqlPort.sock
-datadir                            = $MysqlDataPath
-tmpdir                             = $MysqlTmpPath
+datadir                            = ${MysqlDataPath:?}
+tmpdir                             = ${MysqlTmpPath:?}
 slave_load_tmpdir                  = $MysqlTmpPath
 innodb_data_home_dir               = $MysqlDataPath
-innodb_log_group_home_dir          = $MysqlLogPath
+innodb_log_group_home_dir          = ${MysqlLogPath:?}
 log_bin                            = $MysqlLogPath/mysql_bin
 log_bin_index                      = $MysqlLogPath/mysql_bin.index
 relay_log_index                    = $MysqlLogPath/relay_log.index
@@ -138,7 +143,7 @@ Install_MariaDB()
     echo -e "${CMSG}[mariadb${mariadb_10_2_version:?} Installing] **************>>${CEND}\n"
     # shellcheck disable=SC2034
     src_url=https://mirrors.tuna.tsinghua.edu.cn/mariadb//mariadb-$mariadb_10_2_version/source/mariadb-$mariadb_10_2_version.tar.gz
-    cd $script_dir/src
+    cd ${script_dir:?}/src
     [ ! -f mariadb-$mariadb_10_2_version.tar.gz ] && Download_src
     [ -d mariadb-$mariadb_10_2_version ] && rm -rf mariadb-$mariadb_10_2_version
     tar -zxf mariadb-$mariadb_10_2_version.tar.gz && cd mariadb-$mariadb_10_2_version

@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2034
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
 # @Desc
@@ -20,7 +21,7 @@ if  [ $sysOS == "Linux" ]; then
                 Debian_version=`lsb_release -sr | awk -F. '{print $1}'`
                 OS=Debian
             fi
-        ;;
+            ;;
         centos|fedora|rhel)
             yumdnf="yum"
             if test "$(echo "$VERSION_ID >= 22" | bc)" -ne 0; then
@@ -36,11 +37,11 @@ if  [ $sysOS == "Linux" ]; then
                 Fedora_version=`lsb_release -sr | awk -F. '{print $1}'`
                 OS=fedora
             fi
-        ;;
+            ;;
         *)
             echo "${CFAILURE}Does not support this OS! ${CEND}"
             kill -9 $$
-        ;;
+            ;;
     esac
 else
     echo "${CFAILURE}Does not support this OS!! ${CEND}"
@@ -48,30 +49,36 @@ else
 fi
 
 
-if [ `getconf WORD_BIT` == 32 ] && [ `getconf LONG_BIT` == 64 ];then
+#if [ `getconf WORD_BIT` == 32 ] && [ `getconf LONG_BIT` == 64 ];then
+if [ "$(getconf WORD_BI)" == 32 ] && [ "$(getconf LONG_BIT)" == 64 ];then
     OS_BIT=64
     SYS_BIG_FLAG=x64 #jdk
-    SYS_BIT_a=x86_64;SYS_BIT_b=x86_64; #mariadb
+    SYS_BIT_a=x86_64
+    SYS_BIT_b=x86_64 #mariadb
 else
     OS_BIT=32
     SYS_BIG_FLAG=i586
-    SYS_BIT_a=x86;SYS_BIT_b=i686;
+    SYS_BIT_a=x86
+    SYS_BIT_b=i686
 fi
 ##systeminfo
 CpuProNum=$(cat /proc/cpuinfo |grep 'processor'|wc -l)
 RamSwapG=`awk '/SwapTotal/{swtotal=$2}END{print int(swtotal/1024)}'  /proc/meminfo`
 RamSumG=`awk '/MemTotal/{memtotal=$2}/SwapTotal/{swtotal=$2}END{print int((memtotal+swtotal)/1024)}'  /proc/meminfo`
-RamTotalG=`awk '/MemTotal/{memtotal=$2}END{print int(memtotal/1024)}'  /proc/meminfo`
+# RamTotalG=`awk '/MemTotal/{memtotal=$2}END{print int(memtotal/1024)}'  /proc/meminfo`
+# 内存单位 M
+RamTotal=`awk '/MemTotal/{memtotal=$2}END{print int(memtotal/1024)}'  /proc/meminfo`
+
 CpuCores=$(grep 'cpu cores' /proc/cpuinfo |uniq |awk -F : '{print $2}' |sed 's/^[ \t]*//g')
 
 
-OS_command(){
-    if [ $OS == 'CentOS' ];then
-        echo -e $OS_CentOS | bash
-    elif [ $OS == 'Debian' -o $OS == 'Ubuntu' ];then
-        echo -e $OS_Debian_Ubuntu | bash
-    else
-        echo "${CFAILURE}Does not support this OS, Please contact the author! ${CEND}"
-        kill -9 $$
-    fi
-}
+# OS_command(){
+#     if [ $OS == 'CentOS' ];then
+#         echo -e ${OS_CentOS:?} | bash
+#     elif [ $OS == 'Debian' -o $OS == 'Ubuntu' ];then
+#         echo -e $OS_Debian_Ubuntu | bash
+#     else
+#         echo "${CFAILURE}Does not support this OS, Please contact the author! ${CEND}"
+#         kill -9 $$
+#     fi
+# }
