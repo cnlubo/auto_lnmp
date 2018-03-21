@@ -5,26 +5,20 @@
 # @file_name:                              MariaDB-10.1.sh
 # @Last Modified by:                       ak47
 # @Last Modified time:                     2016-02-18 11:23:53
-# @Desc                                    mariadb-10.0 install scripts
+# @Desc                                    mariadb-10.1 install scripts
 #----------------------------------------------------------------------------
 
 Create_Conf() {
 
-    HostIP=`python $script_dir/py2/get_local_ip.py`
-    a=`echo $HostIP|cut -d\. -f1`
-    b=`echo $HostIP|cut -d\. -f2`
-    c=`echo $HostIP|cut -d\. -f3`
-    d=`echo $HostIP|cut -d\. -f4`
-    pt=`echo $MysqlPort % 256 | bc`
-    server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
-    cat > $MysqlConfigPath/my$MysqlPort.cnf << EOF
+
+    cat > ${MysqlConfigPath:?}/my${MysqlPort:?}.cnf << EOF
 [mysql]
 ############## CLIENT #############
 port                               = $MysqlPort
-socket                             = $MysqlRunPath/mysql$MysqlPort.sock
+socket                             = ${MysqlRunPath:?}/mysql$MysqlPort.sock
 default_character_set              = UTF8
-no_auto_rehash
-password=$dbrootpwd
+#default_character_set              = utf8mb4
+password                           = ${dbrootpwd:?}
 
 [mysqld]
 ############### GENERAL############
@@ -144,19 +138,19 @@ INSTALL_MariaDB()
     cd mariadb-$mariadb_10_1_version;
 
     cmake -DCMAKE_INSTALL_PREFIX=$MysqlBasePath \
-    -DDEFAULT_CHARSET=utf8 \
-    -DDEFAULT_COLLATION=utf8_general_ci \
-    -DWITH_EXTRA_CHARSETS=all \
-    -DWITH_INNOBASE_STORAGE_ENGINE=1 \
-    -DWITH_XTRADB_STORAGE_ENGINE=1 \
-    -DENABLED_LOCAL_INFILE=1 \
-    -DBUILD_CONFIG=mysql_release \
-    -DWITH_INNODB_MEMCACHED=ON \
-    -DENABLE_GPROF=1 \
-    -DWITH_SSL=bundled \
-    -DWITH_EMBEDDED_SERVER=1 \
-    -DCMAKE_EXE_LINKER_FLAGS="-ljemalloc" \
-    -DWITH_SAFEMALLOC=OFF
+        -DDEFAULT_CHARSET=utf8 \
+        -DDEFAULT_COLLATION=utf8_general_ci \
+        -DWITH_EXTRA_CHARSETS=all \
+        -DWITH_INNOBASE_STORAGE_ENGINE=1 \
+        -DWITH_XTRADB_STORAGE_ENGINE=1 \
+        -DENABLED_LOCAL_INFILE=1 \
+        -DBUILD_CONFIG=mysql_release \
+        -DWITH_INNODB_MEMCACHED=ON \
+        -DENABLE_GPROF=1 \
+        -DWITH_SSL=bundled \
+        -DWITH_EMBEDDED_SERVER=1 \
+        -DCMAKE_EXE_LINKER_FLAGS="-ljemalloc" \
+        -DWITH_SAFEMALLOC=OFF
     #make -j$CpuCores;
     make; -j2
     make install;
@@ -213,7 +207,7 @@ INIT_MySQL_DB(){
     $MysqlOptPath/init.d/mysql$MysqlPort start;
     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'127.0.0.1' identified by \"$dbrootpwd\" with grant option;"
     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'localhost' identified by \"$dbrootpwd\" with grant option;"
-mysql -uroot -S $MysqlRunPath/mysql$MysqlPort.sock -p$dbrootpwd <<EOF
+    mysql -uroot -S $MysqlRunPath/mysql$MysqlPort.sock -p$dbrootpwd <<EOF
     USE mysql;
     delete from user where Password='';
     DELETE FROM user WHERE user='';
