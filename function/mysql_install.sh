@@ -24,7 +24,8 @@ system_check(){
 MySQL_Var(){
 
     # 生成数据库root用户随机密码(8位长度包含字母数字和特殊字符)
-    # dbrootpwd=`mkpasswd -l 8`
+    # shellcheck disable=SC2034
+    dbrootpwd=`mkpasswd -l 8`
     read -p "Please input Port(Default:3306):" MysqlPort
     MysqlPort="${MysqlPort:=3306}"
     case   $DbType in
@@ -47,6 +48,26 @@ MySQL_Var(){
     MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort}"
     innodb_buffer_pool_size=`expr $RamTotalG \* 50 / 102400`
     read -p "Please input innodb_buffer_pool_size (default:${innodb_buffer_pool_size}G)" innodb_buffer_pool_size
+    # 生成server_id
+    HostIP=`python ${script_dir:?}/py2/get_local_ip.py`
+    # a=`echo ${HostIP:?}|cut -d\. -f1`
+    b=`echo ${HostIP:?}|cut -d\. -f2`
+    c=`echo ${HostIP:?}|cut -d\. -f3`
+    d=`echo ${HostIP:?}|cut -d\. -f4`
+    pt=`echo ${MysqlPort:?} % 256 | bc`
+    # shellcheck disable=SC2034
+    server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
+    # create dir
+    MysqlDataPath="${MysqlOptPath:?}/data"
+    MysqlLogPath="$MysqlOptPath/log"
+    MysqlConfigPath="$MysqlOptPath/etc"
+    MysqlTmpPath="$MysqlOptPath/tmp"
+    MysqlRunPath="$MysqlOptPath/run"
+    for path in ${MysqlLogPath:?} ${MysqlConfigPath:?} ${MysqlDataPath:?} ${MysqlTmpPath:?} ${MysqlRunPath:?};do
+        # [ ! -d $path ] && mkdir -p $path
+        [ -d ${parh:?} ] && rm -rf ${parh:?}
+        mkdir -p $path && chmod 755 $path && chown -R mysql:mysql $path
+    done
 
 }
 MySQL_Base_Packages_Install(){

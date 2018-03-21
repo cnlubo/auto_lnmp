@@ -11,26 +11,26 @@
 
 Create_Conf() {
 
-    HostIP=`python ${script_dir:?}/py2/get_local_ip.py`
-    echo $HostIP
-    # a=`echo ${HostIP:?}|cut -d\. -f1`
-    b=`echo ${HostIP:?}|cut -d\. -f2`
-    c=`echo ${HostIP:?}|cut -d\. -f3`
-    d=`echo ${HostIP:?}|cut -d\. -f4`
-    pt=`echo ${MysqlPort:?} % 256 | bc`
-    server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
-    dbrootpwd=`mkpasswd -l 8`
-    # create dir
-    MysqlDataPath="${MysqlOptPath:?}/data"
-    MysqlLogPath="$MysqlOptPath/log"
-    MysqlConfigPath="$MysqlOptPath/etc"
-    MysqlTmpPath="$MysqlOptPath/tmp"
-    MysqlRunPath="$MysqlOptPath/run"
-    for path in ${MysqlLogPath:?} ${MysqlConfigPath:?} ${MysqlDataPath:?} ${MysqlTmpPath:?} ${MysqlRunPath:?};do
-        [ ! -d $path ] && mkdir -p $path
-        chmod 755 $path;
-        chown -R mysql:mysql $path;
-    done
+    # HostIP=`python ${script_dir:?}/py2/get_local_ip.py`
+    # echo $HostIP
+    # # a=`echo ${HostIP:?}|cut -d\. -f1`
+    # b=`echo ${HostIP:?}|cut -d\. -f2`
+    # c=`echo ${HostIP:?}|cut -d\. -f3`
+    # d=`echo ${HostIP:?}|cut -d\. -f4`
+    # pt=`echo ${MysqlPort:?} % 256 | bc`
+    # server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
+    # dbrootpwd=`mkpasswd -l 8`
+    # # create dir
+    # MysqlDataPath="${MysqlOptPath:?}/data"
+    # MysqlLogPath="$MysqlOptPath/log"
+    # MysqlConfigPath="$MysqlOptPath/etc"
+    # MysqlTmpPath="$MysqlOptPath/tmp"
+    # MysqlRunPath="$MysqlOptPath/run"
+    # for path in ${MysqlLogPath:?} ${MysqlConfigPath:?} ${MysqlDataPath:?} ${MysqlTmpPath:?} ${MysqlRunPath:?};do
+    #     [ ! -d $path ] && mkdir -p $path
+    #     chmod 755 $path;
+    #     chown -R mysql:mysql $path;
+    # done
     # create my.cnf
     cat > $MysqlConfigPath/my$MysqlPort.cnf << EOF
 [mysql]
