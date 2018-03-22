@@ -123,7 +123,7 @@ MySQL_Base_Packages_Install(){
         cd $script_dir/src
         [ ! -f boost_1_59_0.tar.gz ] && Download_src
         [ -d boost_1_59_0 ] && rm -rf boost_1_59_0
-        tar xvf boost_1_59_0.tar.gz
+        tar xf boost_1_59_0.tar.gz
         cd $script_dir
     fi
     #create group and user
