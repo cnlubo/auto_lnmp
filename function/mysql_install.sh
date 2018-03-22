@@ -7,9 +7,7 @@
 #------------------------------------------------------------------
 system_check(){
 
-    echo
     [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && exit
-    echo
     [ ${RamTotal:?} -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install mySQL.\nThis script need memory more than 1G.\n${CEND}" && exit
 }
 
