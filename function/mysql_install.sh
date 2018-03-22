@@ -29,8 +29,8 @@ MySQL_Var(){
         "MariaDB")
             {
                 if [ $DbVersion == '10.2' ] || [ $DbVersion == '10.1' ];then
-                    read -p "Please input MySQL BaseDirectory(default:/u01/mariadb/$DbVersion)" MysqlBasePath
-                    MysqlBasePath="${MysqlBasePath:=/u01/mariadb/$DbVersion}"
+                    read -p "Please input MySQL BaseDirectory(default:/u01/mariadb/$mariadb_install_version)" MysqlBasePath
+                    MysqlBasePath="${MysqlBasePath:=/u01/mariadb/$mariadb_install_version}"
                 else
                     ead -p "Please input MySQL BaseDirectory(default:/u01/mariadb)" MysqlBasePath
                     MysqlBasePath="${MysqlBasePath:=/u01/mariadb}"
@@ -40,8 +40,8 @@ MySQL_Var(){
         "MySql")
             {
                 if [ $DbVersion == '5.7' ];then
-                    read -p "Please input MySQL BaseDirectory(default:/u01/mysql/$DbVersion)" MysqlBasePath
-                    MysqlBasePath="${MysqlBasePath:=/u01/mysql/$DbVersion}"
+                    read -p "Please input MySQL BaseDirectory(default:/u01/mysql/$mysql_install_version)" MysqlBasePath
+                    MysqlBasePath="${MysqlBasePath:=/u01/mysql/$mysql_install_version}"
                 else
                     ead -p "Please input MySQL BaseDirectory(default:/u01/mysql)" MysqlBasePath
                     MysqlBasePath="${MysqlBasePath:=/u01/mysql}"
@@ -145,6 +145,7 @@ EOF
         1)
             DbType="MySql"
             DbVersion="5.7"
+            mysql_install_version=${mysql_5_7_version:?}
             SOURCE_SCRIPT ${FunctionPath:?}/install/Mysql-5.7.sh
             MySQLDB_Install_Main 2>&1 | tee $script_dir/logs/Install_MySql5.7.log
             select_mysql_install
@@ -152,6 +153,7 @@ EOF
         2)
             DbType="MariaDB"
             DbVersion="10.2"
+            mariadb_install_version=${mariadb_10_2_version:?}
             SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.2.sh
             MariaDB_10_2_Install_Main 2>&1 | tee $script_dir/logs/Install_MariaDB_10.2.log
             select_mysql_install
@@ -159,6 +161,7 @@ EOF
         3)
             DbType="MariaDB"
             DbVersion="10.1"
+            mariadb_install_version=${mariadb_10_2_version:?}
             SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
             MariaDB_10_1_Install_Main 2>&1 | tee $script_dir/logs/Install_MariaDB_10.1.log
             select_mysql_install
