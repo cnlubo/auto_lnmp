@@ -13,7 +13,6 @@ system_check(){
 
 MySQL_Var(){
 
-
     # 检查是否存在运行的mysql进程
     COUNT=$(ps aux|grep mysqld|grep -v grep |wc -l)
     if [ $COUNT -gt 0 ]
