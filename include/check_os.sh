@@ -50,7 +50,7 @@ fi
 
 
 #if [ `getconf WORD_BIT` == 32 ] && [ `getconf LONG_BIT` == 64 ];then
-if [ "$(getconf WORD_BI)" == 32 ] && [ "$(getconf LONG_BIT)" == 64 ];then
+if [ "$(getconf WORD_BIT)" == 32 ] && [ "$(getconf LONG_BIT)" == 64 ];then
     OS_BIT=64
     SYS_BIG_FLAG=x64 #jdk
     SYS_BIT_a=x86_64
