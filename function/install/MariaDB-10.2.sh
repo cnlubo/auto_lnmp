@@ -128,7 +128,12 @@ Install_MariaDB()
         -DDEFAULT_CHARSET=utf8mb4 \
         -DDEFAULT_COLLATION=utf8mb4_general_ci \
         -DWITH_EXTRA_CHARSETS=all \
+        -DWITH_INNOBASE_STORAGE_ENGINE=1 \
+        -DWITH_XTRADB_STORAGE_ENGINE=1 \
+        -DWITH_ARCHIVE_STORAGE_ENGINE=1 \
+        -DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
         -DENABLED_LOCAL_INFILE=1 \
+        -DWITH_INNODB_MEMCACHED=ON \
         -DWITH_SSL=bundled \
         -DWITH_EMBEDDED_SERVER=1 \
         -DCMAKE_EXE_LINKER_FLAGS="-ljemalloc" \
@@ -222,6 +227,6 @@ EOF
 MariaDB_10_2_Install_Main(){
 
     MySQL_Var&&MySQL_Base_Packages_Install&&Install_MariaDB&&Create_Conf&&Init_MariaDB&&Config_MariaDB
-    
+
 
 }
