@@ -60,11 +60,12 @@ MySQL_Var(){
     read -p "Please input innodb_buffer_pool_size (default:${innodb_buffer_pool_size})" innodb_buffer_pool_size
     # 生成server_id
     HostIP=`python ${script_dir:?}/py2/get_local_ip.py`
-    # a=`echo ${HostIP:?}|cut -d\. -f1`
+
     b=`echo ${HostIP:?}|cut -d\. -f2`
     c=`echo ${HostIP:?}|cut -d\. -f3`
     d=`echo ${HostIP:?}|cut -d\. -f4`
     pt=`echo ${MysqlPort:?} % 256 | bc`
+    # a=`echo ${HostIP:?}|cut -d\. -f1`
     # shellcheck disable=SC2034
     server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
     # create dir
