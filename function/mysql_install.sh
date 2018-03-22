@@ -52,9 +52,10 @@ MySQL_Var(){
             echo "unknow Dbtype" ;;
     esac
     read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort/$DbType$DbVersion)" MysqlOptPath
-    MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort}/$DbType$DbVersion"
-    innodb_buffer_pool_size=`expr $RamTotal \* 80 / 102400`G
-    read -p "Please input innodb_buffer_pool_size (default:${innodb_buffer_pool_size})" innodb_buffer_pool_size
+    MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort}/$DbType$DbVersion}"
+    def_innodb_buffer_pool_size=`expr $RamTotal \* 80 / 102400`G
+    read -p "Please input innodb_buffer_pool_size (default:${def_innodb_buffer_pool_size})" innodb_buffer_pool_size
+    innodb_buffer_pool_size="${innodb_buffer_pool_size:=def_innodb_buffer_pool_size}"
     # 生成server_id
     HostIP=`python ${script_dir:?}/py2/get_local_ip.py`
 
