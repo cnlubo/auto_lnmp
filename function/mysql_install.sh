@@ -31,23 +31,33 @@ MySQL_Var(){
     case   $DbType in
         "MariaDB")
             {
-                read -p "Please input MySQL BaseDirectory(default:/u01/MariaDB)" MysqlBasePath
-                MysqlBasePath="${MysqlBasePath:=/u01/MariaDB}"
+                if [ $DbVersion == '10.2' ] || [ $DbVersion == '10.1' ];then
+                    read -p "Please input MySQL BaseDirectory(default:/u01/$DbType$DbVersion)" MysqlBasePath
+                    MysqlBasePath="${MysqlBasePath:=/u01/$DbType$DbVersion}"
+                else
+                    ead -p "Please input MySQL BaseDirectory(default:/u01/MariaDB)" MysqlBasePath
+                    MysqlBasePath="${MysqlBasePath:=/u01/MariaDB}"
+                fi
             }
             ;;
         "MySql")
             {
-                read -p "Please input MySQL BaseDirectory(default:/u01/Mysql)" MysqlBasePath
-                MysqlBasePath="${MysqlBasePath:=/u01/Mysql}"
+                if [ $DbVersion == '5.7' ];then
+                    read -p "Please input MySQL BaseDirectory(default:/u01/$DbType$DbVersion)" MysqlBasePath
+                    MysqlBasePath="${MysqlBasePath:=/u01/$DbType$DbVersion}"
+                else
+                    ead -p "Please input MySQL BaseDirectory(default:/u01/MySQL)" MysqlBasePath
+                    MysqlBasePath="${MysqlBasePath:=/u01/MySQL}"
+                fi
             }
             ;;
         *)
             echo "unknow Dbtype" ;;
     esac
-    read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort)" MysqlOptPath
-    MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort}"
-    innodb_buffer_pool_size=`expr $RamTotal \* 80 / 102400`
-    read -p "Please input innodb_buffer_pool_size (default:${innodb_buffer_pool_size}G)" innodb_buffer_pool_size
+    read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort/$DbType$DbVersion)" MysqlOptPath
+    MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort}/$DbType$DbVersion"
+    innodb_buffer_pool_size=`expr $RamTotal \* 80 / 102400`G
+    read -p "Please input innodb_buffer_pool_size (default:${innodb_buffer_pool_size})" innodb_buffer_pool_size
     # 生成server_id
     HostIP=`python ${script_dir:?}/py2/get_local_ip.py`
     # a=`echo ${HostIP:?}|cut -d\. -f1`
@@ -151,7 +161,7 @@ EOF
             DbType="MariaDB"
             DbVersion="10.1"
             SOURCE_SCRIPT $FunctionPath/install/MariaDB-10.1.sh
-            MariaDB_10_2_Install_Main 2>&1 | tee $script_dir/logs/Install_MariaDB_10.1.log
+            MariaDB_10_1_Install_Main 2>&1 | tee $script_dir/logs/Install_MariaDB_10.1.log
             select_mysql_install
             ;;
         4)

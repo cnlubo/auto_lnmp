@@ -11,27 +11,6 @@
 
 Create_Conf() {
 
-    # HostIP=`python ${script_dir:?}/py2/get_local_ip.py`
-    # echo $HostIP
-    # # a=`echo ${HostIP:?}|cut -d\. -f1`
-    # b=`echo ${HostIP:?}|cut -d\. -f2`
-    # c=`echo ${HostIP:?}|cut -d\. -f3`
-    # d=`echo ${HostIP:?}|cut -d\. -f4`
-    # pt=`echo ${MysqlPort:?} % 256 | bc`
-    # server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
-    # dbrootpwd=`mkpasswd -l 8`
-    # # create dir
-    # MysqlDataPath="${MysqlOptPath:?}/data"
-    # MysqlLogPath="$MysqlOptPath/log"
-    # MysqlConfigPath="$MysqlOptPath/etc"
-    # MysqlTmpPath="$MysqlOptPath/tmp"
-    # MysqlRunPath="$MysqlOptPath/run"
-    # for path in ${MysqlLogPath:?} ${MysqlConfigPath:?} ${MysqlDataPath:?} ${MysqlTmpPath:?} ${MysqlRunPath:?};do
-    #     [ ! -d $path ] && mkdir -p $path
-    #     chmod 755 $path;
-    #     chown -R mysql:mysql $path;
-    # done
-    # create my.cnf
     cat > ${MysqlConfigPath:?}/my${MysqlPort:?}.cnf << EOF
 [mysql]
 ############## CLIENT #############
@@ -78,12 +57,12 @@ general_log_file                   = $MysqlLogPath/general.log
 
 ################ SAFETY############
 
-# max_allowed_packet                 = 16M  # >= MariaDB 10.2.4 default 16m
+max_allowed_packet                 = 16M  # 16M: ()>= MariaDB 10.2.4) 4M: (>= MariaDB 10.1.7) 1MB (<= MariaDB 10.1.6)
 max_connect_errors                 = 65536
 skip_name_resolve
 sql_mode                           = STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY
 sysdate_is_now                     = 1
-# innodb_strict_mode                 = 1   # Default Value: ON (>= MariaDB 10.2.2 OFF (<= MariaDB 10.2.1)
+innodb_strict_mode                 = 1   # Default Value: ON (>= MariaDB 10.2.2 OFF (<= MariaDB 10.2.1)
 skip_ssl                           # disable_ssl
 
 ################  BINARY LOGGING##########
@@ -100,8 +79,6 @@ sync_relay_log                     = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaD
 sync_relay_log_info                = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaDB 10.1.6) 1 is the safest, but slowest
 relay_log_recovery                 = 1
 master_verify_checksum             = 1
-# binlog-commit-wait-count           = 4
-# binlog-commit-wait-usec            = 10000
 
 ############## CACHES AND LIMITS ##########
 # query_cache_type                   = 0   # Default Value: OFF (>= MariaDB 10.1.7), ON (<= MariaDB 10.1.6)
@@ -113,14 +90,12 @@ table_definition_cache             = 65536
 # slave_net_timeout                  = 5  # 60 (1 minute) (>= MariaDB 10.2.4) 3600 (1 hour) (<= MariaDB 10.2.3)
 thread_stack                       = 512K
 ##################INNODB####################################### #
-
 innodb_data_file_path              = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                = O_DIRECT
 innodb_log_files_in_group          = 2
 innodb_log_file_size               = 512M
 innodb_buffer_pool_size            = ${innodb_buffer_pool_size:?}
 innodb_log_buffer_size             = 64M # 16777216 (16MB) >= MariaDB 10.1.9, 8388608 (8MB) <= MariaDB 10.1.8
-# innodb_lru_scan_depth              = 2048
 # innodb_purge_threads               = 4 # 4 (>= MariaDB 10.2.2) 1 (>=MariaDB 10.0 to <= MariaDB 10.2.1) 0 (MariaDB 5.5)
 innodb_sort_buffer_size            = 2M
 
@@ -147,6 +122,7 @@ Install_MariaDB()
     [ ! -f mariadb-$mariadb_10_2_version.tar.gz ] && Download_src
     [ -d mariadb-$mariadb_10_2_version ] && rm -rf mariadb-$mariadb_10_2_version
     tar -zxf mariadb-$mariadb_10_2_version.tar.gz && cd mariadb-$mariadb_10_2_version
+    [ -d $MysqlBasePath ] && rm -rf $MysqlBasePath
     #编译参数
     cmake -DCMAKE_INSTALL_PREFIX=$MysqlBasePath \
         -DDEFAULT_CHARSET=utf8mb4 \
@@ -161,8 +137,8 @@ Install_MariaDB()
     make -j${CpuProNum:?} && make install
     chown -R mysql:mysql $MysqlBasePath
 
-    [ -L /usr/bin/mysql ] && rm -f /usr/bin/mysql;
-    ln -s $MysqlBasePath/bin/mysql /usr/bin/mysql;
+    [ -L /usr/bin/mysql ] && rm -f /usr/bin/mysql
+    ln -s $MysqlBasePath/bin/mysql /usr/bin/mysql
     [ -L /usr/bin/mysqladmin ] && rm -f /usr/bin/mysqladmin
     ln -s $MysqlBasePath/bin/mysqladmin /usr/bin/mysqladmin
 
