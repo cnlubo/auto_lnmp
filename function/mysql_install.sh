@@ -51,8 +51,16 @@ MySQL_Var(){
         *)
             echo "unknow Dbtype" ;;
     esac
-    read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort/$DbType/$DbVersion)" MysqlOptPath
-    MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort/$DbType/$DbVersion}"
+    if [ $DbType == 'MySql' ];then
+        read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort/mysql/$mysql_install_version)" MysqlOptPath
+        MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort/mysql/$mysql_install_version}"
+    elif [ $DbType == 'MariaDB' ];then
+        read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort/mariadb/$mariadb_install_version)" MysqlOptPath
+        MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort/mariadb/$mariadb_install_version}"
+    else
+        read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort)" MysqlOptPath
+        MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort}"
+    fi
     def_innodb_buffer_pool_size=`expr $RamTotal \* 80 / 102400`G
     read -p "Please input innodb_buffer_pool_size (default:${def_innodb_buffer_pool_size})" innodb_buffer_pool_size
     innodb_buffer_pool_size="${innodb_buffer_pool_size:=$def_innodb_buffer_pool_size}"
