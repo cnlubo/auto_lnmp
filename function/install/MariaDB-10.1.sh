@@ -118,7 +118,7 @@ EOF
 
 }
 
-INSTALL_MariaDB()
+Install_MariaDB()
 {
     echo -e "${CMSG}[mariadb${mariadb_10_1_version:?} Installing] ****************>>${CEND}\n"
     # shellcheck disable=SC2034
