@@ -78,10 +78,10 @@ binlog_format                      = row # Default Value: MIXED (>= MariaDB 10.2
 read_only                          = 1
 skip_slave_start                   = 1
 log_slave_updates                  = 1
-sync_master_info                   = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaDB 10.1.6) 1 is the safest, but slowest
-sync_relay_log                     = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaDB 10.1.6) 1 is the safest, but slowest
-sync_relay_log_info                = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaDB 10.1.6) 1 is the safest, but slowest
 relay_log_recovery                 = 1
+# sync_master_info                   = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaDB 10.1.6) 1 is the safest, but slowest
+# sync_relay_log                     = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaDB 10.1.6) 1 is the safest, but slowest
+# sync_relay_log_info                = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaDB 10.1.6) 1 is the safest, but slowest
 master_verify_checksum             = 1
 
 ############## CACHES AND LIMITS ##########

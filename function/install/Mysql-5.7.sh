@@ -40,16 +40,18 @@ password                            =${dbrootpwd:?}
 user                                = ${mysql_user:?}
 port                                = $MysqlPort
 bind_address                        = 0.0.0.0
-character_set_server                = UTF8
+# character_set_server                = UTF8
+character_set_server               = utf8mb4
+collation-server                   = utf8mb4_unicode_ci
+init_connect                       = 'SET NAMES utf8mb4' # 初始化连接都设置为utf8mb4
+skip-character-set-client-handshake  =true               # 忽略客户端字符集设置,使用init_connect设置
 lower_case_table_names              = 1
 join_buffer_size                    = 1M
 sort_buffer_size                    = 1M
 server_id                           = $server_id
-thread_handling                     = loaded-dynamically
+thread_handling                     = loaded-dynamically #mysql 5.7 只有企业版本才有线程池
 gtid_mode                           = ON
 enforce_gtid_consistency            = ON
-max_sp_recursion_depth              = 255
-log_bin_trust_function_creators     = ON
 explicit_defaults_for_timestamp
 ################DIR################
 basedir                             = ${MysqlBasePath:?}
@@ -83,19 +85,19 @@ safe_user_create                    = 1
 ################  BINARY LOGGING######################
 expire_logs_days                    = 7
 sync_binlog                         = 1
-binlog_format                       = row
+# binlog_format                       = row    # (>= 5.7.7) ROW
 binlog_rows_query_log_events        = 1
-binlog_error_action                 = ABORT_SERVER
+# binlog_error_action                 = ABORT_SERVER # (>= 5.7.7) defualt ABORT_SERVER
 ############### REPLICATION ############################
 read_only                           = 1
 skip_slave_start                    = 1
 log_slave_updates                   = 1
 relay_log_recovery                  = 1
-relay_log_purge                     = 1
+# relay_log_purge                     = 1
 master_info_repository              = TABLE
 relay_log_info_repository           = TABLE
-slave_parallel_workers              = 3
 master_verify_checksum              = 1
+slave_parallel_workers              = 3
 slave_skip_errors                   = ddl_exist_errors
 binlog_gtid_simple_recovery         = 1
 plugin_load                         = "rpl_semi_sync_master=semisync_master.so;rpl_semi_sync_slave=semisync_slave.so"
@@ -113,7 +115,7 @@ loose_rpl_semi_sync_slave_enabled   = 1
 max_connections                    = 1000
 max_user_connections               = 998
 open_files_limit                   = 65535
-slave_net_timeout                  = 60
+# slave_net_timeout                  = 60   # Default (>= 5.7.7)	60
 thread_stack                       = 512K
 
 ##################INNODB####################################### #
@@ -121,23 +123,19 @@ thread_stack                       = 512K
 innodb_data_file_path               = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                 = O_DIRECT
 innodb_log_file_size                = 512M
-innodb_buffer_pool_size             = ${innodb_buffer_pool_size:?}G
-innodb_log_buffer_size              = 64M
-# innodb_lru_scan_depth               = 2048
-# innodb_purge_threads                = 4
+innodb_log_files_in_group           = 2
+innodb_buffer_pool_size             = ${innodb_buffer_pool_size:?}
+innodb_log_buffer_size              = 64M # Default (>= 5.7.6)	 16m
 innodb_sort_buffer_size             = 2M
-# innodb_write_io_threads             = ${CpuProNum:?}
-# innodb_buffer_pool_load_at_startup  = 1
-# innodb_buffer_pool_dump_at_shutdown = 1
-# innodb_lock_wait_timeout            = 5
-# innodb_io_capacity                  = 200
-# innodb_undo_tablespaces             = 3
+innodb_purge_threads                = 4   # Default (>= 5.7.8)	4
 ################# LOGGING#########################################
-slow_query_log                         = 1
-general_log                            = 0
-long_query_time                        = 3
-min_examined_row_limit                 = 100
-transaction_isolation                  = READ-COMMITTED
+log_queries_not_using_indexes      = 1
+slow_query_log                     = 1
+general_log                        = 0
+log_slow_admin_statements          = 1
+long_query_time                    = 3
+transaction_isolation              = READ-COMMITTED
+# min_examined_row_limit                 = 100
 
 
 EOF
@@ -157,20 +155,21 @@ Install_MySQLDB()
     cmake -DCMAKE_INSTALL_PREFIX=$MysqlBasePath \
     -DDEFAULT_CHARSET=utf8mb4 \
     -DDEFAULT_COLLATION=utf8mb4_general_ci \
+    -DWITH_ARCHIVE_STORAGE_ENGINE=1 \
+    -DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
+    -DWITH_INNOBASE_STORAGE_ENGINE=1 \
     -DENABLED_LOCAL_INFILE=1 \
     -DWITH_BOOST=$script_dir/src/boost_1_59_0 \
     -DBUILD_CONFIG=mysql_release \
     -DWITH_INNODB_MEMCACHED=ON \
     -DWITH_MYSQLD_LDFLAGS='-ljemalloc'
 
-    #-DWITH_ARCHIVE_STORAGE_ENGINE=1
-    #-DWITH_BLACKHOLE_STORAGE_ENGINE=1
-    #-DWITH_INNOBASE_STORAGE_ENGINE=1 \
+
     #-DWITH_PARTITION_STORAGE_ENGINE=1 \
     #-DWITH_FEDERATED_STORAGE_ENGINE=1 \
     #-DWITH_MYISAM_STORAGE_ENGINE=1 \
 
-    make -j$CpuProNum && make install
+    make -j${CpuProNum:?} && make install
     chown -R mysql:mysql $MysqlBasePath
     [ -L /usr/bin/mysql ] && rm -f /usr/bin/mysql
     ln -s $MysqlBasePath/bin/mysql /usr/bin/mysql
