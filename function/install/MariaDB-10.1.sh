@@ -149,11 +149,11 @@ Install_MariaDB()
         -DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
         -DENABLED_LOCAL_INFILE=1 \
         -DWITH_INNODB_MEMCACHED=ON \
-        -DENABLE_GPROF=1 \
         -DWITH_SSL=bundled \
         -DWITH_EMBEDDED_SERVER=1 \
         -DCMAKE_EXE_LINKER_FLAGS="-ljemalloc" \
         -DWITH_SAFEMALLOC=OFF
+        # -DENABLE_GPROF=1 \
 
     make -j${CpuProNum:?} && make install
     chown -R mysql:mysql $MysqlBasePath

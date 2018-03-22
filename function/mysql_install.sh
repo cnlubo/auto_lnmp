@@ -29,22 +29,22 @@ MySQL_Var(){
         "MariaDB")
             {
                 if [ $DbVersion == '10.2' ] || [ $DbVersion == '10.1' ];then
-                    read -p "Please input MySQL BaseDirectory(default:/u01/$DbType/$DbVersion)" MysqlBasePath
-                    MysqlBasePath="${MysqlBasePath:=/u01/$DbType/$DbVersion}"
+                    read -p "Please input MySQL BaseDirectory(default:/u01/mariadb/$DbVersion)" MysqlBasePath
+                    MysqlBasePath="${MysqlBasePath:=/u01/mariadb/$DbVersion}"
                 else
-                    ead -p "Please input MySQL BaseDirectory(default:/u01/MariaDB)" MysqlBasePath
-                    MysqlBasePath="${MysqlBasePath:=/u01/MariaDB}"
+                    ead -p "Please input MySQL BaseDirectory(default:/u01/mariadb)" MysqlBasePath
+                    MysqlBasePath="${MysqlBasePath:=/u01/mariadb}"
                 fi
             }
             ;;
         "MySql")
             {
                 if [ $DbVersion == '5.7' ];then
-                    read -p "Please input MySQL BaseDirectory(default:/u01/$DbType/$DbVersion)" MysqlBasePath
-                    MysqlBasePath="${MysqlBasePath:=/u01/$DbType/$DbVersion}"
+                    read -p "Please input MySQL BaseDirectory(default:/u01/mysql/$DbVersion)" MysqlBasePath
+                    MysqlBasePath="${MysqlBasePath:=/u01/mysql/$DbVersion}"
                 else
-                    ead -p "Please input MySQL BaseDirectory(default:/u01/MySQL)" MysqlBasePath
-                    MysqlBasePath="${MysqlBasePath:=/u01/MySQL}"
+                    ead -p "Please input MySQL BaseDirectory(default:/u01/mysql)" MysqlBasePath
+                    MysqlBasePath="${MysqlBasePath:=/u01/mysql}"
                 fi
             }
             ;;
