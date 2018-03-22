@@ -136,8 +136,8 @@ select_mysql_install(){
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     cat << EOF
 *  `echo -e "$CBLUE  1) MySQL-${mysql_5_7_version:?}        "`
-*  `echo -e "$CBLUE  2) MariaDB-${mariadb_10_2_version:?}     "`
-*  `echo -e "$CBLUE  3) MariaDB-${mariadb_10_1_version:?}     "`
+*  `echo -e "$CBLUE  2) MariaDB-${mariadb_10_2_version:?}   "`
+*  `echo -e "$CBLUE  3) MariaDB-${mariadb_10_1_version:?}   "`
 *  `echo -e "$CBLUE  4) Back             "`
 *  `echo -e "$CBLUE  5) Quit             "`
 EOF
