@@ -49,7 +49,7 @@ lower_case_table_names              = 1
 join_buffer_size                    = 1M
 sort_buffer_size                    = 1M
 server_id                           = $server_id
-thread_handling                     = loaded-dynamically #mysql 5.7 只有企业版本才有线程池
+# thread_handling                     = loaded-dynamically #mysql 5.7 只有企业版本才有线程池
 gtid_mode                           = ON
 enforce_gtid_consistency            = ON
 explicit_defaults_for_timestamp
