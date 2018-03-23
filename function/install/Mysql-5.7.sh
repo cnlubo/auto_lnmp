@@ -209,7 +209,8 @@ Config_MySQLDB()
     sed -i '/plugin-load-add/s/^#//' $MysqlConfigPath/my$MysqlPort.cnf
     sed -i '/validate_password_policy/s/^#//' $MysqlConfigPath/my$MysqlPort.cnf
     sed -i '/validate-password/s/^#//' $MysqlConfigPath/my$MysqlPort.cnf
-    $MysqlOptPath/init.d/mysql$MysqlPort stop;
+    
+    $MysqlOptPath/init.d/mysql$MysqlPort stop
     #启动数据库
     if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
         echo -e "${CMSG}[ starting db ] **********************************************>>${CEND}\n"
