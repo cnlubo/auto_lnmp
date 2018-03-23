@@ -48,19 +48,19 @@ centos_setup() {
     # [ ! -e "/var/spool/cron/root" -o -z "$(grep 'ntpdate' /var/spool/cron/root)" ] && { echo "*/20 * * * * $(which ntpdate) pool.ntp.org > /dev/null 2>&1" >> /var/spool/cron/root;chmod 600 /var/spool/cron/root; }
     [ ! -e "/var/spool/cron/root" ] || [ -z "$(grep 'ntpdate' /var/spool/cron/root)" ] && { echo "*/20 * * * * $(which ntpdate) pool.ntp.org > /dev/null 2>&1" >> /var/spool/cron/root;chmod 600 /var/spool/cron/root; }
 
-if [ "${CentOS_RHEL_version:?}" == '5' ]; then
-        sed -i 's@^[3-6]:2345:respawn@#&@g' /etc/inittab
-        sed -i 's@^ca::ctrlaltdel@#&@' /etc/inittab
-        sed -i 's@LANG=.*$@LANG="en_US.UTF-8"@g' /etc/sysconfig/i18n
-    elif [ "${CentOS_RHEL_version}" == '6' ]; then
-        sed -i 's@^ACTIVE_CONSOLES.*@ACTIVE_CONSOLES=/dev/tty[1-2]@' /etc/sysconfig/init
-        sed -i 's@^start@#start@' /etc/init/control-alt-delete.conf
-        sed -i 's@LANG=.*$@LANG="en_US.UTF-8"@g' /etc/sysconfig/i18n
-    elif [ "${CentOS_RHEL_version}" == '7' ]; then
-        sed -i 's@LANG=.*$@LANG="en_US.UTF-8"@g' /etc/locale.conf
-    fi
-
-    # service rsyslog restart
-    service sshd restart
+# if [ "${CentOS_RHEL_version:?}" == '5' ]; then
+#         sed -i 's@^[3-6]:2345:respawn@#&@g' /etc/inittab
+#         sed -i 's@^ca::ctrlaltdel@#&@' /etc/inittab
+#         sed -i 's@LANG=.*$@LANG="en_US.UTF-8"@g' /etc/sysconfig/i18n
+#     elif [ "${CentOS_RHEL_version}" == '6' ]; then
+#         sed -i 's@^ACTIVE_CONSOLES.*@ACTIVE_CONSOLES=/dev/tty[1-2]@' /etc/sysconfig/init
+#         sed -i 's@^start@#start@' /etc/init/control-alt-delete.conf
+#         sed -i 's@LANG=.*$@LANG="en_US.UTF-8"@g' /etc/sysconfig/i18n
+#     elif [ "${CentOS_RHEL_version}" == '7' ]; then
+#         sed -i 's@LANG=.*$@LANG="en_US.UTF-8"@g' /etc/locale.conf
+#     fi
+#
+#     # service rsyslog restart
+#     service sshd restart
 
 }

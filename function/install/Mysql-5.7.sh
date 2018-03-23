@@ -1,5 +1,5 @@
 #!/bin/bash\
-# shellcheck disable=SC2164
+    # shellcheck disable=SC2164
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
 # @file_name:                              Mysql-5.7.sh
@@ -49,7 +49,6 @@ lower_case_table_names              = 1
 join_buffer_size                    = 1M
 sort_buffer_size                    = 1M
 server_id                           = $server_id
-# thread_handling                     = loaded-dynamically #mysql 5.7 只有企业版本才有线程池
 gtid_mode                           = ON
 enforce_gtid_consistency            = ON
 explicit_defaults_for_timestamp
@@ -69,14 +68,13 @@ relay_log                           = $MysqlLogPath/relay_bin
 log_error                           = $MysqlLogPath/alert.log
 slow_query_log_file                 = $MysqlLogPath/slow.log
 general_log_file                    = $MysqlLogPath/general.log
-
 ################MyISAM##############################
 
 ################ SAFETY##############################
 
 max_allowed_packet                  = 16M
-max_connect_errors                  = 6000
-skip_name_resolve                   #禁用DNS解析
+max_connect_errors                  = 1000   # 如果客户端尝试连接的错误数量超过这个参数设置的值，则服务器不再接受新的客户端连接
+skip_name_resolve                    #禁用DNS解析
 #skip-networking                     #设置MySQL不要监听网络，也就只能本机访问
 sql_mode                            = STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,ONLY_FULL_GROUP_BY
 innodb_strict_mode                  = 1     #>= 5.7.7 default ON
@@ -85,15 +83,15 @@ safe_user_create                    = 1
 ################  BINARY LOGGING######################
 expire_logs_days                    = 7
 sync_binlog                         = 1
-# binlog_format                       = row    # (>= 5.7.7) ROW
+# binlog_format                       = row    # (>= 5.7.7) default ROW
 binlog_rows_query_log_events        = 1
 # binlog_error_action                 = ABORT_SERVER # (>= 5.7.7) defualt ABORT_SERVER
+log_timestamps                      = system # 主要是控制 errorlog generalog 等日志的显示时间参数，>=5.7.2 默认 UTC 会导致日志中记录的时间比中国这边的慢 修改为 SYSTEM即可
 ############### REPLICATION ############################
 read_only                           = 1
 skip_slave_start                    = 1
 log_slave_updates                   = 1
 relay_log_recovery                  = 1
-# relay_log_purge                     = 1
 master_info_repository              = TABLE
 relay_log_info_repository           = TABLE
 master_verify_checksum              = 1
@@ -112,10 +110,9 @@ loose_rpl_semi_sync_slave_enabled   = 1
 #validate-password                  = FORCE_PLUS_PERMANENT
 
 ############## CACHES AND LIMITS #############################
-max_connections                    = 1000
-max_user_connections               = 998
+max_connections                    = 800     # 允许客户端并发连接的最大数量
 open_files_limit                   = 65535
-# slave_net_timeout                  = 60   # Default (>= 5.7.7)	60
+# slave_net_timeout                  = 60   # Default (>= 5.7.7) 60
 thread_stack                       = 512K
 
 ##################INNODB####################################### #
@@ -125,16 +122,18 @@ innodb_flush_method                 = O_DIRECT
 innodb_log_file_size                = 512M
 innodb_log_files_in_group           = 2
 innodb_buffer_pool_size             = ${innodb_buffer_pool_size:?}
-innodb_log_buffer_size              = 64M # Default (>= 5.7.6)	 16m
-innodb_sort_buffer_size             = 2M
+innodb_log_buffer_size              = 16M # Default (>= 5.7.6)	 16m
+innodb_sort_buffer_size             = 64M # ORDER BY 或者GROUP BY 操作的buffer缓存大小
 innodb_purge_threads                = 4   # Default (>= 5.7.8)	4
+innodb_print_all_deadlocks          = 1   # 将死锁相关信息保存到错误日志中
 ################# LOGGING#########################################
-log_queries_not_using_indexes      = 1
-slow_query_log                     = 1
-general_log                        = 0
-log_slow_admin_statements          = 1
-long_query_time                    = 3
-transaction_isolation              = READ-COMMITTED
+log_queries_not_using_indexes          = 1
+log_throttle_queries_not_using_indexes = 10 #每分钟记录到日志的未使用索引的语句数目 如果超过这个数目后只记录语句数量和花费的总时间
+slow_query_log                         = 1
+general_log                            = 0
+log_slow_admin_statements              = 1
+long_query_time                        = 3
+transaction_isolation                  = READ-COMMITTED
 # min_examined_row_limit                 = 100
 
 
@@ -153,21 +152,16 @@ Install_MySQLDB()
     tar -zxf mysql-$mysql_5_7_version.tar.gz && cd mysql-$mysql_5_7_version
 
     cmake -DCMAKE_INSTALL_PREFIX=$MysqlBasePath \
-    -DDEFAULT_CHARSET=utf8mb4 \
-    -DDEFAULT_COLLATION=utf8mb4_general_ci \
-    -DWITH_ARCHIVE_STORAGE_ENGINE=1 \
-    -DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
-    -DWITH_INNOBASE_STORAGE_ENGINE=1 \
-    -DENABLED_LOCAL_INFILE=1 \
-    -DWITH_BOOST=$script_dir/src/boost_1_59_0 \
-    -DBUILD_CONFIG=mysql_release \
-    -DWITH_INNODB_MEMCACHED=ON \
-    -DWITH_MYSQLD_LDFLAGS='-ljemalloc'
-
-
-    #-DWITH_PARTITION_STORAGE_ENGINE=1 \
-    #-DWITH_FEDERATED_STORAGE_ENGINE=1 \
-    #-DWITH_MYISAM_STORAGE_ENGINE=1 \
+        -DDEFAULT_CHARSET=utf8mb4 \
+        -DDEFAULT_COLLATION=utf8mb4_general_ci \
+        -DWITH_ARCHIVE_STORAGE_ENGINE=1 \
+        -DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
+        -DWITH_INNOBASE_STORAGE_ENGINE=1 \
+        -DENABLED_LOCAL_INFILE=1 \
+        -DWITH_BOOST=$script_dir/src/boost_1_59_0 \
+        -DBUILD_CONFIG=mysql_release \
+        -DWITH_INNODB_MEMCACHED=ON \
+        -DWITH_MYSQLD_LDFLAGS='-ljemalloc'
 
     make -j${CpuProNum:?} && make install
     chown -R mysql:mysql $MysqlBasePath
@@ -175,11 +169,7 @@ Install_MySQLDB()
     ln -s $MysqlBasePath/bin/mysql /usr/bin/mysql
     [ -L /usr/bin/mysqladmin ] && rm -f /usr/bin/mysqladmin
     ln -s $MysqlBasePath/bin/mysqladmin /usr/bin/mysqladmin
-    #环境变量设置
-    #echo PATH='$PATH:'$MysqlBasePath/bin >>/etc/profile
-    #echo export PATH >>/etc/profile
-    #echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/etc/profile
-    #source /etc/profile
+
 
 }
 Init_MySQLDB(){
@@ -189,7 +179,7 @@ Init_MySQLDB(){
     echo "${CMSG}[ Initialization Database ] **************************************************>>${CEND}"
     # 初始化数据库不生成密码    --initialize：root用户生成随机密码 --initialize-insecure：root用户不生成随机密码
     $MysqlBasePath/bin/mysqld --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf --user=mysql \
-    --basedir=$MysqlBasePath --datadir=$MysqlDataPath --initialize-insecure
+        --basedir=$MysqlBasePath --datadir=$MysqlDataPath --initialize-insecure
     #启动脚本
     mkdir -p ${MysqlOptPath:?}/init.d
     chown -R mysql.mysql $MysqlOptPath/
@@ -236,21 +226,31 @@ Config_MySQLDB()
     $MysqlOptPath/init.d/mysql$MysqlPort stop;
     #启动数据库
     if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
-        echo "${CMSG}[ starting db ] **************************************************>>${CEND}";
+        echo -e "${CMSG}[ starting db ] **********************************************>>${CEND}\n"
         systemctl start mysql$MysqlPort.service
     else
-        echo "${CMSG}[ starting db ] **************************************************>>${CEND}";
+        echo -e "${CMSG}[ starting db ] **********************************************>>${CEND}\n"
         service start mysql$MysqlPort
     fi
-    rm -rf $script_dir/src/mysql-$mysql_5_7_version;
-    echo "${CRED}[db root user passwd:$dbrootpwd ] *******************************>>${CEND}";
+    rm -rf $script_dir/src/mysql-$mysql_5_7_version
+    #环境变量设置
+    [ -f /root/.zshrc ] && echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/root/.zshrc
+    id ${default_user:?} >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        [ -f /home/${default_user:?}/.zshrc ] && echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>home/${default_user:?}/.zshrc
+    fi
+    #echo PATH='$PATH:'$MysqlBasePath/bin >>/etc/profile
+    #echo export PATH >>/etc/profile
+    #echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/etc/profile
+    #source /etc/profile
+    echo -e "${CRED}[db root user passwd:$dbrootpwd ] **************************>>${CEND}\n"
 
 }
 
 MySQLDB_Install_Main(){
 
-    # MySQL_Var&&MySQL_Base_Packages_Install&&Install_MySQLDB&&Create_Conf&&Init_MySQLDB&&Config_MySQLDB
-    MySQL_Var&&Create_Conf&&Init_MySQLDB&&Config_MySQLDB
+    MySQL_Var&&MySQL_Base_Packages_Install&&Install_MySQLDB&&Create_Conf&&Init_MySQLDB&&Config_MySQLDB
+    # MySQL_Var&&Create_Conf&&Init_MySQLDB&&Config_MySQLDB
 
 
 
