@@ -7,36 +7,17 @@
 #----------------------------------------------------------------------------
 Create_Conf() {
 
-    HostIP=`python ${script_dir:?}/py2/get_local_ip.py`
-    #a=`echo $HostIP|cut -d\. -f1`
-    b=`echo $HostIP|cut -d\. -f2`
-    c=`echo $HostIP|cut -d\. -f3`
-    d=`echo $HostIP|cut -d\. -f4`
-    pt=`echo ${MysqlPort:?} % 256 | bc`
-    server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
-    dbrootpwd=`mkpasswd -l 8`
-    # create dir
-    MysqlDataPath="${MysqlOptPath:?}/data"
-    MysqlLogPath="$MysqlOptPath/log"
-    MysqlConfigPath="$MysqlOptPath/etc"
-    MysqlTmpPath="$MysqlOptPath/tmp"
-    MysqlRunPath="$MysqlOptPath/run"
-    for path in ${MysqlLogPath:?} ${MysqlConfigPath:?} ${MysqlDataPath:?} ${MysqlTmpPath:?} ${MysqlRunPath:?};do
-        [ ! -d $path ] && mkdir -p $path
-        chmod 755 $path;
-        chown -R mysql:mysql $path;
-    done
-    cat > $MysqlConfigPath/my$MysqlPort.cnf << EOF
+    cat > ${MysqlConfigPath:?}/my${MysqlPort:?}.cnf << EOF
 [mysql]
-############## CLIENT #############
+############## CLIENT ##########################
 port                                = $MysqlPort
-socket                              = $MysqlRunPath/mysql$MysqlPort.sock
+socket                              = ${MysqlRunPath:?}/mysql$MysqlPort.sock
 default_character_set               = UTF8
 no_auto_rehash
 password                            =${dbrootpwd:?}
 
 [mysqld]
-############### GENERAL############
+############### GENERAL##########################
 user                                = ${mysql_user:?}
 port                                = $MysqlPort
 bind_address                        = 0.0.0.0
@@ -48,19 +29,20 @@ skip-character-set-client-handshake  =true               # 忽略客户端字符
 lower_case_table_names              = 1
 join_buffer_size                    = 1M
 sort_buffer_size                    = 1M
-server_id                           = $server_id
+server_id                           = ${server_id:?}
 gtid_mode                           = ON
 enforce_gtid_consistency            = ON
 explicit_defaults_for_timestamp
-################DIR################
+
+################DIR#################################
 basedir                             = ${MysqlBasePath:?}
 pid_file                            = $MysqlRunPath/mysql$MysqlPort.pid
 socket                              = $MysqlRunPath/mysql$MysqlPort.sock
-datadir                             = $MysqlDataPath
-tmpdir                              = $MysqlTmpPath
+datadir                             = ${MysqlDataPath:?}
+tmpdir                              = ${MysqlTmpPath:?}
 slave_load_tmpdir                   = $MysqlTmpPath
-innodb_data_home_dir                = $MysqlDataPath/
-innodb_log_group_home_dir           = $MysqlLogPath
+innodb_data_home_dir                = $MysqlDataPath
+innodb_log_group_home_dir           = ${MysqlLogPath:?}
 log_bin                             = $MysqlLogPath/mysql_bin
 log_bin_index                       = $MysqlLogPath/mysql_bin.index
 relay_log_index                     = $MysqlLogPath/relay_log.index
@@ -68,6 +50,7 @@ relay_log                           = $MysqlLogPath/relay_bin
 log_error                           = $MysqlLogPath/alert.log
 slow_query_log_file                 = $MysqlLogPath/slow.log
 general_log_file                    = $MysqlLogPath/general.log
+
 ################MyISAM##############################
 
 ################ SAFETY##############################
@@ -80,6 +63,7 @@ sql_mode                            = STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO
 innodb_strict_mode                  = 1     #>= 5.7.7 default ON
 skip_ssl
 safe_user_create                    = 1
+
 ################  BINARY LOGGING######################
 expire_logs_days                    = 7
 sync_binlog                         = 1
@@ -87,6 +71,7 @@ sync_binlog                         = 1
 binlog_rows_query_log_events        = 1
 # binlog_error_action                 = ABORT_SERVER # (>= 5.7.7) defualt ABORT_SERVER
 log_timestamps                      = system # 主要是控制 errorlog generalog 等日志的显示时间参数，>=5.7.2 默认 UTC 会导致日志中记录的时间比中国这边的慢 修改为 SYSTEM即可
+
 ############### REPLICATION ############################
 read_only                           = 1
 skip_slave_start                    = 1
@@ -110,13 +95,14 @@ loose_rpl_semi_sync_slave_enabled   = 1
 #validate-password                  = FORCE_PLUS_PERMANENT
 
 ############## CACHES AND LIMITS #############################
+query_cache_type                   = 0   # Default Value: OFF
+query_cache_size                   = 0
 max_connections                    = 800     # 允许客户端并发连接的最大数量
 open_files_limit                   = 65535
 # slave_net_timeout                  = 60   # Default (>= 5.7.7) 60
 thread_stack                       = 512K
 
 ##################INNODB####################################### #
-
 innodb_data_file_path               = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                 = O_DIRECT
 innodb_log_file_size                = 512M
@@ -126,6 +112,7 @@ innodb_log_buffer_size              = 16M # Default (>= 5.7.6)	 16m
 innodb_sort_buffer_size             = 64M # ORDER BY 或者GROUP BY 操作的buffer缓存大小
 innodb_purge_threads                = 4   # Default (>= 5.7.8)	4
 innodb_print_all_deadlocks          = 1   # 将死锁相关信息保存到错误日志中
+
 ################# LOGGING#########################################
 log_queries_not_using_indexes          = 1
 log_throttle_queries_not_using_indexes = 10 #每分钟记录到日志的未使用索引的语句数目 如果超过这个数目后只记录语句数量和花费的总时间
@@ -169,7 +156,6 @@ Install_MySQLDB()
     ln -s $MysqlBasePath/bin/mysql /usr/bin/mysql
     [ -L /usr/bin/mysqladmin ] && rm -f /usr/bin/mysqladmin
     ln -s $MysqlBasePath/bin/mysqladmin /usr/bin/mysqladmin
-
 
 }
 Init_MySQLDB(){
@@ -237,7 +223,7 @@ Config_MySQLDB()
     [ -f /root/.zshrc ] && echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/root/.zshrc
     id ${default_user:?} >/dev/null 2>&1
     if [ $? -eq 0 ]; then
-        [ -f /home/${default_user:?}/.zshrc ] && echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>home/${default_user:?}/.zshrc
+        [ -f /home/${default_user:?}/.zshrc ] && echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/home/${default_user:?}/.zshrc
     fi
     #echo PATH='$PATH:'$MysqlBasePath/bin >>/etc/profile
     #echo export PATH >>/etc/profile

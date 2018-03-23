@@ -13,7 +13,7 @@ Create_Conf() {
 
     cat > ${MysqlConfigPath:?}/my${MysqlPort:?}.cnf << EOF
 [mysql]
-############## CLIENT #############
+############## CLIENT #########################
 port                               = $MysqlPort
 socket                             = ${MysqlRunPath:?}/mysql$MysqlPort.sock
 default_character_set              = UTF8
@@ -22,7 +22,7 @@ no_auto_rehash
 password                           =${dbrootpwd:?}
 
 [mysqld]
-############### GENERAL############
+############### GENERAL#########################
 user                               = ${mysql_user:?}
 port                               = $MysqlPort
 bind_address                       = 0.0.0.0
@@ -38,7 +38,7 @@ sort_buffer_size                   = 1M
 server_id                          = ${server_id:?}
 thread_handling                    = pool-of-threads
 
-################DIR################
+################DIR##############################
 basedir                            = ${MysqlBasePath:?}
 pid_file                           = $MysqlRunPath/mysql$MysqlPort.pid
 socket                             = $MysqlRunPath/mysql$MysqlPort.sock
@@ -55,22 +55,21 @@ log_error                          = $MysqlLogPath/alert.log
 slow_query_log_file                = $MysqlLogPath/slow.log
 general_log_file                   = $MysqlLogPath/general.log
 
-################ SAFETY############
-
+################ SAFETY#############################
 max_allowed_packet                 = 16M  # 16M: ()>= MariaDB 10.2.4) 4M: (>= MariaDB 10.1.7) 1MB (<= MariaDB 10.1.6)
-max_connect_errors                 = 65536
+max_connect_errors                 = 1000
 skip_name_resolve
 sql_mode                           = STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY
 sysdate_is_now                     = 1
 innodb_strict_mode                 = 1   # Default Value: ON (>= MariaDB 10.2.2 OFF (<= MariaDB 10.2.1)
 skip_ssl                           # disable_ssl
 
-################  BINARY LOGGING##########
+################  BINARY LOGGING#####################
 expire_logs_days                   = 7
 sync_binlog                        = 1
 # binlog_format                      = row # Default Value: MIXED (>= MariaDB 10.2.4) STATEMENT (<= MariaDB 10.2.3)
 
-############### REPLICATION ###############
+############### REPLICATION #########################
 read_only                          = 1
 skip_slave_start                   = 1
 log_slave_updates                  = 1
@@ -80,27 +79,27 @@ relay_log_recovery                 = 1
 # sync_relay_log_info                = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaDB 10.1.6) 1 is the safest, but slowest
 master_verify_checksum             = 1
 
-############## CACHES AND LIMITS ##########
-# query_cache_type                   = 0   # Default Value: OFF (>= MariaDB 10.1.7), ON (<= MariaDB 10.1.6)
+############## CACHES AND LIMITS #####################
+query_cache_type                   = 0   # Default Value: OFF (>= MariaDB 10.1.7), ON (<= MariaDB 10.1.6)
 query_cache_size                   = 0
-max_connections                    = 8192
-max_user_connections               = 8000
+max_connections                    = 800
 open_files_limit                   = 65535
 table_definition_cache             = 65536
 # slave_net_timeout                  = 5  # 60 (1 minute) (>= MariaDB 10.2.4) 3600 (1 hour) (<= MariaDB 10.2.3)
 thread_stack                       = 512K
-##################INNODB####################################### #
+
+##################INNODB###############################
 innodb_data_file_path              = ibdata1:1G;ibdata2:512M:autoextend
 innodb_flush_method                = O_DIRECT
 innodb_log_files_in_group          = 2
 innodb_log_file_size               = 512M
 innodb_buffer_pool_size            = ${innodb_buffer_pool_size:?}
-innodb_log_buffer_size             = 64M # 16777216 (16MB) >= MariaDB 10.1.9, 8388608 (8MB) <= MariaDB 10.1.8
-# innodb_purge_threads               = 4 # 4 (>= MariaDB 10.2.2) 1 (>=MariaDB 10.0 to <= MariaDB 10.2.1) 0 (MariaDB 5.5)
-innodb_sort_buffer_size            = 2M
+innodb_log_buffer_size             = 16M # 16777216 (16MB) >= MariaDB 10.1.9, 8388608 (8MB) <= MariaDB 10.1.8
+innodb_purge_threads               = 4 # 4 (>= MariaDB 10.2.2) 1 (>=MariaDB 10.0 to <= MariaDB 10.2.1) 0 (MariaDB 5.5)
+innodb_sort_buffer_size            = 64M
+innodb_print_all_deadlocks          = 1   # 将死锁相关信息保存到错误日志中
 
-
-################# LOGGING####################### #
+################# LOGGING################################
 log_queries_not_using_indexes      = 1
 slow_query_log                     = 1
 general_log                        = 0
@@ -141,16 +140,10 @@ Install_MariaDB()
 
     make -j${CpuProNum:?} && make install
     chown -R mysql:mysql $MysqlBasePath
-
     [ -L /usr/bin/mysql ] && rm -f /usr/bin/mysql
     ln -s $MysqlBasePath/bin/mysql /usr/bin/mysql
     [ -L /usr/bin/mysqladmin ] && rm -f /usr/bin/mysqladmin
     ln -s $MysqlBasePath/bin/mysqladmin /usr/bin/mysqladmin
-
-    #echo PATH='$PATH:'$MysqlBasePath/bin >>/etc/profile
-    #echo export PATH >>/etc/profile
-    #echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/etc/profile
-    #source /etc/profile
 
 }
 Init_MariaDB(){
@@ -196,8 +189,7 @@ Init_MariaDB(){
 Config_MariaDB(){
 
     echo -e "${CMSG}[config db ] *******************************>>${CEND}\n"
-    $MysqlOptPath/init.d/mysql$MysqlPort start;
-
+    $MysqlOptPath/init.d/mysql$MysqlPort start
     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'127.0.0.1' identified by \"$dbrootpwd\" with grant option;"
     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'localhost' identified by \"$dbrootpwd\" with grant option;"
     mysql -uroot -S $MysqlRunPath/mysql$MysqlPort.sock -p$dbrootpwd <<EOF
@@ -220,6 +212,16 @@ EOF
         service start mariadb$MysqlPort
     fi
     rm -rf $script_dir/src/mariadb-$mariadb_10_2_version
+    #环境变量设置
+    [ -f /root/.zshrc ] && echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/root/.zshrc
+    id ${default_user:?} >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        [ -f /home/${default_user:?}/.zshrc ] && echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/home/${default_user:?}/.zshrc
+    fi
+    #echo PATH='$PATH:'$MysqlBasePath/bin >>/etc/profile
+    #echo export PATH >>/etc/profile
+    #echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/etc/profile
+    #source /etc/profile
     echo -e "${CRED}[db root user passwd:$dbrootpwd ] *******************************>>${CEND}\n"
 
 }

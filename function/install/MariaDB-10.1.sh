@@ -61,7 +61,7 @@ general_log_file                   = $MysqlLogPath/general.log
 
 ################ SAFETY############
 max_allowed_packet                 = 16M  # 16M: ()>= MariaDB 10.2.4) 4M: (>= MariaDB 10.1.7) 1MB (<= MariaDB 10.1.6)
-max_connect_errors                 = 65536
+max_connect_errors                 = 1000
 skip_name_resolve
 sql_mode                           = STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY
 sysdate_is_now                     = 1
@@ -87,8 +87,7 @@ master_verify_checksum             = 1
 ############## CACHES AND LIMITS ##########
 # query_cache_type                   = 0   # Default Value: OFF (>= MariaDB 10.1.7), ON (<= MariaDB 10.1.6)
 query_cache_size                   = 0
-max_connections                    = 8192
-max_user_connections               = 8000
+max_connections                    = 800
 open_files_limit                   = 65535
 table_definition_cache             = 65536
 # slave_net_timeout                  = 5  # 60 (1 minute) (>= MariaDB 10.2.4) 3600 (1 hour) (<= MariaDB 10.2.3)
@@ -101,9 +100,9 @@ innodb_log_files_in_group          = 2
 innodb_log_file_size               = 512M
 innodb_buffer_pool_size            = ${innodb_buffer_pool_size:?}
 innodb_file_format                 = Barracuda # Barracuda (>= MariaDB 10.2.2) Antelope (<= MariaDB 10.2.1)
-innodb_log_buffer_size             = 64M # 16777216 (16MB) >= MariaDB 10.1.9, 8388608 (8MB) <= MariaDB 10.1.8
+innodb_log_buffer_size             = 16M # 16777216 (16MB) >= MariaDB 10.1.9, 8388608 (8MB) <= MariaDB 10.1.8
 innodb_purge_threads               = 4 # 4 (>= MariaDB 10.2.2) 1 (>=MariaDB 10.0 to <= MariaDB 10.2.1) 0 (MariaDB 5.5)
-innodb_sort_buffer_size            = 2M
+innodb_sort_buffer_size            = 64M
 
 ################# LOGGING####################### #
 log_queries_not_using_indexes      = 1
@@ -129,16 +128,6 @@ Install_MariaDB()
     tar -zxf mariadb-$mariadb_10_1_version.tar.gz && cd mariadb-$mariadb_10_1_version
     [ -d $MysqlBasePath ] && rm -rf $MysqlBasePath
 
-    # cmake -DCMAKE_INSTALL_PREFIX=$MysqlBasePath \
-        #     -DDEFAULT_CHARSET=utf8mb4 \
-        #     -DDEFAULT_COLLATION=utf8mb4_general_ci \
-        #     -DWITH_EXTRA_CHARSETS=all \
-        #     -DENABLED_LOCAL_INFILE=1 \
-        #     -DWITH_SSL=bundled \
-        #     -DWITH_EMBEDDED_SERVER=1 \
-        #     -DCMAKE_EXE_LINKER_FLAGS="-ljemalloc" \
-        #     -DWITH_SAFEMALLOC=OFF
-
     cmake -DCMAKE_INSTALL_PREFIX=$MysqlBasePath \
         -DDEFAULT_CHARSET=utf8mb4 \
         -DDEFAULT_COLLATION=utf8mb4_general_ci \
@@ -153,7 +142,6 @@ Install_MariaDB()
         -DWITH_EMBEDDED_SERVER=1 \
         -DCMAKE_EXE_LINKER_FLAGS="-ljemalloc" \
         -DWITH_SAFEMALLOC=OFF
-        # -DENABLE_GPROF=1 \
 
     make -j${CpuProNum:?} && make install
     chown -R mysql:mysql $MysqlBasePath
@@ -162,11 +150,6 @@ Install_MariaDB()
     ln -s $MysqlBasePath/bin/mysql /usr/bin/mysql
     [ -L /usr/bin/mysqladmin ] && rm -f /usr/bin/mysqladmin
     ln -s $MysqlBasePath/bin/mysqladmin /usr/bin/mysqladmin;
-
-    # echo PATH='$PATH:'$MysqlBasePath/bin >>/etc/profile
-    # echo export PATH >>/etc/profile
-    # echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/etc/profile
-    # source /etc/profile
 
 }
 
@@ -230,19 +213,27 @@ EOF
     $MysqlOptPath/init.d/mysql$MysqlPort stop
     #启动数据库
     echo -e "${CMSG}[starting db ] ********************************>>${CEND}\n"
-
     if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
         systemctl start mariadb$MysqlPort.service
     else
         service start mariadb$MysqlPort
     fi
     rm -rf $script_dir/src/mariadb-$mariadb_10_1_version
+    #环境变量设置
+    [ -f /root/.zshrc ] && echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/root/.zshrc
+    id ${default_user:?} >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        [ -f /home/${default_user:?}/.zshrc ] && echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/home/${default_user:?}/.zshrc
+    fi
+    #echo PATH='$PATH:'$MysqlBasePath/bin >>/etc/profile
+    #echo export PATH >>/etc/profile
+    #echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/etc/profile
+    #source /etc/profile
     echo -e "${CRED}[db root user passwd:$dbrootpwd ] *******************************>>${CEND}\n"
 
 }
 
 MariaDB_10_1_Install_Main(){
 
-    # MySQL_Var&&MySQL_Base_Packages_Install&&Install_MariaDB&&Create_Conf&&Init_MariaDB&&Config_MariaDB
-    MySQL_Var&&Create_Conf&&Init_MariaDB&&Config_MariaDB
+    MySQL_Var&&MySQL_Base_Packages_Install&&Install_MariaDB&&Create_Conf&&Init_MariaDB&&Config_MariaDB
 }

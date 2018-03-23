@@ -66,7 +66,6 @@ MySQL_Var(){
     innodb_buffer_pool_size="${innodb_buffer_pool_size:=$def_innodb_buffer_pool_size}"
     # 生成server_id
     HostIP=`python ${script_dir:?}/py2/get_local_ip.py`
-
     b=`echo ${HostIP:?}|cut -d\. -f2`
     c=`echo ${HostIP:?}|cut -d\. -f3`
     d=`echo ${HostIP:?}|cut -d\. -f4`
