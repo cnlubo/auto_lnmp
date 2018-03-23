@@ -249,7 +249,8 @@ Config_MySQLDB()
 
 MySQLDB_Install_Main(){
 
-    MySQL_Var&&MySQL_Base_Packages_Install&&Install_MySQLDB&&Create_Conf&&Init_MySQLDB&&Config_MySQLDB
+    # MySQL_Var&&MySQL_Base_Packages_Install&&Install_MySQLDB&&Create_Conf&&Init_MySQLDB&&Config_MySQLDB
+    MySQL_Var&&Create_Conf&&Init_MySQLDB&&Config_MySQLDB
 
 
 
