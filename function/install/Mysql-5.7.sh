@@ -150,7 +150,7 @@ Install_MySQLDB()
     [ ! -f mysql-$mysql_5_7_version.tar.gz ] && Download_src
     [ -d mysql-$mysql_5_7_version ] && rm -rf mysql-$mysql_5_7_version
     tar -zxf mysql-$mysql_5_7_version.tar.gz && cd mysql-$mysql_5_7_version
-
+    [ -d $MysqlBasePath ] && rm -rf $MysqlBasePath
     cmake -DCMAKE_INSTALL_PREFIX=$MysqlBasePath \
         -DDEFAULT_CHARSET=utf8mb4 \
         -DDEFAULT_COLLATION=utf8mb4_general_ci \
