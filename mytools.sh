@@ -49,60 +49,36 @@ select_main_menu(){
             1)
                 SOURCE_SCRIPT ${FunctionPath:?}/init_system.sh
                 select_system_setup_function
-            ;;
+                ;;
             2)
                 SOURCE_SCRIPT $FunctionPath/mysql_install.sh
                 select_mysql_install
-            ;;
+                ;;
             3)
-                clear
-                main_menu
-            ;;
+                SOURCE_SCRIPT $FunctionPath/postgresql_install.sh
+                select_postgresql_install
+                ;;
             4)
                 SOURCE_SCRIPT $FunctionPath/nginx_install.sh
                 select_nginx_install
-            ;;
+                ;;
             5)
                 clear
                 main_menu
-            ;;
+                ;;
             6)
                 clear
+                main_menu
+                ;;
+            7)
+                clear
                 exit 0
-            ;;
+                ;;
             *)
                 clear
                 select_main_menu
         esac
     done
 }
-#SELECT_RUN_SCRIPT(){
-#    PS3="${CBLUE}Which function you want to run:${CEND}"
-#    VarLists=("init_system" "nginx" "tomcat" "mysql" "postgresql" "redis" "exit_system")
-#    select var in ${VarLists[@]} ;do
-#        case $var in
-#            ${VarLists[1]})
-#                SOURCE_SCRIPT $FunctionPath/init_system.sh
-#                SELECT_SYSTEM_SETUP_FUNCTION;;
-#            ${VarLists[2]})
-#                SOURCE_SCRIPT $FunctionPath/tomcat_install.sh
-#                SELECT_TOMCAT_INSTALL;;
-#            ${VarLists[3]})
-#                SOURCE_SCRIPT $FunctionPath/mysql_install.sh
-#                SELECT_MYSQL_INSTALL;;
-#            # ${VarLists[4]})
-#                #     SOURCE_SCRIPT $FunctionPath/mysql_install.sh
-#                # SELECT_MYSQL_INSTALL;;
-#            # ${VarLists[5]})
-#                #     SOURCE_SCRIPT $FunctionPath/tomcat_install.sh
-#                # SELECT_TOMCAT_INSTALL;;
-#            ${VarLists[6]})
-#                exit 0;;
-#            *)
-#                SELECT_RUN_SCRIPT;;
-#        esac
-#        break
-#    done
-#    SELECT_RUN_SCRIPT
-#}
+
 select_main_menu

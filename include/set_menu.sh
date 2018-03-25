@@ -14,10 +14,11 @@ printf "${CGREEN}
 cat << EOF
 *  `echo -e "$CGREEN  1) Configure  System  "`
 *  `echo -e "$CGREEN  2) MySQL      Install "`
-*  `echo -e "$CGREEN  3) Postgresql Install "`
+*  `echo -e "$CGREEN  3) PostgreSQL Install "`
 *  `echo -e "$CGREEN  4) Nginx      Install "`
 *  `echo -e "$CGREEN  5) Tomcat     Install "`
-*  `echo -e "$CGREEN  6) Quit               "`
+*  `echo -e "$CGREEN  6) Redis      Install "`
+*  `echo -e "$CGREEN  7) Quit               "`
 EOF
 }
 #main_menu
