@@ -1,5 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC2164
+# shellcheck disable=SC2034
 # ----------------------------------------------------------------
 #@Author          :              cnlubo (454331202@qq.com)
 #@Filename       :              postgresql_install.sh
@@ -23,68 +24,14 @@ PostgreSQL_Var(){
     # # 生成数据库root用户随机密码(8位长度包含字母数字和特殊字符)
     # # shellcheck disable=SC2034
     # dbrootpwd=`mkpasswd -l 8`
-    # read -p "Please input Port(Default:3306):" MysqlPort
-    # MysqlPort="${MysqlPort:=3306}"
-    # case   $DbType in
-    #     "MariaDB")
-    #         {
-    #             if [ $DbVersion == '10.2' ] || [ $DbVersion == '10.1' ];then
-    #                 read -p "Please input MySQL BaseDirectory(default:/u01/mariadb/$mariadb_install_version)" MysqlBasePath
-    #                 MysqlBasePath="${MysqlBasePath:=/u01/mariadb/$mariadb_install_version}"
-    #             else
-    #                 ead -p "Please input MySQL BaseDirectory(default:/u01/mariadb)" MysqlBasePath
-    #                 MysqlBasePath="${MysqlBasePath:=/u01/mariadb}"
-    #             fi
-    #         }
-    #         ;;
-    #     "MySql")
-    #         {
-    #             if [ $DbVersion == '5.7' ];then
-    #                 read -p "Please input MySQL BaseDirectory(default:/u01/mysql/$mysql_install_version)" MysqlBasePath
-    #                 MysqlBasePath="${MysqlBasePath:=/u01/mysql/$mysql_install_version}"
-    #             else
-    #                 ead -p "Please input MySQL BaseDirectory(default:/u01/mysql)" MysqlBasePath
-    #                 MysqlBasePath="${MysqlBasePath:=/u01/mysql}"
-    #             fi
-    #         }
-    #         ;;
-    #     *)
-    #         echo "unknow Dbtype" ;;
-    # esac
-    # if [ $DbType == 'MySql' ];then
-    #     read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort/mysql/$mysql_install_version)" MysqlOptPath
-    #     MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort/mysql/$mysql_install_version}"
-    # elif [ $DbType == 'MariaDB' ];then
-    #     read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort/mariadb/$mariadb_install_version)" MysqlOptPath
-    #     MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort/mariadb/$mariadb_install_version}"
-    # else
-    #     read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort)" MysqlOptPath
-    #     MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort}"
-    # fi
-    # def_innodb_buffer_pool_size=`expr $RamTotal \* 80 / 102400`G
-    # read -p "Please input innodb_buffer_pool_size (default:${def_innodb_buffer_pool_size})" innodb_buffer_pool_size
-    # innodb_buffer_pool_size="${innodb_buffer_pool_size:=$def_innodb_buffer_pool_size}"
-    # # 生成server_id
-    # HostIP=`python ${script_dir:?}/py2/get_local_ip.py`
-    # b=`echo ${HostIP:?}|cut -d\. -f2`
-    # c=`echo ${HostIP:?}|cut -d\. -f3`
-    # d=`echo ${HostIP:?}|cut -d\. -f4`
-    # pt=`echo ${MysqlPort:?} % 256 | bc`
-    # # a=`echo ${HostIP:?}|cut -d\. -f1`
-    # # shellcheck disable=SC2034
-    # server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
-    # # create dir
-    # MysqlDataPath="${MysqlOptPath:?}/data"
-    # MysqlLogPath="$MysqlOptPath/log"
-    # MysqlConfigPath="$MysqlOptPath/etc"
-    # MysqlTmpPath="$MysqlOptPath/tmp"
-    # MysqlRunPath="$MysqlOptPath/run"
-    # for path in ${MysqlLogPath:?} ${MysqlConfigPath:?} ${MysqlDataPath:?} ${MysqlTmpPath:?} ${MysqlRunPath:?};do
-    #     [ -d $path ] && rm -rf $path
-    #     mkdir -p $path && chmod 755 $path && chown -R mysql:mysql $path
-    # done
-    read -p "Please input PostgreSQL BaseDirectory(default:/u01/pgsql/$postgresql_install_version)" MysqlBasePath
-    MysqlBasePath="${MysqlBasePath:=/u01/mariadb/$mariadb_install_version}"
+    # 安装目录
+    read -p "Please input PostgreSQL BaseDirectory(default:/u01/pgsql/$postgresql_install_version)" PgsqlBasePath
+    PgsqlBasePath="${PgsqlBasePath:=/u01/pgsql/$postgresql_install_version}"
+    # 数据库目录
+    read -p "Please input PostgreSQL Database Directory(default:/u01/pgbase/$postgresql_install_version)" PgsqlOptPath
+    PgsqlOptPath="${PgsqlOptPath:=/u01/pgbase/$postgresql_install_version}"
+
+
 
 
 }
@@ -137,7 +84,27 @@ PostgreSQL_Base_Packages_Install(){
     # if [ ! $? -eq 0 ]; then
     #     useradd -g $mysql_user  -M -s /sbin/nologin $mysql_user
     # fi
-    echo
+
+    echo -e "${CMSG}[remove old PostgreSQL and install BasePackages] ***********>>${CEND}\n"
+    case  $OS in
+        "CentOS")
+            {
+                yum -y remove postgresql*
+                BasePackages="gcc glibc glibc-devel readline-devel zlib-devel libgcc  \
+                    apr-devel flex-devel perl-ExtUtils-Embed"
+            }
+            ;;
+        "Ubuntu")
+            {
+                echo  ""
+            }
+            ;;
+
+        *)
+            echo -e "${CMSG}[ not supported System !!! ] ***********************>>${CEND}\n"
+            ;;
+    esac
+    INSTALL_BASE_PACKAGES $BasePackages
 }
 select_postgresql_install(){
 
@@ -153,21 +120,16 @@ EOF
 
     case $num3 in
         1)
-            # shellcheck disable=SC2034
             DbType="PostgreSQL"
-            # shellcheck disable=SC2034
             DbVersion="10"
             postgresql_install_version=${PostgreSQL_10_version:?}
-            #SOURCE_SCRIPT ${FunctionPath:?}/install/Mysql-5.7.sh
-            #MySQLDB_Install_Main 2>&1 | tee $script_dir/logs/Install_MySql5.7.log
+            SOURCE_SCRIPT ${FunctionPath:?}/install/PostgreSQL-10.sh
+            PostgreSQL_10_Install_Main 2>&1 | tee $script_dir/logs/Install_PostgreSQL10.log
             select_postgresql_install
             ;;
         2)
-            # shellcheck disable=SC2034
             DbType="PostgreSQL"
-            # shellcheck disable=SC2034
             DbVersion="9"
-            # shellcheck disable=SC2034
             postgresql_install_version=${PostgreSQL_9_version:?}
             #SOURCE_SCRIPT ${FunctionPath:?}/install/Mysql-5.7.sh
             #MySQLDB_Install_Main 2>&1 | tee $script_dir/logs/Install_MySql5.7.log
