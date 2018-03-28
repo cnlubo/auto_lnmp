@@ -8,12 +8,13 @@
 #################error-message#######
 EXIT_MSG(){
     ExitMsg="$1"
-    echo -e "${CFAILURE}$(date +%Y-%m-%d-%H:%M) -Error $ExitMsg " |tee -a $ErrLog && exit 1
+    echo -e "${CFAILURE}$(date +%Y-%m-%d-%H:%M) -Error $ExitMsg " |tee -a ${ErrLog:?} && exit 1
 }
 #########normal-message##########
 INFO_MSG(){
     InfoMsg="$1"
-    echo -e "$(date +%Y-%m-%d-%H:%M) -INFO $InfoMsg " |tee -a $InfoLog
+    # echo -e "$(date +%Y-%m-%d-%H:%M) -INFO $InfoMsg " |tee -a $InfoLog
+    echo -e "${CMSG}$(date +%Y-%m-%d-%H:%M) -INFO $InfoMsg *****>>${CEND}\n"
 }
 #check script exists and loading
 SOURCE_SCRIPT(){
@@ -22,12 +23,14 @@ SOURCE_SCRIPT(){
             EXIT_MSG "not exist $arg,so $0 can not be supported!"
         else
             #INFO_MSG "loading $arg now, continue ......"
+            # shellcheck source=/dev/null.
             source $arg
         fi
     done
 }
 PASS_ENTER_TO_EXIT(){
     InfoMsg="input enter or wait 10s to continue"
+    # shellcheck disable=SC2034
     read -p "$InfoMsg" -t 10 ok
     echo ""
 }
@@ -63,12 +66,14 @@ BACK_TO_INDEX(){
     fi
 }
 INPUT_CHOOSE(){
+
     VarTmp=
-    select vars in $@ "exit"; do
+    select vars in "$@" "exit"; do
         case $vars in
             $vars)
+                # shellcheck disable=SC2034
                 [[ "$vars" == "exit" ]] && VarTmp="" || VarTmp="$vars"
-                break;;
+                break ;;
         esac
         INFO_MSG "Input again"
     done
@@ -107,45 +112,45 @@ INSTALL_BASE_PACKAGES(){
             ;;
 
         *)
-            echo "unknow System";;
+            echo "unknow System" ;;
     esac
     return 1
 }
 
-INSTALL_BASE_CMD(){
-    declare count
-    declare -a ProgramsList
-    count=0
-    for arg do
-        TEST_PROGRAMS $arg
-        if [[ $? -eq 1 ]];then
-            ProgramsList[$count]=$arg
-            count=$[$count+1]
-        fi
-    done
-    INFO_MSG "Setting up these programs : ${ProgramsList[@]}"
-    INSTALL_BASE_PACKAGES ${ProgramsList[@]}
-}
-PACKET_TOOLS(){
-    declare CmdScript
-    declare InstallToolsScript
-    declare TmpCmdScript
-    INFO_MSG "Are packaged, please later..."
-    CmdScript="$1"
-    InstallToolsScript="$2"
-    #检测需要的程序
-    TEST_PROGRAMS "gzexe" "tar"
-    TEST_FILE "$CmdScript"
-    TEST_FILE "$InstallToolsScript"
-    [[ ! -d $ScriptPath/packet ]] && mkdir -p $ScriptPath/packet
-    cp $CmdScript ${DownloadTmp}/
-    TmpCmdScript=$(basename $CmdScript)
-    cd "${DownloadTmp}/" && gzexe "$TmpCmdScript" && tar -zcf "${TmpCmdScript%%.*}" "$TmpCmdScript" && cat $InstallToolsScript "${TmpCmdScript%%.*}" > $ScriptPath/packet/$(basename $InstallToolsScript) && cd $ScriptPath/packet/ && gzexe $(basename $InstallToolsScript) && mv ${DownloadTmp}/$(basename $InstallToolsScript) ${ScriptPath}/packet/$(basename $InstallToolsScript) && rm -rf ${DownloadTmp}/${TmpCmdScript}* && rm -rf ${ScriptPath}/packet/$(basename $InstallToolsScript)~ || EXIT_MSG "The corresponding create false!"
-    INFO_MSG "The installation package has been generated, the path is : ${ScriptPath}/packet/$(basename $InstallToolsScript)"
-}
+# INSTALL_BASE_CMD(){
+#     declare count
+#     declare -a ProgramsList
+#     count=0
+#     for arg do
+#         TEST_PROGRAMS $arg
+#         if [[ $? -eq 1 ]];then
+#             ProgramsList[$count]=$arg
+#             count=$[$count+1]
+#         fi
+#     done
+#     INFO_MSG "Setting up these programs : ${ProgramsList[@]}"
+#     INSTALL_BASE_PACKAGES ${ProgramsList[@]}
+# }
+# PACKET_TOOLS(){
+#     declare CmdScript
+#     declare InstallToolsScript
+#     declare TmpCmdScript
+#     INFO_MSG "Are packaged, please later..."
+#     CmdScript="$1"
+#     InstallToolsScript="$2"
+#     #检测需要的程序
+#     TEST_PROGRAMS "gzexe" "tar"
+#     TEST_FILE "$CmdScript"
+#     TEST_FILE "$InstallToolsScript"
+#     [[ ! -d $ScriptPath/packet ]] && mkdir -p $ScriptPath/packet
+#     cp $CmdScript ${DownloadTmp}/
+#     TmpCmdScript=$(basename $CmdScript)
+#     cd "${DownloadTmp}/" && gzexe "$TmpCmdScript" && tar -zcf "${TmpCmdScript%%.*}" "$TmpCmdScript" && cat $InstallToolsScript "${TmpCmdScript%%.*}" > $ScriptPath/packet/$(basename $InstallToolsScript) && cd $ScriptPath/packet/ && gzexe $(basename $InstallToolsScript) && mv ${DownloadTmp}/$(basename $InstallToolsScript) ${ScriptPath}/packet/$(basename $InstallToolsScript) && rm -rf ${DownloadTmp}/${TmpCmdScript}* && rm -rf ${ScriptPath}/packet/$(basename $InstallToolsScript)~ || EXIT_MSG "The corresponding create false!"
+#     INFO_MSG "The installation package has been generated, the path is : ${ScriptPath}/packet/$(basename $InstallToolsScript)"
+# }
 
 Download_src() {
-    [ -s "$src_dir/${src_url##*/}" ] && echo "[${CMSG}${src_url##*/}${CEND}] found" || wget -c -P $src_dir --no-check-certificate $src_url
+    [ -s "${src_dir:?}/${src_url:?##*/}" ] && echo "[${CMSG}${src_url##*/}${CEND}] found" || wget -c -P $src_dir --no-check-certificate $src_url
     if [ ! -e "$src_dir/${src_url##*/}" ];then
         echo "${CFAILURE}${src_url##*/} download failed, Please contact the author! ${CEND}"
         kill -9 $$

@@ -34,7 +34,34 @@ select_system_setup_function(){
         # 禁止root 用户登陆
         PermitRootLogin no
     fi
-    # 创建默认普通用户
+
+    #     # 创建默认普通用户
+    #     echo
+    #     read -p "Please input a typical user(default:${default_user:?})" Typical_User
+    #     Typical_User="${Typical_User:=$default_user}"
+    #     id $Typical_User >/dev/null 2>&1
+    #     if [ $? -eq 0 ]; then
+    #         echo -e "${CWARNING}[ Input user($Typical_User) exist !!!] *******************************>>${CEND}\n"
+    #     else
+    #         # 创建用户设置密码
+    #         useradd $Typical_User
+    #         yum -y install expect
+    #         default_pass=`mkpasswd -l 8`
+    #         echo ${default_pass:?} | passwd $Typical_User --stdin  &>/dev/null
+    #         echo
+    #         echo "${CRED}[system user $Typical_User passwd:${default_pass:?} !!!!! ] **********>>${CEND}" | tee $script_dir/logs/pp.log
+    #         echo
+    #         # sudo 权限
+    #         [ -f /etc/sudoers.d/ak47 ] && rm -rf /etc/sudoers.d/ak47
+    #         cat > /etc/sudoers.d/ak47 << EOF
+    # Defaults    secure_path = /usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+    # $Typical_User   ALL=(ALL)  NOPASSWD: ALL
+    # EOF
+    #         chmod 400 /etc/sudoers.d/ak47
+    #     fi
+    #     sed -i "s@^default_user.*@default_user=$Typical_User@" ./options.conf
+    #     SOURCE_SCRIPT ${ScriptPath:?}/options.conf
+    # 创建非root普通用户
     echo
     read -p "Please input a typical user(default:${default_user:?})" Typical_User
     Typical_User="${Typical_User:=$default_user}"
@@ -42,25 +69,9 @@ select_system_setup_function(){
     if [ $? -eq 0 ]; then
         echo -e "${CWARNING}[ Input user($Typical_User) exist !!!] *******************************>>${CEND}\n"
     else
-        # 创建用户设置密码
-        useradd $Typical_User
-        yum -y install expect
-        default_pass=`mkpasswd -l 8`
-        echo ${default_pass:?} | passwd $Typical_User --stdin  &>/dev/null
-        echo
-        echo "${CRED}[system user $Typical_User passwd:${default_pass:?} !!!!! ] **********>>${CEND}" | tee $script_dir/logs/pp.log
-        echo
-        # sudo 权限
-        [ -f /etc/sudoers.d/ak47 ] && rm -rf /etc/sudoers.d/ak47
-        # echo " $Typical_User   ALL=(ALL)  NOPASSWD: ALL " >> /etc/sudoers.d/ak47 && chmod 400 /etc/sudoers.d/ak47
-        cat > /etc/sudoers.d/ak47 << EOF
-Defaults    secure_path = /usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-$Typical_User   ALL=(ALL)  NOPASSWD: ALL
-EOF
-        chmod 400 /etc/sudoers.d/ak47
+        system_user_setup $Typical_User
     fi
-    sed -i "s@^default_user.*@default_user=$Typical_User@" ./options.conf
-    SOURCE_SCRIPT ${ScriptPath:?}/options.conf
+
     # 安装必要的依赖和初始化系统
     case "${OS}" in
         "CentOS")

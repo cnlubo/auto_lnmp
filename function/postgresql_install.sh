@@ -6,6 +6,7 @@
 #@Filename       :              postgresql_install.sh
 #@desc           :               postgresql install main
 #------------------------------------------------------------------
+SOURCE_SCRIPT ${script_dir:?}/include/configure_os.sh
 system_check(){
 
     [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && exit
@@ -37,61 +38,18 @@ PostgreSQL_Var(){
 }
 PostgreSQL_Base_Packages_Install(){
 
-    # echo -e "${CMSG}[remove old mysql and install BasePackages] *****************************>>${CEND}\n"
-    # case  $OS in
-    #     "CentOS")
-    #         {
-    #             yum -y remove mysql-server mysql
-    #             BasePackages="wget gcc gcc-c++ autoconf libxml2-devel zlib-devel libjpeg-devel \
-        #                 libpng-devel glibc-devel glibc-static glib2-devel  bzip2 bzip2-devel openssl-devel \
-        #                 ncurses-devel bison cmake make libaio-devel expect gnutls-devel"
-    #             if [ $DbType == 'MariaDB' ];then
-    #                 BasePackages=${BasePackages}" gnutls-devel"
-    #             fi
-    #         }
-    #         ;;
-    #     "Ubuntu")
-    #         {
-    #             apt-get -y remove mysql-client mysql-server mysql-common mariadb-server
-    #             BasePackages="wget gcc g++ cmake libjpeg-dev libxml2 libxml2-dev libpng-dev \
-        #                 autoconf make bison zlibc bzip2 libncurses5-dev libncurses5 libssl-dev axel libaio-dev"
-    #         }
-    #         ;;
-    #
-    #     *)
-    #         echo -e "${CMSG}[ not supported System !!! ] ***********************>>${CEND}\n"
-    #         ;;
-    # esac
-    # INSTALL_BASE_PACKAGES $BasePackages
-    # SOURCE_SCRIPT ${script_dir:?}/include/jemalloc.sh
-    # Install_Jemalloc
-    # #下载boost 源码
-    # if [ $DbType == 'MySql' ] && [ $DbVersion == '5.7' ];then
-    #     # shellcheck disable=SC2034
-    #     src_url=https://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz
-    #     cd $script_dir/src
-    #     [ ! -f boost_1_59_0.tar.gz ] && Download_src
-    #     [ -d boost_1_59_0 ] && rm -rf boost_1_59_0
-    #     tar xf boost_1_59_0.tar.gz
-    #     cd $script_dir
-    # fi
-    # #create group and user
-    # grep ${mysql_user:?} /etc/group >/dev/null 2>&1
-    # if [ ! $? -eq 0 ]; then
-    #     groupadd $mysql_user;
-    # fi
-    # id $mysql_user >/dev/null 2>&1
-    # if [ ! $? -eq 0 ]; then
-    #     useradd -g $mysql_user  -M -s /sbin/nologin $mysql_user
-    # fi
 
     echo -e "${CMSG}[remove old PostgreSQL and install BasePackages] ***********>>${CEND}\n"
     case  $OS in
         "CentOS")
             {
                 yum -y remove postgresql*
+                # BasePackages="gcc glibc glibc-devel readline-devel zlib-devel libgcc  \
+                #     apr-devel flex-devel perl-ExtUtils-Embed tcl tcl-devel openldap openldap-devel \
+                #     libxml2 libxml2-devel pam pam-devel"
                 BasePackages="gcc glibc glibc-devel readline-devel zlib-devel libgcc  \
-                    apr-devel flex-devel perl-ExtUtils-Embed"
+                    apr-devel perl-ExtUtils-Embed tcl tcl-devel openldap openldap-devel \
+                    libxml2 libxml2-devel pam pam-devel libxslt libxslt-devel openldap-devel"
             }
             ;;
         "Ubuntu")
@@ -105,6 +63,9 @@ PostgreSQL_Base_Packages_Install(){
             ;;
     esac
     INSTALL_BASE_PACKAGES $BasePackages
+
+    # 运行pgsql 的非root 用户
+    system_user_setup ${default_user:?}
 }
 select_postgresql_install(){
 
@@ -131,8 +92,8 @@ EOF
             DbType="PostgreSQL"
             DbVersion="9"
             postgresql_install_version=${PostgreSQL_9_version:?}
-            #SOURCE_SCRIPT ${FunctionPath:?}/install/Mysql-5.7.sh
-            #MySQLDB_Install_Main 2>&1 | tee $script_dir/logs/Install_MySql5.7.log
+            SOURCE_SCRIPT ${FunctionPath:?}/install/PostgreSQL-09.sh
+            PostgreSQL_09_Install_Main 2>&1 | tee $script_dir/logs/Install_PostgreSQL09.log
             select_postgresql_install
             ;;
         3)
