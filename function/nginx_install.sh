@@ -1,5 +1,5 @@
 #!/bin/bash\
-    # shellcheck disable=SC2164
+# shellcheck disable=SC2164
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
 # @file_name:                              nginx_install.sh
@@ -44,13 +44,6 @@ Nginx_Base_Dep_Install() {
     # ./configure --prefix=/usr/local/software/pcre --enable-utf8 --enable-unicode-properties
     # make && make install
     # cd ..
-    #
-    # # openssl
-    # # shellcheck disable=SC2034
-    # src_url=https://www.openssl.org/source/openssl-${openssl_version:?}.tar.gz
-    # [ ! -f openssl-${openssl_version:?}.tar.gz ] && Download_src
-    # [ -d openssl-${openssl_version:?} ] && rm -rf openssl-${openssl_version:?}
-    # tar xf openssl-${openssl_version:?}.tar.gz
     # jemalloc
     SOURCE_SCRIPT ${script_dir:?}/include/jemalloc.sh
     Install_Jemalloc

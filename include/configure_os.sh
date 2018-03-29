@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2164
 # -------------------------------------------
 # @Author  : cnlubo (454331202@qq.com)
 # @Link    :
@@ -89,4 +90,59 @@ EOF
     fi
     sed -i "s@^default_user.*@default_user=$system_user@" ./options.conf
     SOURCE_SCRIPT ${ScriptPath:?}/options.conf
+}
+
+share_software_install(){
+
+    zlib_install
+}
+
+zlib_install() {
+
+    if [ -e ${zlib_install_dir:?}/lib/libz.a ]; then
+        cd ${script_dir:?}/src
+        # shellcheck disable=SC2034
+        src_url=http://zlib.net/zlib-${zlib_version:?}.tar.gz
+        [ ! -f zlib-${zlib_version:?}.tar.gz ] && Download_src
+        [ -d zlib-${zlib_version:?} ] && rm -rf zlib-${zlib_version:?}
+        tar xf zlib-${zlib_version:?}.tar.gz && cd zlib-${zlib_version:?}
+        /configure --prefix=${zlib_install_dir:?} && make && make install
+        if [ -f ${zlib_install_dir:?}/lib/libz.a ]; then
+            SUCCESS_MSG "[zlib-${zlib_version:?} installed successful !!!]"
+            [ -f etc/ld.so.conf.d/sharelib.conf ] && rm -rf etc/ld.so.conf.d/sharelib.conf
+            echo "${zlib_install_dir:?}/lib" > /etc/ld.so.conf.d/sharelib.conf
+            ldconfig
+        else
+            FAILURE_MSG "[install zlib-${zlib_version:?} failed,Please contact the author !!!]"
+            kill -9 $$
+        fi
+    else
+        INFO_MSG "[zlib-${zlib_version:?} have installed !!!]"
+    fi
+}
+pcre_install() {
+
+    if [ -e ${pcre_install_dir:?}/lib/libpcre.a ]; then
+
+        cd ${script_dir:?}/src
+        # shellcheck disable=SC2034
+        src_url=https://sourceforge.net/projects/pcre/files/pcre/${pcre_version:?}/pcre-$pcre_version.tar.gz/download
+        [ ! -f pcre-$pcre_version.tar.gz ] && Download_src && mv download pcre-$pcre_version.tar.gz
+        [ -d pcre-$pcre_version ] && rm -rf pcre-$pcre_version
+        tar xf pcre-$pcre_version.tar.gz && cd pcre-$pcre_version
+        ./configure --prefix=${pcre_install_dir:?} --enable-utf8 --enable-unicode-properties
+        make && make install
+        if [ -f ${pcre_install_dir:?}/lib/libpcre.a ]; then
+            SUCCESS_MSG "[pcre-${pcre_install_dir:?} installed successful !!!]"
+            [ -f etc/ld.so.conf.d/pcre.conf ] && rm -rf etc/ld.so.conf.d/pcre.conf
+            echo "${pcre_install_dir:?}/lib" > /etc/ld.so.conf.d/pcre.conf
+            ldconfig
+        else
+            FAILURE_MSG "[install pcre-${pcre_install_dir:?} failed,Please contact the author !!!]"
+            kill -9 $$
+        fi
+    else
+        INFO_MSG "[pcre-${pcre_install_dir:?} have installed !!!]"
+    fi
+
 }

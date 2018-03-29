@@ -23,6 +23,7 @@ Install_PostgreSQL()
         --with-python \
         --with-tcl \
         --with-openssl \
+        --with-includes=/usr/local/openssl/include \
         --with-pam \
         --with-ldap \
         --with-libxml \

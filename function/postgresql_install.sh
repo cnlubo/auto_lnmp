@@ -45,10 +45,10 @@ PostgreSQL_Base_Packages_Install(){
             {
                 yum -y remove postgresql*
                 # BasePackages="gcc glibc glibc-devel readline-devel zlib-devel libgcc  \
-                #     apr-devel flex-devel perl-ExtUtils-Embed tcl tcl-devel openldap openldap-devel \
-                #     libxml2 libxml2-devel pam pam-devel"
+                    #     apr-devel flex-devel perl-ExtUtils-Embed tcl tcl-devel openldap openldap-devel \
+                    #     libxml2 libxml2-devel pam pam-devel"
                 BasePackages="gcc glibc glibc-devel readline-devel zlib-devel libgcc  \
-                    apr-devel perl-ExtUtils-Embed tcl tcl-devel openldap openldap-devel \
+                    apr-devel flex-devel perl-ExtUtils-Embed tcl tcl-devel openldap openldap-devel \
                     libxml2 libxml2-devel pam pam-devel libxslt libxslt-devel openldap-devel"
             }
             ;;
