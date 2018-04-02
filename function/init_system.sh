@@ -32,7 +32,7 @@ select_system_setup_function(){
             sed -i "s@^Port.*@Port $SSH_PORT@" /etc/ssh/sshd_config
         fi
         # 禁止root 用户登陆
-        PermitRootLogin no
+        # PermitRootLogin no
     fi
 
     #     # 创建默认普通用户
