@@ -194,6 +194,7 @@ installDepsBySrc() {
                     else
                         [ ! -f /usr/bin/python2.7.5 ] && mkdir -p /usr/bin/backup_python && mv /usr/bin/python2.7 /usr/bin/python2.7.5 && cp /usr/bin/python2.7.5 /usr/bin/backup_python
                     fi
+                    # ln -s /usr/local/python2.7.14/bin/python2.7-config /usr/bin/python2.7-config
                     ln -s /usr/local/python$python2_version/bin/python2.7 /usr/bin/python2.7
                     # 修改 /usr/bin/yum和/usr/libexec/urlgrabber-ext-down的Python版本
                     if [ -f /usr/bin/python2.7.5 ]; then

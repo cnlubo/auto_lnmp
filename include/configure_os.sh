@@ -123,7 +123,6 @@ zlib_install() {
 pcre_install() {
 
     if [ -e ${pcre_install_dir:?}/lib/libpcre.a ]; then
-
         cd ${script_dir:?}/src
         # shellcheck disable=SC2034
         src_url=https://sourceforge.net/projects/pcre/files/pcre/${pcre_version:?}/pcre-$pcre_version.tar.gz/download
@@ -133,7 +132,7 @@ pcre_install() {
         ./configure --prefix=${pcre_install_dir:?} --enable-utf8 --enable-unicode-properties
         make && make install
         if [ -f ${pcre_install_dir:?}/lib/libpcre.a ]; then
-            SUCCESS_MSG "[pcre-${pcre_install_dir:?} installed successful !!!]"
+            SUCCESS_MSG "[pcre-${pcre_version:?} installed successful !!!]"
             [ -f etc/ld.so.conf.d/pcre.conf ] && rm -rf etc/ld.so.conf.d/pcre.conf
             echo "${pcre_install_dir:?}/lib" > /etc/ld.so.conf.d/pcre.conf
             ldconfig
@@ -143,6 +142,31 @@ pcre_install() {
         fi
     else
         INFO_MSG "[pcre-${pcre_install_dir:?} have installed !!!]"
+    fi
+
+}
+
+libxml2_install() {
+
+    if [ -e ${libxml2_install_dir:?}/lib/libxml2.a ]; then
+        cd ${script_dir:?}/src
+        # shellcheck disable=SC2034
+        src_url=https://git.gnome.org/browse/libxml2/snapshot/libxml2-${libxml2_version:?}.tar.xz
+        [ ! -f libxml2-${libxml2_version:?}.tar.xz ] && Download_src
+        [ -d libxml2-${libxml2_version:?} ] && rm -rf libxml2-${libxml2_version:?}
+        tar xf libxml2-${libxml2_version:?}.tar.xz && cd libxml2-${libxml2_version:?}
+        ./configure --prefix=${libxml2_install_dir:?} && make && make install
+        if [ -f ${libxml2_install_dir:?}/lib/libxml2.a ]; then
+            SUCCESS_MSG "[libxml2-${libxml2_version:?} installed successful !!!]"
+            [ -f etc/ld.so.conf.d/sharelib.conf ] && rm -rf etc/ld.so.conf.d/sharelib.conf
+            echo "${libxml2_install_dir:?}/lib" > /etc/ld.so.conf.d/sharelib.conf
+            ldconfig
+        else
+            FAILURE_MSG "[install libxml2-${libxml2_version:?} failed,Please contact the author !!!]"
+            kill -9 $$
+        fi
+    else
+        INFO_MSG "[ libxml2-${libxml2_version:?} have installed !!!]"
     fi
 
 }
