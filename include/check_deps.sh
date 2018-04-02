@@ -207,10 +207,10 @@ installDepsBySrc() {
                 echo -e "${CMSG} [ setuptools vs pip install begin ] *****************************>>${CEND}\n"
                 # setuptools
                 cd $script_dir/src
-                src_url=https://github.com/pypa/setuptools/archive/${setuptools_version:?}.tar.gz
-                [ ! -f $setuptools_version.tar.gz ] && Download_src
+                src_url=https://github.com/pypa/setuptools/archive/v${setuptools_version:?}.tar.gz
+                [ ! -f v$setuptools_version.tar.gz ] && Download_src
                 [ -d setuptools-$setuptools_version ] && rm -rf setuptools-$setuptools_version
-                tar xf $setuptools_version.tar.gz && cd setuptools-$setuptools_version
+                tar xf v$setuptools_version.tar.gz && cd setuptools-$setuptools_version
                 python bootstrap.py && python setup.py install
                 if [ $? -eq 0 ];then
                     echo -e "${CMSG} [ setuptools-$setuptools_version install success !!!] ***********>>${CEND}\n"
