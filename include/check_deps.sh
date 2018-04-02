@@ -182,7 +182,7 @@ installDepsBySrc() {
             yum -y install  openssl-devel ncurses-devel  bzip2-devel sqlite-devel readline-devel zlib-devel  tk-devel gdbm-devel
             [ -d /usr/local/python$python2_version ] && rm -rf /usr/local/python$python2_version
             mkdir -p /usr/local/python$python2_version/lib
-            ./configure --enable-shared  --enable-unicode=ucs4 --prefix=/usr/local/python$python2_version LDFLAGS="-Wl,-rpath /usr/local/python$python2_version/lib"
+            ./configure --enable-shared  --enable-unicode=ucs4 --with-cxx-main=g++ --prefix=/usr/local/python$python2_version LDFLAGS="-Wl,-rpath /usr/local/python$python2_version/lib"
             make && make install
             if [ $? -eq 0 ];then
                 echo -e "${CMSG} [ Python-$python2_version install success ! ] ********************>>${CEND}\n"
