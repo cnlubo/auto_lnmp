@@ -8,7 +8,7 @@
 
 Install_OpenSSL() {
 
-    if [ -e ${openssl_install_dir:?}/lib/libcrypto.a ]; then
+    if [ ! -e ${openssl_install_dir:?}/lib/libcrypto.a ]; then
         cd ${script_dir:?}/src
         # shellcheck disable=SC2034
         src_url=https://www.openssl.org/source/openssl-${openssl_install_version:?}.tar.gz
@@ -23,7 +23,7 @@ Install_OpenSSL() {
             ldconfig
         else
             FAILURE_MSG "[install openssl-${openssl_install_version:?} failed,Please contact the author !!!]"
-            kill -9 $$
+            # kill -9 $$
         fi
     fi
 

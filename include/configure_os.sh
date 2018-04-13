@@ -106,7 +106,7 @@ zlib_install() {
         [ ! -f zlib-${zlib_version:?}.tar.gz ] && Download_src
         [ -d zlib-${zlib_version:?} ] && rm -rf zlib-${zlib_version:?}
         tar xf zlib-${zlib_version:?}.tar.gz && cd zlib-${zlib_version:?}
-        /configure --prefix=${zlib_install_dir:?} && make && make install
+        ./configure --prefix=${zlib_install_dir:?} && make && make install
         if [ -f ${zlib_install_dir:?}/lib/libz.a ]; then
             SUCCESS_MSG "[zlib-${zlib_version:?} installed successful !!!]"
             [ -f etc/ld.so.conf.d/sharelib.conf ] && rm -rf etc/ld.so.conf.d/sharelib.conf
@@ -114,7 +114,7 @@ zlib_install() {
             ldconfig
         else
             FAILURE_MSG "[install zlib-${zlib_version:?} failed,Please contact the author !!!]"
-            kill -9 $$
+            # kill -9 $$
         fi
     else
         INFO_MSG "[zlib-${zlib_version:?} have installed !!!]"
