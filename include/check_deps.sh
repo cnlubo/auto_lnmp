@@ -196,6 +196,8 @@ installDepsBySrc() {
                     fi
                     # ln -s /usr/local/python2.7.14/bin/python2.7-config /usr/bin/python2.7-config
                     ln -s /usr/local/python$python2_version/bin/python2.7 /usr/bin/python2.7
+                    [ -f /usr/bin/python2.7-config ] && mv /usr/bin/python2.7-config /usr/bin/backup_python/
+                    ln -s /usr/local/python$python2_version/bin/python2.7-config /usr/bin/python2.7-config
                     # 修改 /usr/bin/yum和/usr/libexec/urlgrabber-ext-down的Python版本
                     if [ -f /usr/bin/python2.7.5 ]; then
                         #sed -i "s@^#\!/usr/bin/python.*@#\!  /usr/bin/python2.7.5@" /usr/bin/yum
@@ -203,6 +205,11 @@ installDepsBySrc() {
                         sed -i "1c #\!  /usr/bin/python2.7.5" /usr/bin/yum
                         sed -i "1c #\!  /usr/bin/python2.7.5" /usr/libexec/urlgrabber-ext-down
                     fi
+                    # python.h
+                    [ ! -d /usr/include/python2.7 ] && mkdir -p /usr/include/python2.7
+                    [ -h /usr/include/python2.7/Python.h ] && rm -rf /usr/include/python2.7/Python.h
+                    [ -f /usr/include/python2.7/Python.h ] && mv  /usr/include/python2.7/Python.h /usr/include/python2.7/Python.h_bak
+                    ln -s /usr/local/python$python2_version/include/python2.7/Python.h /usr/include/python2.7/Python.h
                 fi
                 echo -e "${CMSG} [ setuptools vs pip install begin ] *****************************>>${CEND}\n"
                 # setuptools

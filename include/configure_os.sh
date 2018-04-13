@@ -155,6 +155,7 @@ libxml2_install() {
         [ ! -f libxml2-${libxml2_version:?}.tar.xz ] && Download_src
         [ -d libxml2-${libxml2_version:?} ] && rm -rf libxml2-${libxml2_version:?}
         tar xf libxml2-${libxml2_version:?}.tar.xz && cd libxml2-${libxml2_version:?}
+        yum install -y libtool
         ./configure --prefix=${libxml2_install_dir:?} && make && make install
         if [ -f ${libxml2_install_dir:?}/lib/libxml2.a ]; then
             SUCCESS_MSG "[libxml2-${libxml2_version:?} installed successful !!!]"
@@ -169,4 +170,15 @@ libxml2_install() {
         INFO_MSG "[ libxml2-${libxml2_version:?} have installed !!!]"
     fi
 
+}
+
+libxslt_install()
+{
+    echo
+    # ./configure --prefix=/usr/local/software/sharelib \
+        #   --with-python=/usr/local/python2.7.14/bin/python \
+        #   --with-libxml-src=/usr/local/auto_lnmp/src/libxml2-2.9.8
+    #   --with-libxml-prefix=usr/local/software/sharelib \
+        #   --with-libxml-include-prefix=/usr/local/software/sharelib/include  \
+        #   --with-libxml-libs-prefix=/usr/local/software/sharelib/lib
 }

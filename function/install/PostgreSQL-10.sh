@@ -7,7 +7,6 @@
 
 Install_PostgreSQL()
 {
-    # echo -e "${CMSG}[mariadb${mariadb_10_1_version:?} Installing] ****************>>${CEND}\n"
     INFO_MSG "[PostgreSQL${postgresql_install_version:?} Installing]"
     cd ${script_dir:?}/src
     # shellcheck disable=SC2034
@@ -23,20 +22,19 @@ Install_PostgreSQL()
         --with-python \
         --with-tcl \
         --with-openssl \
-        --with-includes=/usr/local/openssl/include \
+        --with-includes="${openssl11_install_dir:?}/include ${zlib_install_dir:?}/include" \
+        --with-libraries="${openssl11_install_dir:?}/lib ${zlib_install_dir:?}/lib" \
         --with-pam \
         --with-ldap \
         --with-libxml \
         --with-libxslt \
         --enable-thread-safety \
         --enable-dtrace \
-        --enable-debug
-
-        # --with-wal-blocksize=16 \
-        # --with-blocksize=16 \
-    # make -j${CpuProNum:?} && make install
-    # chown -R mysql:mysql $MysqlBasePath
-    #
+        --enable-debug  \
+        --with-wal-blocksize=16 \
+        --with-blocksize=16
+     make -j${CpuProNum:?} && make install
+    # chown -R mysql:mysql $MysqlBasePathß
     # [ -L /usr/bin/mysql ] && rm -f /usr/bin/mysql
     # ln -s $MysqlBasePath/bin/mysql /usr/bin/mysql
     # [ -L /usr/bin/mysqladmin ] && rm -f /usr/bin/mysqladmin
@@ -235,5 +233,6 @@ Install_PostgreSQL()
 
 PostgreSQL_10_Install_Main(){
 
-    PostgreSQL_Var&&PostgreSQL_Base_Packages_Install&&Install_PostgreSQL&&Create_Conf&&Init_PostgreSQL&&Config_PostgreSQL
+    PostgreSQL_Var&&PostgreSQL_Base_Packages_Install&&Install_PostgreSQL
+    # &&Create_Conf&&Init_PostgreSQL&&Config_PostgreSQL
 }

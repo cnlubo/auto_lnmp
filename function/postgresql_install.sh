@@ -32,9 +32,6 @@ PostgreSQL_Var(){
     read -p "Please input PostgreSQL Database Directory(default:/u01/pgbase/$postgresql_install_version)" PgsqlOptPath
     PgsqlOptPath="${PgsqlOptPath:=/u01/pgbase/$postgresql_install_version}"
 
-
-
-
 }
 PostgreSQL_Base_Packages_Install(){
 
@@ -46,10 +43,10 @@ PostgreSQL_Base_Packages_Install(){
                 yum -y remove postgresql*
                 # BasePackages="gcc glibc glibc-devel readline-devel zlib-devel libgcc  \
                     #     apr-devel flex-devel perl-ExtUtils-Embed tcl tcl-devel openldap openldap-devel \
-                    #     libxml2 libxml2-devel pam pam-devel"
-                BasePackages="gcc glibc glibc-devel readline-devel zlib-devel libgcc  \
-                    apr-devel flex-devel perl-ExtUtils-Embed tcl tcl-devel openldap openldap-devel \
-                    libxml2 libxml2-devel pam pam-devel libxslt libxslt-devel openldap-devel"
+                    #     libxml2 libxml2-devel pam pam-devel libxslt libxslt-devel openldap-devel"
+                BasePackages="gcc glibc glibc-devel readline-devel libgcc  \
+                    flex flex-devel perl-ExtUtils-Embed tcl tcl-devel openldap-devel \
+                    pam-devel libxml2 libxml2-devel libxslt libxslt-devel"
             }
             ;;
         "Ubuntu")
@@ -63,9 +60,13 @@ PostgreSQL_Base_Packages_Install(){
             ;;
     esac
     INSTALL_BASE_PACKAGES $BasePackages
-
     # 运行pgsql 的非root 用户
     system_user_setup ${default_user:?}
+    # openssl
+    SOURCE_SCRIPT ${script_dir:?}/include/openssl.sh
+    Install_OpenSSL_Main  ${openssl_latest_version:?} ${openssl11_install_dir:?}
+    # zlib
+    zlib_install
 }
 select_postgresql_install(){
 
