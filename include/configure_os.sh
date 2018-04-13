@@ -99,7 +99,7 @@ share_software_install(){
 
 zlib_install() {
 
-    if [ -e ${zlib_install_dir:?}/lib/libz.a ]; then
+    if [ ! -e ${zlib_install_dir:?}/lib/libz.a ]; then
         cd ${script_dir:?}/src
         # shellcheck disable=SC2034
         src_url=http://zlib.net/zlib-${zlib_version:?}.tar.gz
@@ -122,7 +122,7 @@ zlib_install() {
 }
 pcre_install() {
 
-    if [ -e ${pcre_install_dir:?}/lib/libpcre.a ]; then
+    if [ ! -e ${pcre_install_dir:?}/lib/libpcre.a ]; then
         cd ${script_dir:?}/src
         # shellcheck disable=SC2034
         src_url=https://sourceforge.net/projects/pcre/files/pcre/${pcre_version:?}/pcre-$pcre_version.tar.gz/download
@@ -148,7 +148,7 @@ pcre_install() {
 
 libxml2_install() {
 
-    if [ -e ${libxml2_install_dir:?}/lib/libxml2.a ]; then
+    if [ ! -e ${libxml2_install_dir:?}/lib/libxml2.a ]; then
         cd ${script_dir:?}/src
         # shellcheck disable=SC2034
         src_url=https://git.gnome.org/browse/libxml2/snapshot/libxml2-${libxml2_version:?}.tar.xz

@@ -33,7 +33,7 @@ Install_PostgreSQL()
         --enable-debug  \
         --with-wal-blocksize=16 \
         --with-blocksize=16
-     make -j${CpuProNum:?} && make install
+    make -j${CpuProNum:?} && make install
     # chown -R mysql:mysql $MysqlBasePathß
     # [ -L /usr/bin/mysql ] && rm -f /usr/bin/mysql
     # ln -s $MysqlBasePath/bin/mysql /usr/bin/mysql
@@ -158,7 +158,7 @@ Install_PostgreSQL()
 #     #初始化数据库
 #     echo -e "${CMSG}[Initialization Database] **********************************>>${CEND}\n"
 #     $MysqlBasePath/scripts/mysql_install_db --user=mysql --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf \
-#         --basedir=$MysqlBasePath --datadir=$MysqlDataPath
+    #         --basedir=$MysqlBasePath --datadir=$MysqlDataPath
 #     # 启动脚本
 #     mkdir -p ${MysqlOptPath:?}/init.d
 #     chown -R mysql.mysql $MysqlOptPath/

@@ -7,7 +7,8 @@
 
 EXIT_MSG(){
     ExitMsg="$1"
-    echo -e "${CFAILURE}$(date +%Y-%m-%d-%H:%M) -Error $ExitMsg " |tee -a ${ErrLog:?} && exit 1
+    # echo -e "${CFAILURE}$(date +%Y-%m-%d-%H:%M) -Error $ExitMsg " |tee -a ${ErrLog:?} && exit 1
+    echo -e "${CFAILURE}$(date +%Y-%m-%d-%H:%M) -Error $ExitMsg "
 }
 
 INFO_MSG(){
