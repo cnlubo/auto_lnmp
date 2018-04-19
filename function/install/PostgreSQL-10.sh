@@ -51,6 +51,7 @@ Init_PostgreSQL(){
         echo export "PGHOME=${PgsqlBasePath:?}" >>/home/${default_user:?}/.zshrc
         echo export "PGHOST=${PgsqlOptPath:?}/run" >>/home/${default_user:?}/.zshrc
         echo export "PGDATA=${PgsqlOptPath:?}/data" >>/home/${default_user:?}/.zshrc
+        su - ${pgsql_user:?} -c "source /home/${default_user:?}/.zshrc"
     else
         echo export "PATH=$PATH:${PgsqlBasePath:?}/bin" >>/home/${pgsql_user:?}/.bash_profile
         echo export "PGHOME=${PgsqlBasePath:?}" >>/home/${pgsql_user:?}/.bash_profile
@@ -60,6 +61,14 @@ Init_PostgreSQL(){
 
     INFO_MSG "[Initialization default Database ]"
     sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/initdb --encoding=UTF-8 --pgdata=${PgsqlOptPath:?}/data
+    # postgresql.conf
+    echo unix_socket_directories = "\"${PgsqlOptPath:?}/run\"" >>${PgsqlOptPath:?}/data/postgresql.conf
+    echo unix_socket_permissions = 0770 >>${PgsqlOptPath:?}/data/postgresql.conf
+    INFO_MSG "[Staring Database  ]"
+    # 手工启动数据库
+    sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/pg_ctl -D ${PgsqlOptPath:?}/data -l ${PgsqlOptPath:?}/logs/alert.log start
+    # set pgsql_user passwd
+    # su - postgres -c "${pgsql_install_dir}/bin/psql -c \"alter user postgres with password '$dbpostgrespwd';\""
 
 }
 
