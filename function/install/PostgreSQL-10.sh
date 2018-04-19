@@ -62,13 +62,13 @@ Init_PostgreSQL(){
     INFO_MSG "[Initialization default Database ]"
     sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/initdb --encoding=UTF-8 --pgdata=${PgsqlOptPath:?}/data
     # postgresql.conf
-    echo unix_socket_directories = ${PgsqlOptPath:?}/run >>${PgsqlOptPath:?}/data/postgresql.conf
+    echo -e unix_socket_directories = \'${PgsqlOptPath:?}/run\' >>${PgsqlOptPath:?}/data/postgresql.conf
     echo unix_socket_permissions = 0770 >>${PgsqlOptPath:?}/data/postgresql.conf
     INFO_MSG "[Staring Database  ]"
     # 手工启动数据库
     sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/pg_ctl -D ${PgsqlOptPath:?}/data -l ${PgsqlOptPath:?}/logs/alert.log start
     # set pgsql_user passwd
-    # su - postgres -c "${pgsql_install_dir}/bin/psql -c \"alter user postgres with password '$dbpostgrespwd';\""
+    su - ${pgsql_user:?} -c "${PgsqlBasePath:?}/bin/psql -c \"alter user postgres with password '12345678';\""
 
 }
 
