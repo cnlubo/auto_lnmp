@@ -62,7 +62,7 @@ Init_PostgreSQL(){
     INFO_MSG "[Initialization default Database ]"
     sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/initdb --encoding=UTF-8 --pgdata=${PgsqlOptPath:?}/data
     # postgresql.conf
-    echo unix_socket_directories = "\"${PgsqlOptPath:?}/run\"" >>${PgsqlOptPath:?}/data/postgresql.conf
+    echo unix_socket_directories = "\'${PgsqlOptPath:?}/run\' >>${PgsqlOptPath:?}/data/postgresql.conf
     echo unix_socket_permissions = 0770 >>${PgsqlOptPath:?}/data/postgresql.conf
     INFO_MSG "[Staring Database  ]"
     # 手工启动数据库
