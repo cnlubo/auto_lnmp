@@ -44,9 +44,7 @@ Install_PostgreSQL()
 Init_PostgreSQL(){
 
     INFO_MSG "[setting envionment variables !!! ]"
-    #echo ${pgsql_user:?}
     chown -Rf ${pgsql_user:?}:${pgsql_user:?} ${PgsqlBasePath:?}
-    #echo ${PgsqlBasePath:?}
     # 设置环境变量
     if [ -f /home/${default_user:?}/.zshrc ]; then
         echo export "PATH=$PATH:${PgsqlBasePath:?}/bin" >>/home/${default_user:?}/.zshrc
@@ -61,7 +59,7 @@ Init_PostgreSQL(){
     fi
 
     INFO_MSG "[Initialization default Database ]"
-    sudo -u ${pgsql_user:?} -c "${PgsqlBasePath:?}/bin/initdb --encoding=UTF-8 --pgdata=${PgsqlOptPath:?}/data"
+    sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/initdb --encoding=UTF-8 --pgdata=${PgsqlOptPath:?}/data
 
 }
 
