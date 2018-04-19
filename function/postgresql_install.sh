@@ -46,7 +46,7 @@ PostgreSQL_Var(){
     mkdir -p $PgsqlOptPath/archive
     mkdir -p $PgsqlOptPath/backup
     mkdir -p $PgsqlOptPath/logs
-    chown -Rf $pgsql_user:$pgsql_user $PgsqlOptPath/
+    chown -Rf $pgsql_user:$pgsql_user $PgsqlOptPath
 }
 PostgreSQL_Base_Packages_Install(){
 
