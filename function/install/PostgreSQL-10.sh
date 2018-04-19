@@ -63,7 +63,6 @@ Init_PostgreSQL(){
     fi
 
     INFO_MSG "[Initialization default Database ]"
-    # ./initdb --encoding=UTF-8  --local=zh_CN.UTF8 --username=postgres --pwprompt --pgdata=/opt/PostgreSQL/data/
     sudo -u ${pgsql_user:?} -c ${PgsqlBasePath:?}/bin/initdb --encoding=UTF-8 --pgdata=${PgsqlOptPath:?}/data
 
 }
