@@ -62,7 +62,7 @@ Init_PostgreSQL(){
     INFO_MSG "[Initialization default Database ]"
     sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/initdb --encoding=UTF-8 --pgdata=${PgsqlOptPath:?}/data
     # postgresql.conf
-    echo unix_socket_directories = "\'${PgsqlOptPath:?}/run\' >>${PgsqlOptPath:?}/data/postgresql.conf
+    echo unix_socket_directories = ${PgsqlOptPath:?}/run >>${PgsqlOptPath:?}/data/postgresql.conf
     echo unix_socket_permissions = 0770 >>${PgsqlOptPath:?}/data/postgresql.conf
     INFO_MSG "[Staring Database  ]"
     # 手工启动数据库
@@ -72,85 +72,7 @@ Init_PostgreSQL(){
 
 }
 
-# Init_PostgreSQL(){
-#
-#     chown -R mysql.mysql $MysqlConfigPath/
-#     chmod 777 $MysqlBasePath/scripts/mysql_install_db
-#     #初始化数据库
-#     echo -e "${CMSG}[Initialization Database] **********************************>>${CEND}\n"
-#     $MysqlBasePath/scripts/mysql_install_db --user=mysql --defaults-file=$MysqlConfigPath/my$MysqlPort.cnf \
-    #         --basedir=$MysqlBasePath --datadir=$MysqlDataPath
-#     # 启动脚本
-#     mkdir -p ${MysqlOptPath:?}/init.d
-#     chown -R mysql.mysql $MysqlOptPath/
-#     cp $script_dir/template/mysql_start $MysqlOptPath/init.d/mysql$MysqlPort
-#     chmod 775 $MysqlOptPath/init.d/mysql$MysqlPort
-#     chown -R mysql.mysql $MysqlOptPath/init.d/
-#     sed  -i ':a;$!{N;ba};s#basedir=#basedir='''$MysqlBasePath'''#' $MysqlOptPath/init.d/mysql$MysqlPort
-#     sed  -i ':a;$!{N;ba};s#datadir=#datadir='''$MysqlDataPath'''#' $MysqlOptPath/init.d/mysql$MysqlPort
-#     sed  -i ':a;$!{N;ba};s#conf=#conf='''$MysqlConfigPath/my$MysqlPort.cnf'''#' $MysqlOptPath/init.d/mysql$MysqlPort
-#     sed  -i ':a;$!{N;ba};s#mysql_user=#mysql_user='''$mysql_user'''#' $MysqlOptPath/init.d/mysql$MysqlPort
-#     sed  -i ':a;$!{N;ba};s#mysqld_pid_file_path=#mysqld_pid_file_path='''$MysqlRunPath/mysql$MysqlPort\.pid'''#' $MysqlOptPath/init.d/mysql$MysqlPort
-#
-#     #启动服务脚本
-#     if ( [ $OS == "Ubuntu" ] && [ ${Ubuntu_version:?} -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] );then
-#         #support Systemd
-#         [ -L /lib/systemd/system/mariadb$MysqlPort.service ] && rm -f /lib/systemd/system/mariadb$MysqlPort.service
-#         cp $script_dir/template/mariadb.service /lib/systemd/system/mariadb$MysqlPort.service
-#         sed  -i ':a;$!{N;ba};s#PIDFile=#PIDFile='''$MysqlOptPath/run/mysql$MysqlPort.pid'''#' /lib/systemd/system/mariadb$MysqlPort.service
-#         mycnf=''$MysqlOptPath/etc/my$MysqlPort.cnf''
-#         sed -i ''s#@MysqlBasePath#$MysqlBasePath#g'' /lib/systemd/system/mariadb$MysqlPort.service
-#         sed -i ''s#@defaults-file#$mycnf#g'' /lib/systemd/system/mariadb$MysqlPort.service
-#         systemctl enable mariadb$MysqlPort.service
-#         #echo "${CMSG}[starting db ] **************************************************>>${CEND}"
-#         #systemctl start mysql$MysqlPort.service #启动数据库
-#     else
-#         [ -L /etc/init.d/mariadb$MysqlPort ] && rm -f /etc/init.d/mariadb$MysqlPort
-#         ln -s $MysqlOptPath/init.d/mysql$MysqlPort /etc/init.d/mariadb$MysqlPort
-#         #echo "${CMSG}[starting db ] **************************************************>>${CEND}";
-#         #service start mysql$MysqlPort
-#     fi
-#
-# }
-# Config_PostgreSQL(){
-#
-#     echo -e "${CMSG}[config db ] *******************************>>${CEND}\n"
-#     $MysqlOptPath/init.d/mysql$MysqlPort start;
-#
-#     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'127.0.0.1' identified by \"$dbrootpwd\" with grant option;"
-#     $MysqlBasePath/bin/mysql -S $MysqlRunPath/mysql$MysqlPort.sock -e "grant all privileges on *.* to root@'localhost' identified by \"$dbrootpwd\" with grant option;"
-#     mysql -uroot -S $MysqlRunPath/mysql$MysqlPort.sock -p$dbrootpwd <<EOF
-#     USE mysql;
-#     delete from user where Password='';
-#     DELETE FROM user WHERE user='';
-#     delete from proxies_priv where Host!='localhost';
-#     drop database test;
-#     DROP USER ''@'%';
-#     reset master;
-#     FLUSH PRIVILEGES;
-# EOF
-#     $MysqlOptPath/init.d/mysql$MysqlPort stop
-#     #启动数据库
-#     echo -e "${CMSG}[starting db ] ********************************>>${CEND}\n"
-#     if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
-#         systemctl start mariadb$MysqlPort.service
-#     else
-#         service start mariadb$MysqlPort
-#     fi
-#     rm -rf $script_dir/src/mariadb-$mariadb_10_1_version
-#     #环境变量设置
-#     [ -f /root/.zshrc ] && echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/root/.zshrc
-#     id ${default_user:?} >/dev/null 2>&1
-#     if [ $? -eq 0 ]; then
-#         [ -f /home/${default_user:?}/.zshrc ] && echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/home/${default_user:?}/.zshrc
-#     fi
-#     #echo PATH='$PATH:'$MysqlBasePath/bin >>/etc/profile
-#     #echo export PATH >>/etc/profile
-#     #echo export 'MYSQL_PS1="\\u@\\h:\\d \\r:\\m:\\s>"' >>/etc/profile
-#     #source /etc/profile
-#     echo -e "${CRED}[db root user passwd:$dbrootpwd ] *******************************>>${CEND}\n"
-#
-# }
+
 
 PostgreSQL_10_Install_Main(){
 
