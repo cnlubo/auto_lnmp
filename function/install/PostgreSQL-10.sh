@@ -45,20 +45,21 @@ Init_PostgreSQL(){
 
     INFO_MSG "[setting envionment variables !!! ]"
     echo ${pgsql_user:?}
-    chown -R ${pgsql_user:?}:${pgsql_user:?} ${PgsqlBasePath:?}
+    chown -R ${pgsql_user:?}:${pgsql_user:?} ${PgsqlBasePath:?}/
+    echo ${PgsqlBasePath:?}
     # 设置环境变量
     if [ -f /home/${default_user:?}/.zshrc ]; then
         echo export "PATH=$PATH:${PgsqlBasePath:?}/bin" >>/home/${default_user:?}/.zshrc
         echo export "PGHOME=${PgsqlBasePath:?}" >>/home/${default_user:?}/.zshrc
         echo export "PGHOST=${PgsqlOptPath:?}/run" >>/home/${default_user:?}/.zshrc
         echo export "PGDATA=${PgsqlOptPath:?}/data" >>/home/${default_user:?}/.zshrc
-        source /home/${default_user:?}/.zshrc
+        # source /home/${default_user:?}/.zshrc
     else
         echo export "PATH=$PATH:${PgsqlBasePath:?}/bin" >>/home/${pgsql_user:?}/.bash_profile
         echo export "PGHOME=${PgsqlBasePath:?}" >>/home/${pgsql_user:?}/.bash_profile
         echo export "PGHOST=${PgsqlOptPath:?}/run" >>/home/${pgsql_user:?}/.bash_profile
         echo export "PGDATA=${PgsqlOptPath:?}/data" >>/home/${pgsql_user:?}/.bash_profile
-        source /home/${pgsql_user:?}/.bash_profile
+        # source /home/${pgsql_user:?}/.bash_profile
     fi
 
     INFO_MSG "[Initialization default Database ]"
