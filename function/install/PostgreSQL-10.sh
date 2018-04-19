@@ -45,7 +45,7 @@ Init_PostgreSQL(){
 
     INFO_MSG "[setting envionment variables !!! ]"
     #echo ${pgsql_user:?}
-    chown -R ${pgsql_user:?}:${pgsql_user:?} ${PgsqlBasePath:?}
+    chown -Rf ${pgsql_user:?}:${pgsql_user:?} ${PgsqlBasePath:?}
     #echo ${PgsqlBasePath:?}
     # 设置环境变量
     if [ -f /home/${default_user:?}/.zshrc ]; then
@@ -53,7 +53,7 @@ Init_PostgreSQL(){
         echo export "PGHOME=${PgsqlBasePath:?}" >>/home/${default_user:?}/.zshrc
         echo export "PGHOST=${PgsqlOptPath:?}/run" >>/home/${default_user:?}/.zshrc
         echo export "PGDATA=${PgsqlOptPath:?}/data" >>/home/${default_user:?}/.zshrc
-        su ${pgsql_user:?} && source /home/${default_user:?}/.zshrc && sudo su - && cd ${script_dir:?}/src
+        # su ${pgsql_user:?} && source /home/${default_user:?}/.zshrc && sudo su - && cd ${script_dir:?}/src
     else
         echo export "PATH=$PATH:${PgsqlBasePath:?}/bin" >>/home/${pgsql_user:?}/.bash_profile
         echo export "PGHOME=${PgsqlBasePath:?}" >>/home/${pgsql_user:?}/.bash_profile
