@@ -53,17 +53,15 @@ Init_PostgreSQL(){
         echo export "PGHOME=${PgsqlBasePath:?}" >>/home/${default_user:?}/.zshrc
         echo export "PGHOST=${PgsqlOptPath:?}/run" >>/home/${default_user:?}/.zshrc
         echo export "PGDATA=${PgsqlOptPath:?}/data" >>/home/${default_user:?}/.zshrc
-        # su ${pgsql_user:?} && source /home/${default_user:?}/.zshrc && sudo su - && cd ${script_dir:?}/src
     else
         echo export "PATH=$PATH:${PgsqlBasePath:?}/bin" >>/home/${pgsql_user:?}/.bash_profile
         echo export "PGHOME=${PgsqlBasePath:?}" >>/home/${pgsql_user:?}/.bash_profile
         echo export "PGHOST=${PgsqlOptPath:?}/run" >>/home/${pgsql_user:?}/.bash_profile
         echo export "PGDATA=${PgsqlOptPath:?}/data" >>/home/${pgsql_user:?}/.bash_profile
-        # source /home/${pgsql_user:?}/.bash_profile
     fi
 
     INFO_MSG "[Initialization default Database ]"
-    sudo -u ${pgsql_user:?} -c ${PgsqlBasePath:?}/bin/initdb --encoding=UTF-8 --pgdata=${PgsqlOptPath:?}/data
+    sudo -u ${pgsql_user:?} -c "${PgsqlBasePath:?}/bin/initdb --encoding=UTF-8 --pgdata=${PgsqlOptPath:?}/data"
 
 }
 
