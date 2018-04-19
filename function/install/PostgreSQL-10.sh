@@ -38,6 +38,13 @@ Install_PostgreSQL()
     #cd contrib && make -j${CpuProNum:?} && make install
     # all doc all contrib
     gmake world && gmake install-world
+
+
+}
+Init_PostgreSQL(){
+
+    INFO_MSG "[setting envionment variables !!! ]"
+    echo ${pgsql_user:?}
     chown -R ${pgsql_user:?}:${pgsql_user:?} ${PgsqlBasePath:?}
     # 设置环境变量
     if [ -f /home/${default_user:?}/.zshrc ]; then
@@ -45,18 +52,15 @@ Install_PostgreSQL()
         echo export "PGHOME=${PgsqlBasePath:?}" >>/home/${default_user:?}/.zshrc
         echo export "PGHOST=${PgsqlOptPath:?}/run" >>/home/${default_user:?}/.zshrc
         echo export "PGDATA=${PgsqlOptPath:?}/data" >>/home/${default_user:?}/.zshrc
-        sudo -u ${pgsql_user:?} -H source /home/${default_user:?}/.zshrc
+        source /home/${default_user:?}/.zshrc
     else
         echo export "PATH=$PATH:${PgsqlBasePath:?}/bin" >>/home/${pgsql_user:?}/.bash_profile
         echo export "PGHOME=${PgsqlBasePath:?}" >>/home/${pgsql_user:?}/.bash_profile
         echo export "PGHOST=${PgsqlOptPath:?}/run" >>/home/${pgsql_user:?}/.bash_profile
         echo export "PGDATA=${PgsqlOptPath:?}/data" >>/home/${pgsql_user:?}/.bash_profile
-        sudo -u ${pgsql_user:?} -H /home/${pgsql_user:?}/.bash_profile
+        source /home/${pgsql_user:?}/.bash_profile
     fi
 
-}
-Init_PostgreSQL(){
-    
     INFO_MSG "[Initialization default Database ]"
 
 }
