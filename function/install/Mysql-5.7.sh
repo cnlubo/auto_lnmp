@@ -209,7 +209,7 @@ Config_MySQLDB()
     sed -i '/plugin-load-add/s/^#//' $MysqlConfigPath/my$MysqlPort.cnf
     sed -i '/validate_password_policy/s/^#//' $MysqlConfigPath/my$MysqlPort.cnf
     sed -i '/validate-password/s/^#//' $MysqlConfigPath/my$MysqlPort.cnf
-    
+
     $MysqlOptPath/init.d/mysql$MysqlPort stop
     #启动数据库
     if ( [ $OS == "Ubuntu" ] && [ $Ubuntu_version -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ $CentOS_RHEL_version -ge 7 ] );then
@@ -237,8 +237,5 @@ Config_MySQLDB()
 MySQLDB_Install_Main(){
 
     MySQL_Var&&MySQL_Base_Packages_Install&&Install_MySQLDB&&Create_Conf&&Init_MySQLDB&&Config_MySQLDB
-    # MySQL_Var&&Create_Conf&&Init_MySQLDB&&Config_MySQLDB
-
-
-
+    
 }

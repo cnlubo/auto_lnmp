@@ -31,7 +31,22 @@ PostgreSQL_Var(){
     # 数据库目录
     read -p "Please input PostgreSQL Database Directory(default:/u01/pgbase/$postgresql_install_version)" PgsqlOptPath
     PgsqlOptPath="${PgsqlOptPath:=/u01/pgbase/$postgresql_install_version}"
-
+    # 使用默认非root 用户作为postgresql 运行用户
+    id ${default_user:?} >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo -e "${CWARNING}[ running user($default_user) exist !!!] *******************************>>${CEND}\n"
+    else
+        system_user_setup ${default_user:?}
+    fi
+    pgsql_user=${default_user:?}
+    # create dir
+    mkdir -p $PgsqlOptPath
+    mkdir -p $PgsqlOptPath/data
+    mkdir -p $PgsqlOptPath/run
+    mkdir -p $PgsqlOptPath/archive
+    mkdir -p $PgsqlOptPath/backup
+    mkdir -p $PgsqlOptPath/logs
+    chown -Rf $pgsql_user:$pgsql_user $PgsqlOptPath/
 }
 PostgreSQL_Base_Packages_Install(){
 

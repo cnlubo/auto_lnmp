@@ -73,6 +73,15 @@ MySQL_Var(){
     # a=`echo ${HostIP:?}|cut -d\. -f1`
     # shellcheck disable=SC2034
     server_id=`expr $b \* 256 \* 256 \* 256 + $c \* 256 \* 256 + $d \* 256 + $pt`
+    #create group and user
+    grep ${mysql_user:?} /etc/group >/dev/null 2>&1
+    if [ ! $? -eq 0 ]; then
+        groupadd $mysql_user;
+    fi
+    id $mysql_user >/dev/null 2>&1
+    if [ ! $? -eq 0 ]; then
+        useradd -g $mysql_user  -M -s /sbin/nologin $mysql_user
+    fi
     # create dir
     MysqlDataPath="${MysqlOptPath:?}/data"
     MysqlLogPath="$MysqlOptPath/log"
@@ -81,7 +90,7 @@ MySQL_Var(){
     MysqlRunPath="$MysqlOptPath/run"
     for path in ${MysqlLogPath:?} ${MysqlConfigPath:?} ${MysqlDataPath:?} ${MysqlTmpPath:?} ${MysqlRunPath:?};do
         [ -d $path ] && rm -rf $path
-        mkdir -p $path && chmod 755 $path && chown -R mysql:mysql $path
+        mkdir -p $path && chmod 755 $path && chown -R $mysql_user:$mysql_user $path
     done
 
 }
@@ -125,15 +134,7 @@ MySQL_Base_Packages_Install(){
         tar xf boost_1_59_0.tar.gz
         cd $script_dir
     fi
-    #create group and user
-    grep ${mysql_user:?} /etc/group >/dev/null 2>&1
-    if [ ! $? -eq 0 ]; then
-        groupadd $mysql_user;
-    fi
-    id $mysql_user >/dev/null 2>&1
-    if [ ! $? -eq 0 ]; then
-        useradd -g $mysql_user  -M -s /sbin/nologin $mysql_user
-    fi
+
 }
 select_mysql_install(){
 

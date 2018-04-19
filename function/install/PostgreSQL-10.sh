@@ -34,12 +34,30 @@ Install_PostgreSQL()
         --with-wal-blocksize=16 \
         --with-blocksize=16
     make -j${CpuProNum:?} && make install
-    # chown -R mysql:mysql $MysqlBasePathß
-    # [ -L /usr/bin/mysql ] && rm -f /usr/bin/mysql
-    # ln -s $MysqlBasePath/bin/mysql /usr/bin/mysql
-    # [ -L /usr/bin/mysqladmin ] && rm -f /usr/bin/mysqladmin
-    # ln -s $MysqlBasePath/bin/mysqladmin /usr/bin/mysqladmin;
+    # contrib
+    #cd contrib && make -j${CpuProNum:?} && make install
+    # all doc all contrib
+    gmake world && gmake install-world
+    chown -R ${pgsql_user:?}:${pgsql_user:?} ${PgsqlBasePath:?}
+    # 设置环境变量
+    if [ -f /home/${default_user:?}/.zshrc ]; then
+        echo export "PATH=$PATH:${PgsqlBasePath:?}/bin" >>/home/${default_user:?}/.zshrc
+        echo export "PGHOME=${PgsqlBasePath:?}" >>/home/${default_user:?}/.zshrc
+        echo export "PGHOST=${PgsqlOptPath:?}/run" >>/home/${default_user:?}/.zshrc
+        echo export "PGDATA=${PgsqlOptPath:?}/data" >>/home/${default_user:?}/.zshrc
+        sudo -u ${pgsql_user:?} -H source /home/${default_user:?}/.zshrc
+    else
+        echo export "PATH=$PATH:${PgsqlBasePath:?}/bin" >>/home/${pgsql_user:?}/.bash_profile
+        echo export "PGHOME=${PgsqlBasePath:?}" >>/home/${pgsql_user:?}/.bash_profile
+        echo export "PGHOST=${PgsqlOptPath:?}/run" >>/home/${pgsql_user:?}/.bash_profile
+        echo export "PGDATA=${PgsqlOptPath:?}/data" >>/home/${pgsql_user:?}/.bash_profile
+        sudo -u ${pgsql_user:?} -H /home/${pgsql_user:?}/.bash_profile
+    fi
 
+}
+
+Setup_Conf() {
+    echo
 }
 
 # Create_Conf() {
@@ -233,6 +251,6 @@ Install_PostgreSQL()
 
 PostgreSQL_10_Install_Main(){
 
-    PostgreSQL_Var&&PostgreSQL_Base_Packages_Install&&Install_PostgreSQL
-    # &&Create_Conf&&Init_PostgreSQL&&Config_PostgreSQL
+    PostgreSQL_Var&&PostgreSQL_Base_Packages_Install&&Install_PostgreSQL && Setup_Conf
+    #&&Init_PostgreSQL&&Config_PostgreSQL
 }

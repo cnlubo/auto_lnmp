@@ -17,16 +17,16 @@ OpenResty_Dep_Install(){
 
 Install_OpenResty(){
 
-    echo -e "${CMSG}[create user and group ]***********************************>>${CEND}\n"
-
-    grep ${run_user:?} /etc/group >/dev/null 2>&1
-    if [ ! $? -eq 0 ]; then
-        groupadd $run_user
-    fi
-    id $run_user >/dev/null 2>&1
-    if [ ! $? -eq 0 ]; then
-        useradd -g $run_user  -M -s /sbin/nologin $run_user
-    fi
+    # echo -e "${CMSG}[create user and group ]***********************************>>${CEND}\n"
+    #
+    # grep ${run_user:?} /etc/group >/dev/null 2>&1
+    # if [ ! $? -eq 0 ]; then
+    #     groupadd $run_user
+    # fi
+    # id $run_user >/dev/null 2>&1
+    # if [ ! $? -eq 0 ]; then
+    #     useradd -g $run_user  -M -s /sbin/nologin $run_user
+    # fi
 
     echo -e "${CMSG}[prepare OpenResty install ]***********************************>>${CEND}\n"
     [ -d ${openresty_install_dir:?} ] && rm -rf ${openresty_install_dir:?}
@@ -48,7 +48,7 @@ Install_OpenResty(){
         --pid-path=${openresty_install_dir:?}/run/nginx.pid  \
         --lock-path=${openresty_install_dir:?}/run/nginx.lock \
         --modules-path=${dynamic_modules_path:?} \
-        --user=$run_user --group=$run_user \
+        --user=${run_user:?} --group=$run_user \
         --with-http_stub_status_module \
         --with-http_ssl_module \
         --with-http_gzip_static_module \

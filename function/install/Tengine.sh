@@ -21,16 +21,16 @@ Tengine_Dep_Install(){
 
 Install_Tengine(){
 
-    echo -e "${CMSG}[create user and group ]***********************************>>${CEND}\n"
-
-    grep ${run_user:?} /etc/group >/dev/null 2>&1
-    if [ ! $? -eq 0 ]; then
-        groupadd $run_user
-    fi
-    id $run_user >/dev/null 2>&1
-    if [ ! $? -eq 0 ]; then
-        useradd -g $run_user  -M -s /sbin/nologin $run_user
-    fi
+    # echo -e "${CMSG}[create user and group ]***********************************>>${CEND}\n"
+    #
+    # grep ${run_user:?} /etc/group >/dev/null 2>&1
+    # if [ ! $? -eq 0 ]; then
+    #     groupadd $run_user
+    # fi
+    # id $run_user >/dev/null 2>&1
+    # if [ ! $? -eq 0 ]; then
+    #     useradd -g $run_user  -M -s /sbin/nologin $run_user
+    # fi
 
     echo -e "${CMSG}[prepare Tengine install ]***********************************>>${CEND}\n"
     [ -d ${tengine_install_dir:?} ] && rm -rf ${tengine_install_dir:?}
@@ -62,7 +62,7 @@ Install_Tengine(){
         --http-log-path=${tengine_install_dir:?}/logs/access.log \
         --pid-path=${tengine_install_dir:?}/run/nginx.pid  \
         --lock-path=${tengine_install_dir:?}/run/nginx.lock \
-        --user=$run_user --group=$run_user \
+        --user=${run_user:?} --group=$run_user \
         --with-file-aio \
         --with-http_v2_module \
         --with-http_realip_module \

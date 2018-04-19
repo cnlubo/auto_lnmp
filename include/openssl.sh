@@ -9,6 +9,8 @@
 Install_OpenSSL() {
 
     if [ ! -e ${openssl_install_dir:?}/lib/libcrypto.a ]; then
+
+        INFO_MSG "[openssl-${openssl_install_version:?} begin install !!!]"
         cd ${script_dir:?}/src
         # shellcheck disable=SC2034
         src_url=https://www.openssl.org/source/openssl-${openssl_install_version:?}.tar.gz

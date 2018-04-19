@@ -1,5 +1,5 @@
 #!/bin/bash\
-# shellcheck disable=SC2164
+    # shellcheck disable=SC2164
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
 # @file_name:                              nginx_install.sh
@@ -17,6 +17,16 @@ Nginx_Var() {
     if [ $COUNT -gt 0 ]
     then
         echo -e "${CWARNING}[Error nginx or Tengine is running please stop !!!!]${CEND}\n" && exit
+    fi
+    echo -e "${CMSG}[create user and group ]***********************************>>${CEND}\n"
+
+    grep ${run_user:?} /etc/group >/dev/null 2>&1
+    if [ ! $? -eq 0 ]; then
+        groupadd $run_user
+    fi
+    id $run_user >/dev/null 2>&1
+    if [ ! $? -eq 0 ]; then
+        useradd -g $run_user  -M -s /sbin/nologin $run_user
     fi
 
 }

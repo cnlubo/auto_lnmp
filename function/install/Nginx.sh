@@ -20,16 +20,16 @@ Nginx_Dep_Install(){
 }
 Install_Nginx(){
 
-    echo -e "${CMSG}[create user and group ]***********************************>>${CEND}\n"
-
-    grep ${run_user:?} /etc/group >/dev/null 2>&1
-    if [ ! $? -eq 0 ]; then
-        groupadd $run_user
-    fi
-    id $run_user >/dev/null 2>&1
-    if [ ! $? -eq 0 ]; then
-        useradd -g $run_user  -M -s /sbin/nologin $run_user
-    fi
+    # echo -e "${CMSG}[create user and group ]***********************************>>${CEND}\n"
+    #
+    # grep ${run_user:?} /etc/group >/dev/null 2>&1
+    # if [ ! $? -eq 0 ]; then
+    #     groupadd $run_user
+    # fi
+    # id $run_user >/dev/null 2>&1
+    # if [ ! $? -eq 0 ]; then
+    #     useradd -g $run_user  -M -s /sbin/nologin $run_user
+    # fi
 
     echo -e "${CMSG}[prepare nginx install ]***********************************>>${CEND}\n"
     [ -d ${nginx_install_dir:?} ] && rm -rf ${nginx_install_dir:?}
@@ -59,7 +59,7 @@ Install_Nginx(){
         --http-log-path=${nginx_install_dir:?}/logs/access.log \
         --pid-path=${nginx_install_dir:?}/run/nginx.pid  \
         --lock-path=${nginx_install_dir:?}/run/nginx.lock \
-        --user=$run_user --group=$run_user \
+        --user=${run_user:?} --group=$run_user \
         --with-http_stub_status_module \
         --with-http_ssl_module \
         --with-http_gzip_static_module \

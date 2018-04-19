@@ -100,6 +100,8 @@ share_software_install(){
 zlib_install() {
 
     if [ ! -e ${zlib_install_dir:?}/lib/libz.a ]; then
+
+        INFO_MSG "[zlib-${zlib_version:?} begin install !!!]"
         cd ${script_dir:?}/src
         # shellcheck disable=SC2034
         src_url=http://zlib.net/zlib-${zlib_version:?}.tar.gz
