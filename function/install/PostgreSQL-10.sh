@@ -55,120 +55,12 @@ Install_PostgreSQL()
     fi
 
 }
+Init_PostgreSQL(){
+    
+    INFO_MSG "[Initialization default Database ]"
 
-Setup_Conf() {
-    echo
 }
 
-# Create_Conf() {
-#
-#
-#     cat > ${MysqlConfigPath:?}/my${MysqlPort:?}.cnf << EOF
-# [mysql]
-#
-# ############## CLIENT #############
-# port                               = $MysqlPort
-# socket                             = ${MysqlRunPath:?}/mysql$MysqlPort.sock
-# default_character_set              = UTF8
-# #default_character_set              = utf8mb4
-# password                           = ${dbrootpwd:?}
-#
-# [mysqld]
-#
-# ############### GENERAL############
-# user                               = ${mysql_user:?}
-# port                               = $MysqlPort
-# bind_address                       = 0.0.0.0
-# # character_set_server               = UTF8
-# character_set_server               = utf8mb4
-# collation-server                   = utf8mb4_unicode_ci
-# init_connect                       = 'SET NAMES utf8mb4' # 初始化连接都设置为utf8mb4
-# skip-character-set-client-handshake  =true               # 忽略客户端字符集设置,使用init_connect设置
-# # performance_schema                 = 0                 #  如果设置为1 初始化数据库时失败
-# lower_case_table_names             = 1
-# join_buffer_size                   = 1M
-# sort_buffer_size                   = 1M
-# server_id                          = ${server_id:?}
-# thread_handling                    = pool-of-threads
-#
-# ################DIR################
-# basedir                            = ${MysqlBasePath:?}
-# pid_file                           = $MysqlRunPath/mysql$MysqlPort.pid
-# socket                             = $MysqlRunPath/mysql$MysqlPort.sock
-# datadir                            = ${MysqlDataPath:?}
-# tmpdir                             = ${MysqlTmpPath:?}
-# slave_load_tmpdir                  = $MysqlTmpPath
-# innodb_data_home_dir               = $MysqlDataPath
-# innodb_log_group_home_dir          = ${MysqlLogPath:?}
-# log_bin                            = $MysqlLogPath/mysql_bin
-# log_bin_index                      = $MysqlLogPath/mysql_bin.index
-# relay_log_index                    = $MysqlLogPath/relay_log.index
-# relay_log                          = $MysqlLogPath/relay_bin
-# log_error                          = $MysqlLogPath/alert.log
-# slow_query_log_file                = $MysqlLogPath/slow.log
-# general_log_file                   = $MysqlLogPath/general.log
-#
-# ################MyISAM#############
-#
-# ################ SAFETY############
-# max_allowed_packet                 = 16M  # 16M: ()>= MariaDB 10.2.4) 4M: (>= MariaDB 10.1.7) 1MB (<= MariaDB 10.1.6)
-# max_connect_errors                 = 1000
-# skip_name_resolve
-# sql_mode                           = STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY
-# sysdate_is_now                     = 1
-# innodb_strict_mode                 = 1   # Default Value: ON (>= MariaDB 10.2.2 OFF (<= MariaDB 10.2.1)
-# skip_ssl                           # disable_ssl
-#
-# ################  BINARY LOGGING##########
-# expire_logs_days                   = 7
-# sync_binlog                        = 1
-# binlog_checksum                    = CRC32 # CRC32 (>= MariaDB 10.2.1) NONE (<= MariaDB 10.2.0)
-# binlog_format                      = row # Default Value: MIXED (>= MariaDB 10.2.4) STATEMENT (<= MariaDB 10.2.3)
-#
-# ############### REPLICATION ###############
-# read_only                          = 1
-# skip_slave_start                   = 1
-# log_slave_updates                  = 1
-# relay_log_recovery                 = 1
-# # sync_master_info                   = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaDB 10.1.6) 1 is the safest, but slowest
-# # sync_relay_log                     = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaDB 10.1.6) 1 is the safest, but slowest
-# # sync_relay_log_info                = 1 # 10000 (>= MariaDB 10.1.7), 0 (<= MariaDB 10.1.6) 1 is the safest, but slowest
-# master_verify_checksum             = 1
-#
-# ############## CACHES AND LIMITS ##########
-# # query_cache_type                   = 0   # Default Value: OFF (>= MariaDB 10.1.7), ON (<= MariaDB 10.1.6)
-# query_cache_size                   = 0
-# max_connections                    = 800
-# open_files_limit                   = 65535
-# table_definition_cache             = 65536
-# # slave_net_timeout                  = 5  # 60 (1 minute) (>= MariaDB 10.2.4) 3600 (1 hour) (<= MariaDB 10.2.3)
-# thread_stack                       = 512K
-#
-# ##################INNODB####################################### #
-# innodb_data_file_path              = ibdata1:1G;ibdata2:512M:autoextend
-# innodb_flush_method                = O_DIRECT
-# innodb_log_files_in_group          = 2
-# innodb_log_file_size               = 512M
-# innodb_buffer_pool_size            = ${innodb_buffer_pool_size:?}
-# innodb_file_format                 = Barracuda # Barracuda (>= MariaDB 10.2.2) Antelope (<= MariaDB 10.2.1)
-# innodb_log_buffer_size             = 16M # 16777216 (16MB) >= MariaDB 10.1.9, 8388608 (8MB) <= MariaDB 10.1.8
-# innodb_purge_threads               = 4 # 4 (>= MariaDB 10.2.2) 1 (>=MariaDB 10.0 to <= MariaDB 10.2.1) 0 (MariaDB 5.5)
-# innodb_sort_buffer_size            = 64M
-#
-# ################# LOGGING####################### #
-# log_queries_not_using_indexes      = 1
-# slow_query_log                     = 1
-# general_log                        = 0
-# log_slow_admin_statements          = 1
-# long_query_time                    = 3
-# transaction_isolation              = READ-COMMITTED
-#
-#
-# EOF
-#
-# }
-#
-#
 # Init_PostgreSQL(){
 #
 #     chown -R mysql.mysql $MysqlConfigPath/
@@ -251,6 +143,6 @@ Setup_Conf() {
 
 PostgreSQL_10_Install_Main(){
 
-    PostgreSQL_Var&&PostgreSQL_Base_Packages_Install&&Install_PostgreSQL && Setup_Conf
+    PostgreSQL_Var&&PostgreSQL_Base_Packages_Install&&Install_PostgreSQL && Init_PostgreSQL
     #&&Init_PostgreSQL&&Config_PostgreSQL
 }
