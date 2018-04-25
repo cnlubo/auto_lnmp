@@ -40,6 +40,7 @@ PostgreSQL_Var(){
     fi
     pgsql_user=${default_user:?}
     # create dir
+    [ -d $PgsqlOptPath ] && rm -rf $PgsqlOptPath
     mkdir -p $PgsqlOptPath
     mkdir -p $PgsqlOptPath/data
     mkdir -p $PgsqlOptPath/run
