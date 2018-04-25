@@ -31,6 +31,7 @@ PostgreSQL_Var(){
     # 数据库目录
     read -p "Please input PostgreSQL Database Directory(default:/u01/pgbase/$postgresql_install_version)" PgsqlOptPath
     PgsqlOptPath="${PgsqlOptPath:=/u01/pgbase/$postgresql_install_version}"
+    PgsqlDataPath=$PgsqlOptPath/data
     # 使用默认非root 用户作为postgresql 运行用户
     id ${default_user:?} >/dev/null 2>&1
     if [ $? -eq 0 ]; then
@@ -42,7 +43,8 @@ PostgreSQL_Var(){
     # create dir
     [ -d $PgsqlOptPath ] && rm -rf $PgsqlOptPath
     mkdir -p $PgsqlOptPath
-    mkdir -p $PgsqlOptPath/data
+    [ -d $PgsqlDataPath ] && rm -rf $PgsqlDataPath
+    mkdir -p $PgsqlDataPath
     mkdir -p $PgsqlOptPath/run
     mkdir -p $PgsqlOptPath/archive
     mkdir -p $PgsqlOptPath/backup
