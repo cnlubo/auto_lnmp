@@ -69,10 +69,10 @@ Init_PostgreSQL(){
     sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/pg_ctl -D ${PgsqlOptPath:?}/data -l ${PgsqlOptPath:?}/logs/alert.log start
     # set pgsql_user passwd
     dbrootpwd=`mkpasswd -l 8`
-    su - ${pgsql_user:?} -c "${PgsqlBasePath:?}/bin/psql -h 127.0.0.1 -d postgres -c \"alter ${pgsql_user:?} with password '$dbrootpwd';\""
+    su - ${pgsql_user:?} -c "${PgsqlBasePath:?}/bin/psql -h 127.0.0.1 -d postgres -c \"alter user ${pgsql_user:?} with password '$dbrootpwd';\""
     echo -e "${CRED}[PostgreSQL db ${pgsql_user:?} passwd:$dbrootpwd ] **************************>>${CEND}\n"
     # enabled password validate
-    
+
 }
 
 
