@@ -103,5 +103,5 @@ Config_PostgreSQL(){
 
 PostgreSQL_10_Install_Main(){
 
-    PostgreSQL_Var&&PostgreSQL_Base_Packages_Install&&Install_PostgreSQL&Init_PostgreSQL&&Config_PostgreSQL
+    PostgreSQL_Var&&PostgreSQL_Base_Packages_Install&&Install_PostgreSQL&&Init_PostgreSQL&&Config_PostgreSQL
 }
