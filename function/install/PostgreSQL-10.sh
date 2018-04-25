@@ -68,7 +68,7 @@ Init_PostgreSQL(){
     # 手工启动数据库
     sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/pg_ctl -D ${PgsqlOptPath:?}/data -l ${PgsqlOptPath:?}/logs/alert.log start
     # set pgsql_user passwd
-    su - ${pgsql_user:?} -c "${PgsqlBasePath:?}/bin/psql -c \"alter user postgres with password '12345678';\""
+    su - ${pgsql_user:?} -c "${PgsqlBasePath:?}/bin/psql -c \"alter ${pgsql_user:?} postgres with password '12345678';\" -d postgres"
 
 }
 
