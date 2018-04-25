@@ -76,8 +76,8 @@ Init_PostgreSQL(){
     # enabled password validate
     sed -i 's@^host.*@#&@g' $PgsqlOptPath/data/pg_hba.conf
     sed -i 's@^local.*@#&@g' $PgsqlOptPath/data/pg_hba.conf
-    echo '\nlocal   all             all                                     md5' >> $PgsqlOptPath/data/pg_hba.conf
-    echo '\nhost    all             all             0.0.0.0/0               md5' >> $PgsqlOptPath/data/pg_hba.conf
+    echo -e '\nlocal   all             all                                     md5' >> $PgsqlOptPath/data/pg_hba.conf
+    echo 'host    all             all             0.0.0.0/0               md5' >> $PgsqlOptPath/data/pg_hba.conf
     sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/pg_ctl -D ${PgsqlOptPath:?}/data -l ${PgsqlOptPath:?}/logs/alert.log stop
     # sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/pg_ctl -D ${PgsqlOptPath:?}/data -l ${PgsqlOptPath:?}/logs/alert.log start
 
@@ -88,6 +88,7 @@ Config_PostgreSQL(){
     if ( [ $OS == "Ubuntu" ] && [ ${Ubuntu_version:?} -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] );then
         [ -L /lib/systemd/system/pgsql.service ]  && systemctl disable pgsql.service && rm -f /lib/systemd/system/pgsql.service
         cp $script_dir/template/systemd/pgsql.service /lib/systemd/system/pgsql.service
+        sed -i "s#@pgsqluser#${pgsql_user:?}#g" /lib/systemd/system/pgsql.service
         sed -i "s#@PgsqlBasePath#${PgsqlBasePath:?}#g" /lib/systemd/system/pgsql.service
         sed -i "s#@PgsqlDataPath#${PgsqlDataPath:?}#g" /lib/systemd/system/pgsql.service
         systemctl enable pgsql.service
