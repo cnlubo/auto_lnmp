@@ -72,6 +72,14 @@ Init_PostgreSQL(){
     su - ${pgsql_user:?} -c "${PgsqlBasePath:?}/bin/psql -h 127.0.0.1 -d postgres -c \"alter user ${pgsql_user:?} with password '$dbrootpwd';\""
     echo -e "${CRED}[PostgreSQL db ${pgsql_user:?} passwd:$dbrootpwd ] **************************>>${CEND}\n"
     # enabled password validate
+    sed -i 's@^host.*@#&@g' $PgsqlOptPath/data/pg_hba.conf
+    sed -i 's@^local.*@#&@g' $PgsqlOptPath/data/pg_hba.conf
+    echo 'local   all             all                                     md5' >> $PgsqlOptPath/data/pg_hba.conf
+    echo 'host    all             all             0.0.0.0/0               md5' >> $PgsqlOptPath/data/pg_hba.conf
+    sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/pg_ctl -D ${PgsqlOptPath:?}/data -l ${PgsqlOptPath:?}/logs/alert.log stop
+    sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/pg_ctl -D ${PgsqlOptPath:?}/data -l ${PgsqlOptPath:?}/logs/alert.log start
+
+
 
 }
 
