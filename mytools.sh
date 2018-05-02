@@ -52,8 +52,8 @@ select_main_menu(){
                 select_database_install
                 ;;
             3)
-                SOURCE_SCRIPT $FunctionPath/nginx_install.sh
-                select_nginx_install
+                SOURCE_SCRIPT $FunctionPath/web_install.sh
+                select_web_install
                 ;;
             4)
                 clear

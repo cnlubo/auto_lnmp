@@ -17,7 +17,7 @@ Nginx_Var() {
     #echo "ps -c|方法:"$COUNT
     if [ $COUNT -gt 0 ]
     then
-        echo -e "${CWARNING}[Error nginx or Tengine is running please stop !!!!]${CEND}\n" && exit
+        echo -e "${CWARNING}[Error nginx or Tengine is running please stop !!!!]${CEND}\n" && exit 0
     fi
     echo -e "${CMSG}[create user and group ]***********************************>>${CEND}\n"
 
@@ -198,7 +198,7 @@ EOF
             ;;
         5)
             clear
-            select_main_menu
+            select_web_install
             ;;
         6)
             clear
