@@ -148,12 +148,12 @@ select_nginx_install(){
 
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     cat << EOF
-*  `echo -e "$CBLUE  1) Nginx-${nginx_mainline_version:?}   "`
-*  `echo -e "$CBLUE  2) Nginx-${nginx_mainline_version:?} with lua"`
-*  `echo -e "$CBLUE  3) Tengine-${Tengine_version:?} "`
-*  `echo -e "$CBLUE  4) OpenResty-${openresty_version:?}     "`
-*  `echo -e "$CBLUE  5) Back             "`
-*  `echo -e "$CBLUE  6) Quit             "`
+*  `echo -e "$CMAGENTA  1) Nginx-${nginx_mainline_version:?}   "`
+*  `echo -e "$CMAGENTA  2) Nginx-${nginx_mainline_version:?} with lua"`
+*  `echo -e "$CMAGENTA  3) Tengine-${Tengine_version:?} "`
+*  `echo -e "$CMAGENTA  4) OpenResty-${openresty_version:?}     "`
+*  `echo -e "$CMAGENTA  5) Back             "`
+*  `echo -e "$CMAGENTA  6) Quit             "`
 EOF
     read -p "${CBLUE}Which Version are you want to install:${CEND} " num3
 
@@ -197,7 +197,6 @@ EOF
             select_nginx_install
             ;;
         5)
-            clear
             select_web_install
             ;;
         6)
