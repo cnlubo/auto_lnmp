@@ -141,7 +141,7 @@ select_mysql_install(){
     # system_check
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     cat << EOF
-*  `echo -e "$CBLUE  1) MySQL-${mysql_5_7_version:?}        "`
+*  `echo -e "$CMAGENTA  1) MySQL-${mysql_5_7_version:?}        "`
 *  `echo -e "$CBLUE  2) MariaDB-${mariadb_10_2_version:?}   "`
 *  `echo -e "$CBLUE  3) MariaDB-${mariadb_10_1_version:?}   "`
 *  `echo -e "$CBLUE  4) Back             "`
@@ -175,7 +175,6 @@ EOF
             select_mysql_install
             ;;
         4)
-            clear
             select_database_install
             ;;
         5)
