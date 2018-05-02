@@ -18,8 +18,8 @@ select_database_install(){
     cat << EOF
 *  `echo -e "$CBLUE  1) MySQL        "`
 *  `echo -e "$CBLUE  2) PostgreSQL   "`
-*  `echo -e "$CBLUE  4) Back         "`
-*  `echo -e "$CBLUE  5) Quit         "`
+*  `echo -e "$CBLUE  3) Back         "`
+*  `echo -e "$CBLUE  4) Quit         "`
 EOF
     read -p "${CBLUE}Which Version DataBase are you want to install:${CEND} " num3
 
@@ -41,7 +41,6 @@ EOF
             exit 0
             ;;
         *)
-
             select_database_install
     esac
 }
