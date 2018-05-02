@@ -5,12 +5,6 @@
 #@Filename       :              mysql_install.sh
 #@desc           :              mysql install main
 #------------------------------------------------------------------
-# system_check(){
-#
-#     [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && exit
-#     [ ${RamTotal:?} -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install mySQL.\nThis script need memory more than 1G.\n${CEND}" && exit
-# }
-
 MySQL_Var(){
 
     # 检查是否存在运行的mysql进程
@@ -142,10 +136,10 @@ select_mysql_install(){
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     cat << EOF
 *  `echo -e "$CMAGENTA  1) MySQL-${mysql_5_7_version:?}        "`
-*  `echo -e "$CBLUE  2) MariaDB-${mariadb_10_2_version:?}   "`
-*  `echo -e "$CBLUE  3) MariaDB-${mariadb_10_1_version:?}   "`
-*  `echo -e "$CBLUE  4) Back             "`
-*  `echo -e "$CBLUE  5) Quit             "`
+*  `echo -e "$CMAGENTA  2) MariaDB-${mariadb_10_2_version:?}   "`
+*  `echo -e "$CMAGENTA  3) MariaDB-${mariadb_10_1_version:?}   "`
+*  `echo -e "$CMAGENTA  4) Back             "`
+*  `echo -e "$CMAGENTA  5) Quit             "`
 EOF
     read -p "${CBLUE}Which Version MySQL are you want to install:${CEND} " num3
 

@@ -7,11 +7,6 @@
 #@desc           :               postgresql install main
 #------------------------------------------------------------------
 SOURCE_SCRIPT ${script_dir:?}/include/configure_os.sh
-# system_check(){
-#
-#     [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && exit
-#     [ ${RamTotal:?} -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install PostgreSQL.\nThis script need memory more than 1G.\n${CEND}" && exit
-# }
 
 PostgreSQL_Var(){
 
@@ -19,7 +14,7 @@ PostgreSQL_Var(){
     COUNT=$(ps aux|grep postgres|grep -v grep |wc -l)
     if [ $COUNT -gt 0 ]
     then
-        WARNING_MSG "[PostgreSQL is running please stop !!!!]" && exit
+        WARNING_MSG "[PostgreSQL is running please stop !!!!]" && exit 0
     fi
     # 安装目录
     read -p "Please input PostgreSQL BaseDirectory(default:/u01/pgsql/$postgresql_install_version)" PgsqlBasePath
@@ -87,10 +82,10 @@ select_postgresql_install(){
     # system_check
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     cat << EOF
-*  `echo -e "$CCYAN  1) PostgreSQL-${PostgreSQL_10_version:?}        "`
-*  `echo -e "$CBLUE  2) PostgreSQL-${PostgreSQL_9_version:?}        "`
-*  `echo -e "$CBLUE  3) Back             "`
-*  `echo -e "$CBLUE  4) Quit             "`
+*  `echo -e "$CMAGENTA  1) PostgreSQL-${PostgreSQL_10_version:?}        "`
+*  `echo -e "$CMAGENTA  2) PostgreSQL-${PostgreSQL_9_version:?}        "`
+*  `echo -e "$CMAGENTA  3) Back             "`
+*  `echo -e "$CMAGENTA  4) Quit             "`
 EOF
     read -p "${CBLUE}Which Version PostgreSQL are you want to install:${CEND} " num3
 
