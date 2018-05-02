@@ -83,7 +83,7 @@ Install_Nginx(){
 
     # close debug
     sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
-    #打开UTF8支持
+    #enabled UTF8 support
     sed -i 's@./configure --disable-shared@./configure --disable-shared --enable-utf8 --enable-unicode-properties@' objs/Makefile
     echo -e "${CMSG}[nginx install ........ ]***********************************>>${CEND}\n"
     make -j${CpuProNum:?} && make install
@@ -91,7 +91,7 @@ Install_Nginx(){
         echo -e "${CMSG}[Nginx installed successfully !!!]***********************************>>${CEND}\n"
         mkdir -p ${nginx_install_dir:?}/tmp/client
         Config_Nginx
-        # lsof -n | grep jemalloc 验证是否生效
+        # lsof -n | grep jemalloc
     else
         echo -e "${CFAILURE}[Nginx install failed, Please Contact the author !!!]*************>>${CEND}\n"
         kill -9 $$
@@ -109,7 +109,7 @@ Config_Nginx(){
         else
             cp ${script_dir:?}/template/nginx/nginx_template.conf $nginx_install_dir/conf/nginx.conf
         fi
-        # 修改配置
+
         sed -i "s#@run_user#${run_user:?}#g" $nginx_install_dir/conf/nginx.conf
         # sed -i "s#@worker_processes#2#g" $nginx_install_dir/conf/nginx.conf
         sed -i "s#@nginx_install_dir#$nginx_install_dir#g" $nginx_install_dir/conf/nginx.conf
@@ -128,7 +128,7 @@ Config_Nginx(){
           endscript
         }
 EOF
-        #启动脚本
+        #init script
         mkdir -p ${nginx_install_dir:?}/init.d
         cp $script_dir/template/init.d/nginx.centos ${nginx_install_dir:?}/init.d/nginx
         chmod 775 ${nginx_install_dir:?}/init.d/nginx

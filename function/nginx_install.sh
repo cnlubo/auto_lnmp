@@ -1,5 +1,6 @@
-#!/bin/bash\
-    # shellcheck disable=SC2164
+#!/bin/bash
+
+# shellcheck disable=SC2164
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
 # @file_name:                              nginx_install.sh
