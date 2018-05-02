@@ -38,8 +38,6 @@ Install_PostgreSQL()
     #cd contrib && make -j${CpuProNum:?} && make install
     # all doc all contrib
     gmake world && gmake install-world
-
-
 }
 Init_PostgreSQL(){
 
@@ -79,8 +77,7 @@ Init_PostgreSQL(){
     echo -e '\nlocal   all             all                                     md5' >> $PgsqlOptPath/data/pg_hba.conf
     echo 'host    all             all             0.0.0.0/0               md5' >> $PgsqlOptPath/data/pg_hba.conf
     sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/pg_ctl -D ${PgsqlOptPath:?}/data -l ${PgsqlOptPath:?}/logs/alert.log stop
-    # sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/pg_ctl -D ${PgsqlOptPath:?}/data -l ${PgsqlOptPath:?}/logs/alert.log start
-
+    
 }
 
 Config_PostgreSQL(){
