@@ -22,9 +22,6 @@ PostgreSQL_Var(){
     #     echo
     #     echo -e "${CWARNING}[Error MySQL is running please stop !!!!]${CEND}\n" && exit
     # fi
-    # # 生成数据库root用户随机密码(8位长度包含字母数字和特殊字符)
-    # # shellcheck disable=SC2034
-    # dbrootpwd=`mkpasswd -l 8`
     # 安装目录
     read -p "Please input PostgreSQL BaseDirectory(default:/u01/pgsql/$postgresql_install_version)" PgsqlBasePath
     PgsqlBasePath="${PgsqlBasePath:=/u01/pgsql/$postgresql_install_version}"
