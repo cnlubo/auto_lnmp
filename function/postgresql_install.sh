@@ -87,7 +87,7 @@ select_postgresql_install(){
     # system_check
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     cat << EOF
-*  `echo -e "$CBLUE  1) PostgreSQL-${PostgreSQL_10_version:?}        "`
+*  `echo -e "$CGREEN  1) PostgreSQL-${PostgreSQL_10_version:?}        "`
 *  `echo -e "$CBLUE  2) PostgreSQL-${PostgreSQL_9_version:?}        "`
 *  `echo -e "$CBLUE  3) Back             "`
 *  `echo -e "$CBLUE  4) Quit             "`
@@ -112,7 +112,7 @@ EOF
             select_postgresql_install
             ;;
         3)
-            clear
+            # clear
             select_database_install
             ;;
         4)
