@@ -20,9 +20,9 @@ SUCCESS_MSG(){
     InfoMsg="$1"
     echo -e "${CSUCCESS}$(date +%Y-%m-%d-%H:%M) -SUCCESS $InfoMsg *****>>${CEND}\n"
 }
-SUCCESS_MSG(){
+WARNING_MSG(){
     InfoMsg="$1"
-    echo -e "${CSUCCESS}$(date +%Y-%m-%d-%H:%M) -SUCCESS $InfoMsg *****>>${CEND}\n"
+    echo -e "${CWARNING}$(date +%Y-%m-%d-%H:%M) -WARNING $InfoMsg *****>>${CEND}\n"
 }
 FAILURE_MSG()
 {

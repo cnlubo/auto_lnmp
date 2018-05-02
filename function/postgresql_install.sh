@@ -15,13 +15,12 @@ system_check(){
 
 PostgreSQL_Var(){
 
-    # # 检查是否存在运行的mysql进程
-    # COUNT=$(ps aux|grep mysqld|grep -v grep |wc -l)
-    # if [ $COUNT -gt 0 ]
-    # then
-    #     echo
-    #     echo -e "${CWARNING}[Error MySQL is running please stop !!!!]${CEND}\n" && exit
-    # fi
+    # # 检查是否存在运行的进程
+    COUNT=$(ps aux|grep postgres|grep -v grep |wc -l)
+    if [ $COUNT -gt 0 ]
+    then
+        WARNING_MSG "[PostgreSQL is running please stop !!!!]" && exit
+    fi
     # 安装目录
     read -p "Please input PostgreSQL BaseDirectory(default:/u01/pgsql/$postgresql_install_version)" PgsqlBasePath
     PgsqlBasePath="${PgsqlBasePath:=/u01/pgsql/$postgresql_install_version}"
