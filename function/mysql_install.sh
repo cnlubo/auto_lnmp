@@ -5,11 +5,11 @@
 #@Filename       :              mysql_install.sh
 #@desc           :              mysql install main
 #------------------------------------------------------------------
-system_check(){
-
-    [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && exit
-    [ ${RamTotal:?} -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install mySQL.\nThis script need memory more than 1G.\n${CEND}" && exit
-}
+# system_check(){
+#
+#     [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && exit
+#     [ ${RamTotal:?} -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install mySQL.\nThis script need memory more than 1G.\n${CEND}" && exit
+# }
 
 MySQL_Var(){
 
@@ -138,7 +138,7 @@ MySQL_Base_Packages_Install(){
 }
 select_mysql_install(){
 
-    system_check
+    # system_check
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     cat << EOF
 *  `echo -e "$CBLUE  1) MySQL-${mysql_5_7_version:?}        "`
@@ -176,7 +176,7 @@ EOF
             ;;
         4)
             clear
-            select_main_menu
+            select_database_install
             ;;
         5)
             clear

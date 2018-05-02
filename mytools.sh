@@ -31,9 +31,6 @@ SOURCE_SCRIPT $script_dir/include/set_menu.sh
 # SOURCE_SCRIPT $script_dir/include/memory.sh
 # Check if user is root
 [[ $(id -u) != '0' ]] && EXIT_MSG "Please use root to run this script."
-
-
-
 ## get the IP information
 #IPADDR=`./py2/get_ipaddr.py`
 #PUBLIC_IPADDR=`./py2/get_public_ipaddr.py`
@@ -51,26 +48,22 @@ select_main_menu(){
                 select_system_setup_function
                 ;;
             2)
-                SOURCE_SCRIPT $FunctionPath/mysql_install.sh
-                select_mysql_install
+                SOURCE_SCRIPT $FunctionPath/database_install.sh
+                select_database_install
                 ;;
             3)
-                SOURCE_SCRIPT $FunctionPath/postgresql_install.sh
-                select_postgresql_install
-                ;;
-            4)
                 SOURCE_SCRIPT $FunctionPath/nginx_install.sh
                 select_nginx_install
+                ;;
+            4)
+                clear
+                main_menu
                 ;;
             5)
                 clear
                 main_menu
                 ;;
             6)
-                clear
-                main_menu
-                ;;
-            7)
                 clear
                 exit 0
                 ;;

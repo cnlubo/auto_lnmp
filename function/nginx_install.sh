@@ -141,8 +141,7 @@ Nginx_Base_Dep_Install() {
         fi
     fi
     # other
-    yum -y install gcc automake autoconf libtool make gcc-c++
-    # libuuid-devel
+    yum -y install gcc automake autoconf libtool make gcc-c++ libuuid-devel
 }
 
 select_nginx_install(){

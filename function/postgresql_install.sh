@@ -7,11 +7,11 @@
 #@desc           :               postgresql install main
 #------------------------------------------------------------------
 SOURCE_SCRIPT ${script_dir:?}/include/configure_os.sh
-system_check(){
-
-    [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && exit
-    [ ${RamTotal:?} -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install PostgreSQL.\nThis script need memory more than 1G.\n${CEND}" && exit
-}
+# system_check(){
+#
+#     [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && exit
+#     [ ${RamTotal:?} -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install PostgreSQL.\nThis script need memory more than 1G.\n${CEND}" && exit
+# }
 
 PostgreSQL_Var(){
 
@@ -84,7 +84,7 @@ PostgreSQL_Base_Packages_Install(){
 }
 select_postgresql_install(){
 
-    system_check
+    # system_check
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     cat << EOF
 *  `echo -e "$CBLUE  1) PostgreSQL-${PostgreSQL_10_version:?}        "`
@@ -113,7 +113,7 @@ EOF
             ;;
         3)
             clear
-            select_main_menu
+            select_database_install
             ;;
         4)
             clear
