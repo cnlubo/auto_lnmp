@@ -36,6 +36,7 @@ EOF
         3)
             SOURCE_SCRIPT $FunctionPath/install/Redis_install.sh
             Redis_Install_Main
+            select_database_install
             ;;
         4)
             clear
