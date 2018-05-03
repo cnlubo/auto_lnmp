@@ -97,12 +97,13 @@ Config_Redis(){
         sed -i "s#@redis_install_dir#${redis_install_dir:?}#g" /lib/systemd/system/redis.service
         sed -i "s#@RedisPort#$RedisPort#g" /lib/systemd/system/redis.service
         sed -i "s#@redis_user#${redis_user:?}#g" /lib/systemd/system/redis.service
+        sed -i "s#@redispass#$redispass#g" /lib/systemd/system/redis.service
         systemctl enable redis.service
         INFO_MSG "[starting nginx ........]"
         systemctl start redis.service
 
     else
-        
+
         [ -L /etc/init.d/redis ] && rm -f /etc/init.d/redis
         ln -s ${redis_install_dir:?}/init.d/redis /etc/init.d/redis
         INFO_MSG "[starting nginx ........]"
