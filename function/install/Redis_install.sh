@@ -70,12 +70,26 @@ Install_Redis(){
         chown -Rf $redis_user:$redis_user ${redis_install_dir}/
         [ -L /usr/local/bin/redis-cli ] && rm -f /usr/local/bin/redis-cli
         ln -s ${redis_install_dir}/bin/redis-cli /usr/local/bin/redis-cli
+        # 解决运行警告
         if   [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] ;then
             # setup sysctl.conf
             [ -z "`grep 'vm.overcommit_memory' /etc/sysctl.conf`" ] && echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
             [ -z "`grep 'net.core.somaxconn' /etc/sysctl.conf`" ] && echo 'net.core.somaxconn = 511' >> /etc/sysctl.conf
             sysctl -p
         fi
+        if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+            echo never > /sys/kernel/mm/transparent_hugepage/enabled
+        fi
+        cat >> /etc/rc.local << EOF
+        if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+        echo never > /sys/kernel/mm/transparent_hugepage/enabled
+        fi
+EOF
+        chmod +x /etc/rc.d/rc.local
+
+        # if test -f /sys/kernel/mm/transparent_hugepage/defrag; then
+        #     echo never > /sys/kernel/mm/transparent_hugepage/defrag
+        # fi
         Config_Redis
     else
         FAILURE_MSG "[Redis install failed, Please Contact the author !!!]"
