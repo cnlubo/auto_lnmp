@@ -37,7 +37,7 @@ Redis_Dep_Install(){
 }
 Install_Redis(){
 
-    INFO_MSG "[Redis Installing]"
+    INFO_MSG "[Redis ${redis_version:?} Installing.........]"
     [ -d ${redis_install_dir:?} ] && rm -rf ${redis_install_dir:?}
     cd ${script_dir:?}/src
     # shellcheck disable=SC2034
@@ -45,11 +45,60 @@ Install_Redis(){
     [ ! -f redis-${redis_version:?}.tar.gz ] && Download_src
     [ -d redis-${redis_version:?} ] && rm -rf redis-${redis_version:?}
     tar xf redis-${redis_version:?}.tar.gz && cd redis-${redis_version:?}
+    make -j${CpuProNum:?} && make PREFIX=${redis_install_dir:?} install
+    if [ -f "{redis_install_dir:?}/bin/redis-server" ]; then
+        read -p "Please input Port(Default:6379):" RedisPort
+        RedisPort="${RedisPort:=6379}"
+        mkdir -p ${redis_install_dir}/{run,etc,init.d,logs,$RedisPort}
+        cp redis.conf ${redis_install_dir}/etc/redis_$RedisPort.conf
+        # setting conf file
+        sed -i 's@daemonize no@daemonize yes@' ${redis_install_dir}/etc/redis_$RedisPort.conf
+        sed -i 's@supervised no@supervised yes@' ${redis_install_dir}/etc/redis_$RedisPort.conf
+        sed -i ''s@pidfile.*@pidfile ${redis_install_dir}/run/redis_$RedisPort.pid@'' ${redis_install_dir}/etc/redis_$RedisPort.conf
+        sed -i ''s@logfile.*@logfile ${redis_install_dir}/var/redis.log@'' ${redis_install_dir}/etc/redis_$RedisPort.conf
+        # The working directory
+        sed -i ''s@^dir.*@dir ${redis_install_dir}/$RedisPort@'' ${redis_install_dir}/etc/redis_$RedisPort.conf
+        #sed -i "s@^# bind 127.0.0.1@bind 127.0.0.1@" ${redis_install_dir}/etc/redis_$RedisPort.conf
+        sed -i "s@^# requirepass foobared@requirepass admin5678@" ${redis_install_dir}/etc/redis_$RedisPort.conf
+        # setting Port
+        sed -i ''s@port 6379@port $RedisPort@'' ${redis_install_dir}/etc/redis_$RedisPort.conf
+        chown -Rf $redis_user:$redis_user ${redis_install_dir}/
+        Config_Redis
+
+    else
+        FAILURE_MSG "[Redis install failed, Please Contact the author !!!]"
+        kill -9 $$
+    fi
 }
 
 Config_Redis(){
 
-    echo
+    INFO_MSG "[setup Redis init script .........]"
+    #init.d
+    cp $script_dir/template/init.d/Redis.centos ${redis_install_dir}/init.d/redis
+    chmod 775 ${redis_install_dir}/init.d/redis
+
+    sed -i "s#@redis_install_dir#${redis_install_dir:?}#g" ${redis_install_dir:?}/init.d/redis
+    sed -i "s#@RedisPort#$RedisPort#g" ${redis_install_dir:?}/init.d/redis
+    # systemd
+    # if ( [ $OS == "Ubuntu" ] && [ ${Ubuntu_version:?} -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] );then
+    #
+    #     [ -L /lib/systemd/system/redis.service ]  && systemctl disable redis.service && rm -f /lib/systemd/system/redis.service
+    #     cp $script_dir/template/systemd/redis.service /lib/systemd/system/redis.service
+    #     sed -i "s#@redis_install_dir#${redis_install_dir:?}#g" /lib/systemd/system/redis.service
+    #     sed -i "s#@RedisPort#$RedisPort#g" /lib/systemd/system/redis.service
+    #     sed -i "s#@redis_user#${redis_user:?}#g" /lib/systemd/system/redis.service
+    #     systemctl enable redis.service
+    #     INFO_MSG "[starting nginx ]"
+    #     systemctl start redis.service
+    # else
+    #     [ -L /etc/init.d/redis ] && rm -f /etc/init.d/redis
+    #     ln -s ${redis_install_dir:?}/init.d/redis /etc/init.d/redis
+    #     INFO_MSG "[starting nginx ]"
+    #     service start redis
+    # fi
+
+
 }
 
 Redis_Install_Main() {
