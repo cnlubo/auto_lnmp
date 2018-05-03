@@ -77,9 +77,9 @@ Install_Redis(){
             echo never > /sys/kernel/mm/transparent_hugepage/enabled
         fi
         cat >> /etc/rc.local << EOF
-        if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
-        echo never > /sys/kernel/mm/transparent_hugepage/enabled
-        fi
+if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+echo never > /sys/kernel/mm/transparent_hugepage/enabled
+fi
 EOF
         chmod +x /etc/rc.d/rc.local
 
