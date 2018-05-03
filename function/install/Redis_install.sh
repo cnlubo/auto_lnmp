@@ -35,6 +35,9 @@ Redis_Dep_Install(){
 
     INFO_MSG "[Redis ${redis_version:?} Installing.........]"
     yum -y install gcc tcl
+    # jemalloc
+    SOURCE_SCRIPT ${script_dir:?}/include/jemalloc.sh
+    Install_Jemalloc
 }
 Install_Redis(){
 
@@ -47,21 +50,22 @@ Install_Redis(){
     tar xf redis-${redis_version:?}.tar.gz && cd redis-${redis_version:?}
     make -j${CpuProNum:?} && make PREFIX=${redis_install_dir:?} install
     if [ -f "${redis_install_dir:?}/bin/redis-server" ]; then
-        read -p "Please input Port(Default:6379):" RedisPort
-        RedisPort="${RedisPort:=6379}"
+        #read -p "Please input Port(Default:6379):" RedisPort
+        #RedisPort="${RedisPort:=6379}"
+        RedisPort=${redis_port:?}
         mkdir -p ${redis_install_dir}/{run,etc,init.d,logs,$RedisPort}
         cp redis.conf ${redis_install_dir}/etc/redis_$RedisPort.conf
         # setting conf file
         sed -i 's@daemonize no@daemonize yes@' ${redis_install_dir}/etc/redis_$RedisPort.conf
         sed -i 's@supervised no@supervised yes@' ${redis_install_dir}/etc/redis_$RedisPort.conf
-        sed -i ''s@pidfile.*@pidfile ${redis_install_dir}/run/redis_$RedisPort.pid@'' ${redis_install_dir}/etc/redis_$RedisPort.conf
-        sed -i ''s@logfile.*@logfile ${redis_install_dir}/var/redis.log@'' ${redis_install_dir}/etc/redis_$RedisPort.conf
+        sed -i "s@pidfile.*@pidfile ${redis_install_dir}/run/redis_$RedisPort.pid@" ${redis_install_dir}/etc/redis_$RedisPort.conf
+        sed -i "s@logfile.*@logfile ${redis_install_dir}/var/redis.log@" ${redis_install_dir}/etc/redis_$RedisPort.conf
         # The working directory
-        sed -i ''s@^dir.*@dir ${redis_install_dir}/$RedisPort@'' ${redis_install_dir}/etc/redis_$RedisPort.conf
+        sed -i "s@^dir.*@dir ${redis_install_dir}/$RedisPort@" ${redis_install_dir}/etc/redis_$RedisPort.conf
         #sed -i "s@^# bind 127.0.0.1@bind 127.0.0.1@" ${redis_install_dir}/etc/redis_$RedisPort.conf
         sed -i "s@^# requirepass foobared@requirepass admin5678@" ${redis_install_dir}/etc/redis_$RedisPort.conf
         # setting Port
-        sed -i ''s@port 6379@port $RedisPort@'' ${redis_install_dir}/etc/redis_$RedisPort.conf
+        sed -i "s@port 6379@port $RedisPort@" ${redis_install_dir}/etc/redis_$RedisPort.conf
         chown -Rf $redis_user:$redis_user ${redis_install_dir}/
         Config_Redis
     else
@@ -101,7 +105,7 @@ Config_Redis(){
 }
 
 Redis_Install_Main() {
-    
+
     Redis_Var && Redis_Dep_Install && Install_Redis
 
 }
