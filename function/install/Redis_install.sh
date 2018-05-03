@@ -63,8 +63,10 @@ Install_Redis(){
         # The working directory
         sed -i "s@^dir.*@dir ${redis_install_dir}/$RedisPort@" ${redis_install_dir}/etc/redis_$RedisPort.conf
         #sed -i "s@^# bind 127.0.0.1@bind 127.0.0.1@" ${redis_install_dir}/etc/redis_$RedisPort.conf
-        sed -i "s@^# requirepass foobared@requirepass admin5678@" ${redis_install_dir}/etc/redis_$RedisPort.conf
+        redispass='admin5678'
+        sed -i "s@^# requirepass foobared@requirepass $redispass@" ${redis_install_dir}/etc/redis_$RedisPort.conf
         # setting Port
+
         sed -i "s@port 6379@port $RedisPort@" ${redis_install_dir}/etc/redis_$RedisPort.conf
         chown -Rf $redis_user:$redis_user ${redis_install_dir}/
         Config_Redis
@@ -83,6 +85,7 @@ Config_Redis(){
 
     sed -i "s#@redis_install_dir#${redis_install_dir:?}#g" ${redis_install_dir:?}/init.d/redis
     sed -i "s#@RedisPort#$RedisPort#g" ${redis_install_dir:?}/init.d/redis
+    sed -i "s#@redispass#$redispass#g" ${redis_install_dir:?}/init.d/redis
     # systemd
     # if ( [ $OS == "Ubuntu" ] && [ ${Ubuntu_version:?} -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] );then
     #
