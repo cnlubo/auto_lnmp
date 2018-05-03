@@ -51,24 +51,22 @@ Install_Redis(){
     make -j${CpuProNum:?} && make PREFIX=${redis_install_dir:?} install
 
     if [ -f "${redis_install_dir:?}/bin/redis-server" ]; then
-        #read -p "Please input Port(Default:6379):" RedisPort
-        #RedisPort="${RedisPort:=6379}"
-        RedisPort=${redis_port:?}
-        mkdir -p ${redis_install_dir}/{run,etc,init.d,logs,$RedisPort}
-        cp redis.conf ${redis_install_dir}/etc/redis_$RedisPort.conf
+        redisport=${redis_port:?}
+        mkdir -p ${redis_install_dir}/{run,etc,init.d,logs,$redisport}
+        cp redis.conf ${redis_install_dir}/etc/redis_$redisport.conf
         # setting conf file
-        sed -i 's@daemonize no@daemonize yes@' ${redis_install_dir}/etc/redis_$RedisPort.conf
-        sed -i 's@supervised no@supervised auto@' ${redis_install_dir}/etc/redis_$RedisPort.conf
-        sed -i "s@pidfile.*@pidfile ${redis_install_dir}/run/redis_$RedisPort.pid@" ${redis_install_dir}/etc/redis_$RedisPort.conf
-        sed -i "s@logfile.*@logfile ${redis_install_dir}/logs/redis.log@" ${redis_install_dir}/etc/redis_$RedisPort.conf
+        sed -i 's@daemonize no@daemonize yes@' ${redis_install_dir}/etc/redis_$redisport.conf
+        sed -i 's@supervised no@supervised auto@' ${redis_install_dir}/etc/redis_$redisport.conf
+        sed -i "s@pidfile.*@pidfile ${redis_install_dir}/run/redis_$redisport.pid@" ${redis_install_dir}/etc/redis_$redisport.conf
+        sed -i "s@logfile.*@logfile ${redis_install_dir}/logs/redis.log@" ${redis_install_dir}/etc/redis_$redisport.conf
         # The working directory
-        sed -i "s@^dir.*@dir ${redis_install_dir}/$RedisPort@" ${redis_install_dir}/etc/redis_$RedisPort.conf
+        sed -i "s@^dir.*@dir ${redis_install_dir}/$redisport@" ${redis_install_dir}/etc/redis_$redisport.conf
         #sed -i "s@^# bind 127.0.0.1@bind 127.0.0.1@" ${redis_install_dir}/etc/redis_$RedisPort.conf
         # redis pass
         redispass='admin5678'
-        sed -i "s@^# requirepass foobared@requirepass $redispass@" ${redis_install_dir}/etc/redis_$RedisPort.conf
+        sed -i "s@^# requirepass foobared@requirepass $redispass@" ${redis_install_dir}/etc/redis_$redisport.conf
         # setting Port
-        sed -i "s@port 6379@port $RedisPort@" ${redis_install_dir}/etc/redis_$RedisPort.conf
+        sed -i "s@port 6379@port $redisport@" ${redis_install_dir}/etc/redis_$redisport.conf
         chown -Rf $redis_user:$redis_user ${redis_install_dir}/
         [ -L /usr/local/bin/redis-cli ] && rm -f /usr/local/bin/redis-cli
         ln -s ${redis_install_dir}/bin/redis-cli /usr/local/bin/redis-cli
@@ -85,9 +83,8 @@ Config_Redis(){
     #init.d
     cp $script_dir/template/init.d/Redis.centos ${redis_install_dir}/init.d/redis
     chmod 775 ${redis_install_dir}/init.d/redis
-
     sed -i "s#@redis_install_dir#${redis_install_dir:?}#g" ${redis_install_dir:?}/init.d/redis
-    sed -i "s#@RedisPort#$RedisPort#g" ${redis_install_dir:?}/init.d/redis
+    sed -i "s#@RedisPort#$redisport#g" ${redis_install_dir:?}/init.d/redis
     sed -i "s#@redispass#$redispass#g" ${redis_install_dir:?}/init.d/redis
     # systemd
     if ( [ $OS == "Ubuntu" ] && [ ${Ubuntu_version:?} -ge 15 ] ) || ( [ $OS == "CentOS" ] && [ ${CentOS_RHEL_version:?} -ge 7 ] );then
@@ -95,7 +92,7 @@ Config_Redis(){
         [ -L /lib/systemd/system/redis.service ]  && systemctl disable redis.service && rm -f /lib/systemd/system/redis.service
         cp $script_dir/template/systemd/redis.service /lib/systemd/system/redis.service
         sed -i "s#@redis_install_dir#${redis_install_dir:?}#g" /lib/systemd/system/redis.service
-        sed -i "s#@RedisPort#$RedisPort#g" /lib/systemd/system/redis.service
+        sed -i "s#@redisport#$redisport#g" /lib/systemd/system/redis.service
         sed -i "s#@redis_user#${redis_user:?}#g" /lib/systemd/system/redis.service
         sed -i "s#@redispass#$redispass#g" /lib/systemd/system/redis.service
         systemctl enable redis.service

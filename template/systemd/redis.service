@@ -4,11 +4,10 @@ After=syslog.target
 After=network.target
 [Service]
 Type=forking
-Environment="PASS=@redispass" "redisport=@RedisPort"
+Environment="PASS=@redispass" "RedisPort=@redisport"
 PIDFile=@redis_install_dir/run/redis_$redisport.pid
-ExecStart=@redis_install_dir/bin/redis-server @redis_install_dir/etc/redis_$redisport.conf
-ExecStop=@redis_install_dir/bin/redis-cli -p $redisport -a $PASS shutdown
-#ExecStop=/bin/kill -s QUIT $MAINPID
+ExecStart=@redis_install_dir/bin/redis-server @redis_install_dir/etc/redis_@redisport.conf
+ExecStop=@redis_install_dir/bin/redis-cli -p $RedisPort -a $PASS shutdown
 User=@redis_user
 Group=@redis_user
 LimitCORE=infinity
