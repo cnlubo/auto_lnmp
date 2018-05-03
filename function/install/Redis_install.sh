@@ -33,11 +33,11 @@ Redis_Var() {
 
 Redis_Dep_Install(){
 
+    INFO_MSG "[Redis ${redis_version:?} Installing.........]"
     yum -y install gcc tcl
 }
 Install_Redis(){
 
-    INFO_MSG "[Redis ${redis_version:?} Installing.........]"
     [ -d ${redis_install_dir:?} ] && rm -rf ${redis_install_dir:?}
     cd ${script_dir:?}/src
     # shellcheck disable=SC2034
@@ -46,7 +46,7 @@ Install_Redis(){
     [ -d redis-${redis_version:?} ] && rm -rf redis-${redis_version:?}
     tar xf redis-${redis_version:?}.tar.gz && cd redis-${redis_version:?}
     make -j${CpuProNum:?} && make PREFIX=${redis_install_dir:?} install
-    if [ -f "{redis_install_dir:?}/bin/redis-server" ]; then
+    if [ -f "${redis_install_dir:?}/bin/redis-server" ]; then
         read -p "Please input Port(Default:6379):" RedisPort
         RedisPort="${RedisPort:=6379}"
         mkdir -p ${redis_install_dir}/{run,etc,init.d,logs,$RedisPort}
@@ -64,7 +64,6 @@ Install_Redis(){
         sed -i ''s@port 6379@port $RedisPort@'' ${redis_install_dir}/etc/redis_$RedisPort.conf
         chown -Rf $redis_user:$redis_user ${redis_install_dir}/
         Config_Redis
-
     else
         FAILURE_MSG "[Redis install failed, Please Contact the author !!!]"
         kill -9 $$
@@ -102,7 +101,7 @@ Config_Redis(){
 }
 
 Redis_Install_Main() {
+    
     Redis_Var && Redis_Dep_Install && Install_Redis
-    #&& Config_Redis
 
 }
