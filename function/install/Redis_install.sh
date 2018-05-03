@@ -8,18 +8,14 @@
 
 Redis_Var() {
 
-    # #第二种，准确判断pid的信息，
-    # #-C 表示的是nginx完整命令，不带匹配的操作
-    # #--no-header 表示不要表头的数据
-    # #wc -l 表示计数
-    # COUNT=$(ps -C nginx --no-header |wc -l)
-    # #echo "ps -c|方法:"$COUNT
-    # if [ $COUNT -gt 0 ]
-    # then
-    #     echo -e "${CWARNING}[Error nginx or Tengine is running please stop !!!!]${CEND}\n" && exit
-    # fi
-    # echo -e "${CMSG}[create user and group ]***********************************>>${CEND}\n"
 
+    #通过服务名来判断服务器是否有这个进程
+    COUNT=$(pgrep -f redis-server|wc -l)
+    if [ $COUNT -gt 0 ]
+    then
+        WARNING_MSG "[Error Redis is running please stop !!!!]" && exit
+    fi
+    INFO_MSG "[create user and group ..........]"
     grep ${redis_user:?} /etc/group >/dev/null 2>&1
     if [ ! $? -eq 0 ]; then
         groupadd $redis_user

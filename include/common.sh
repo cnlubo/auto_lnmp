@@ -14,20 +14,20 @@ EXIT_MSG(){
 INFO_MSG(){
     InfoMsg="$1"
     # echo -e "$(date +%Y-%m-%d-%H:%M) -INFO $InfoMsg " |tee -a $InfoLog
-    echo -e "${CMSG}$(date +%Y-%m-%d-%H:%M) -INFO $InfoMsg ****************>>${CEND}\n"
+    echo -e "${CMSG}$(date +%Y-%m-%d-%H:%M) -INFO $InfoMsg ${CEND}\n"
 }
 SUCCESS_MSG(){
     InfoMsg="$1"
-    echo -e "${CSUCCESS}$(date +%Y-%m-%d-%H:%M) -SUCCESS $InfoMsg *****>>${CEND}\n"
+    echo -e "${CSUCCESS}$(date +%Y-%m-%d-%H:%M) -SUCCESS $InfoMsg ${CEND}\n"
 }
 WARNING_MSG(){
     InfoMsg="$1"
-    echo -e "${CWARNING}$(date +%Y-%m-%d-%H:%M) -WARNING $InfoMsg *****>>${CEND}\n"
+    echo -e "${CWARNING}$(date +%Y-%m-%d-%H:%M) -WARNING $InfoMsg ${CEND}\n"
 }
 FAILURE_MSG()
 {
     InfoMsg="$1"
-    echo -e "${CFAILURE}$(date +%Y-%m-%d-%H:%M) -FAILURE $InfoMsg *****>>${CEND}\n"
+    echo -e "${CFAILURE}$(date +%Y-%m-%d-%H:%M) -FAILURE $InfoMsg ${CEND}\n"
 }
 #check script exists and loading
 SOURCE_SCRIPT(){
