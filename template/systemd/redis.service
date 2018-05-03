@@ -1,10 +1,10 @@
-Unit]
+[Unit]
 Description=redis-server on 6379
 After=syslog.target
 After=network.target
 [Service]
-#Type=forking
-#PIDFile=@redis_install_dir/run/redis_@RedisPort.pid
+Type=forking
+PIDFile=@redis_install_dir/run/redis_@RedisPort.pid
 ExecStart=@redis_install_dir/bin/redis-server @redis_install_dir/etc/redis_@RedisPort.conf
 ExecStop=@redis_install_dir/bin/redis-cli -p @RedisPort -a @redispass shutdown
 User=@redis_user
