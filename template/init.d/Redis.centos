@@ -30,10 +30,8 @@ case "$1" in
         then
             echo "$PIDFILE does not exist, process is not running"
         else
-            # PID=$(cat $PIDFILE)
             echo "Stopping ..."
             $CLIEXEC -p $REDISPORT -a $PASS shutdown
-            # while [ -x /proc/${PID} ]
             while [ -x ${PIDFILE} ]
             do
                 echo "Waiting for Redis to shutdown ..."
