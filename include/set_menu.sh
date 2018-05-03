@@ -24,8 +24,7 @@ cat << EOF
 *  `echo -e "$CGREEN  1) Configure    System  "`
 *  `echo -e "$CGREEN  2) DataBase     Install "`
 *  `echo -e "$CGREEN  3) Web Server   Install "`
-*  `echo -e "$CGREEN  4) Redis        Install "`
-*  `echo -e "$CGREEN  5) Quit               "`
+*  `echo -e "$CGREEN  4) Quit               "`
 EOF
 }
 #main_menu

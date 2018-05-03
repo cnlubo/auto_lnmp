@@ -34,8 +34,8 @@ EOF
             select_postgresql_install
             ;;
         3)
-            clear
-            select_main_menu
+            SOURCE_SCRIPT $FunctionPath/install/Redis_install.sh
+            Redis_Install_Main
             ;;
         4)
             clear

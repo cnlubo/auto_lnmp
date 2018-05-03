@@ -57,14 +57,6 @@ select_main_menu(){
                 ;;
             4)
                 clear
-                main_menu
-                ;;
-            5)
-                clear
-                main_menu
-                ;;
-            6)
-                clear
                 exit 0
                 ;;
             *)
