@@ -5,7 +5,6 @@ After=network.target
 [Service]
 Type=forking
 Environment="PASS=@redispass" "RedisPort=@redisport"
-PIDFile=@redis_install_dir/run/redis_$redisport.pid
 ExecStart=@redis_install_dir/bin/redis-server @redis_install_dir/etc/redis_@redisport.conf
 ExecStop=@redis_install_dir/bin/redis-cli -p $RedisPort -a $PASS shutdown
 User=@redis_user
