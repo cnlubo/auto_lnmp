@@ -14,7 +14,7 @@ EXIT_MSG(){
 INFO_MSG(){
     InfoMsg="$1"
     # echo -e "$(date +%Y-%m-%d-%H:%M) -INFO $InfoMsg " |tee -a $InfoLog
-    echo -e "${CMSG}$(date +%Y-%m-%d-%H:%M) -INFO $InfoMsg *****>>${CEND}\n"
+    echo -e "${CMSG}$(date +%Y-%m-%d-%H:%M) -INFO $InfoMsg ****************>>${CEND}\n"
 }
 SUCCESS_MSG(){
     InfoMsg="$1"
