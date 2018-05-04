@@ -190,3 +190,8 @@ get_char(){
     stty echo
     stty $SAVEDSTTY
 }
+system_check(){
+
+    [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && exit
+    [ ${RamTotal:?} -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install.\nThis script need memory more than 1G.\n${CEND}" && exit
+}

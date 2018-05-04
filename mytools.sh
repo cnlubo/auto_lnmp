@@ -56,6 +56,10 @@ select_main_menu(){
                 select_web_install
                 ;;
             4)
+                SOURCE_SCRIPT $FunctionPath/devopstools_install.sh
+                select_devops_install
+                ;;
+            5)
                 clear
                 exit 0
                 ;;
