@@ -27,20 +27,20 @@ Install_Ruby() {
             do
                 fname=$(basename $file)
                 [ -L /usr/local/bin/$fname ] && rm -rf /usr/local/bin/$fname
-                ln -s $file /usr/local/bin/$file
+                ln -s $file /usr/local/bin/$fname
             done
             for file in ${ruby_install_dir:?}/include/*
             do
                 fname=$(basename $file)
                 [ -L /usr/local/bin/$fname ] && rm -rf /usr/local/bin/$fname
-                ln -s $file /usr/local/bin/$file
+                ln -s $file /usr/local/bin/$fname
             done
             for file in ${ruby_install_dir:?}/lib/*
             do
                 fname=$(basename $file)
                 if [ ! $fname = 'pkgconfig' ]; then
                     [ -L /usr/local/bin/$fname ] && rm -rf /usr/local/bin/$fname
-                    ln -s $file /usr/local/bin/$file
+                    ln -s $file /usr/local/bin/$fname
                 else
                     ln -s -b ${ruby_install_dir:?}/lib/pkgconfig/* /usr/local/lib/pkgconfig
                 fi
