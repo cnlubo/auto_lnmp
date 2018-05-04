@@ -32,20 +32,20 @@ Install_Ruby() {
             for file in ${ruby_install_dir:?}/include/*
             do
                 fname=$(basename $file)
-                [ -L /usr/local/bin/$fname ] && rm -rf /usr/local/bin/$fname
-                ln -s $file /usr/local/bin/$fname
+                [ -L /usr/local/include/$fname ] && rm -rf /usr/local/include/$fname
+                ln -s $file /usr/local/include/$fname
             done
             for file in ${ruby_install_dir:?}/lib/*
             do
                 fname=$(basename $file)
                 if [ ! $fname = 'pkgconfig' ]; then
-                    [ -L /usr/local/bin/$fname ] && rm -rf /usr/local/bin/$fname
-                    ln -s $file /usr/local/bin/$fname
+                    [ -L /usr/local/lib/$fname ] && rm -rf /usr/local/lib/$fname
+                    ln -s $file /usr/local/lib/$fname
                 else
                     ln -s -b ${ruby_install_dir:?}/lib/pkgconfig/* /usr/local/lib/pkgconfig
                 fi
             done
-            SUCCESS_MSG "[ Ruby--${ruby_version:?} install success !!!]"
+            SUCCESS_MSG "[ Ruby-${ruby_version:?} install success !!!]"
 
         else
             FAILURE_MSG "[ ruby install failed, Please contact the author !!!]"
