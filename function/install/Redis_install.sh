@@ -76,12 +76,14 @@ Install_Redis(){
         if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
             echo never > /sys/kernel/mm/transparent_hugepage/enabled
         fi
-        cat >> /etc/rc.local << EOF
+        if test -z "`grep 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' /etc/sysctl.conf`"; then
+            cat >> /etc/rc.local << EOF
 if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
 echo never > /sys/kernel/mm/transparent_hugepage/enabled
 fi
 EOF
-        chmod +x /etc/rc.d/rc.local
+            chmod +x /etc/rc.d/rc.local
+        fi
 
         # if test -f /sys/kernel/mm/transparent_hugepage/defrag; then
         #     echo never > /sys/kernel/mm/transparent_hugepage/defrag
