@@ -11,10 +11,10 @@ Install_Ruby() {
     if [ -f "${ruby_install_dir:?}/bin/ruby" ];then
         INFO_MSG "[ Ruby has been install !!! ]"
     else
-        INFO_MSG "[ Ruby-${ruby_version:?} installing ]"
         yum -y install zlib-devel curl-devel openssl-devel  apr-devel apr-util-devel libxslt-devel
         # shellcheck disable=SC2034
         src_url=http://cache.ruby-lang.org/pub/ruby/2.4/ruby-${ruby_version:?}.tar.gz
+        INFO_MSG "[ Ruby-${ruby_version:?} installing ]"
         cd ${script_dir:?}/src
         [ -f ruby-${ruby_version:?}.tar.gz ] && Download_src
         [ -d ruby-${ruby_version:?} ] && rm -rf ruby-${ruby_version:?}
@@ -45,6 +45,7 @@ Install_Ruby() {
                     ln -s -b ${ruby_install_dir:?}/lib/pkgconfig/* /usr/local/lib/pkgconfig
                 fi
             done
+            Install_RubyGems
             SUCCESS_MSG "[ Ruby-${ruby_version:?} install success !!!]"
 
         else
@@ -52,6 +53,20 @@ Install_Ruby() {
             kill -9 $$
         fi
     fi
+}
 
+Install_RubyGems() {
+
+    INFO_MSG "[ rubygems-${rubygems_version:?} installing ]"
+    cd ${script_dir:?}/src
+    # shellcheck disable=SC2034
+    src_url=https://rubygems.org/rubygems/rubygems-${rubygems_version:?}.tgz
+    [ -f rubygems-${rubygems_version:?}.tgz ] && Download_src
+    [ -d rubygems-${rubygems_version:?} ] && rm -rf rubygems-${rubygems_version:?}
+    tar xf  rubygems-${rubygems_version:?}.tgz && cd rubygems-${rubygems_version:?}
+    ruby setup.rb
+    # 修改源为ruby-china
+    gem sources --add https://gems.ruby-china.org/ --remove https://rubygems.org/
+    gem sources -l
 
 }
