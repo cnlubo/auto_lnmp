@@ -65,6 +65,12 @@ Install_RubyGems() {
     [ -d rubygems-${rubygems_version:?} ] && rm -rf rubygems-${rubygems_version:?}
     tar xf  rubygems-${rubygems_version:?}.tgz && cd rubygems-${rubygems_version:?}
     ruby setup.rb
+    for file in ${ruby_install_dir:?}/bin/*
+    do
+        fname=$(basename $file)
+        [ -L /usr/local/bin/$fname ] && rm -rf /usr/local/bin/$fname
+        ln -s $file /usr/local/bin/$fname
+    done
     # 修改源为ruby-china
     gem sources --add https://gems.ruby-china.org/ --remove https://rubygems.org/
     gem sources -l
