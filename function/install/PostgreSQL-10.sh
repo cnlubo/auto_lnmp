@@ -77,7 +77,7 @@ Init_PostgreSQL(){
     echo -e '\nlocal   all             all                                     md5' >> $PgsqlOptPath/data/pg_hba.conf
     echo 'host    all             all             0.0.0.0/0               md5' >> $PgsqlOptPath/data/pg_hba.conf
     sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/pg_ctl -D ${PgsqlOptPath:?}/data -l ${PgsqlOptPath:?}/logs/alert.log stop
-    
+
 }
 
 Config_PostgreSQL(){
@@ -95,6 +95,10 @@ Config_PostgreSQL(){
     else
         echo ""
     fi
+    # setting options.conf
+    sed -i "s@^pgsql_user.*@pgsql_user=${pgsql_user:?}@" ./options.conf
+    sed -i "s@^pgsqlbasepath.*@pgsqlbasepath=${PgsqlBasePath:?}@" ./options.conf
+    SOURCE_SCRIPT ${ScriptPath:?}/options.conf
 }
 
 

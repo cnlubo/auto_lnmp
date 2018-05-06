@@ -7,13 +7,12 @@
 #@desc           :               postgresql install main
 #------------------------------------------------------------------
 SOURCE_SCRIPT ${script_dir:?}/include/configure_os.sh
+SOURCE_SCRIPT ${script_dir:?}/include/check_db.sh
 
 PostgreSQL_Var(){
 
-    # # 检查是否存在运行的进程
-    COUNT=$(ps aux|grep postgres|grep -v grep |wc -l)
-    if [ $COUNT -gt 0 ]
-    then
+    check_app_status "postgreSQL"
+    if [ $? -eq 0 ]; then
         WARNING_MSG "[PostgreSQL is running please stop !!!!]" && exit 0
     fi
     # 安装目录
