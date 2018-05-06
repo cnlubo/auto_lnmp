@@ -96,8 +96,8 @@ Config_PostgreSQL(){
         echo ""
     fi
     # setting options.conf
-    sed -i "s@^pgsqluser.*@pgsqluser=${pgsql_user:?}@" ./options.conf
-    sed -i "s@^pgsqlbasepath.*@pgsqlbasepath=${PgsqlBasePath:?}@" ./options.conf
+    sed -i "s@^pgsqluser.*@pgsqluser=${pgsql_user:?}@" ${script_dir:?}/options.conf
+    sed -i "s@^pgsqlbasepath.*@pgsqlbasepath=${PgsqlBasePath:?}@" ${script_dir:?}/options.conf
     SOURCE_SCRIPT ${ScriptPath:?}/options.conf
 }
 
