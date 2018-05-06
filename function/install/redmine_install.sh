@@ -27,6 +27,7 @@ Redmine_Dep_Install(){
     INFO_MSG "[ Ruby、rubygem、rails Installing.........]"
     SOURCE_SCRIPT ${script_dir:?}/include/ruby.sh
     Install_Ruby
+    Setup_DataBase
 
 }
 
@@ -35,35 +36,76 @@ Setup_DataBase() {
     case   ${redmine_dbtype:?} in
         "postgreSQL")
             {
-
                 while :; do
-                    echo
-                    read -p "Please input PostgreSQL install path (Default:${pgsqlbasepath:?}:" PgsqlPath
-                    PgsqlPath="${PgsqlPath:=${pgsqlbasepath:?}}"
-                    if [ ! -x $PgsqlPath/bin/psql ]; then
-                        FAILURE_MSG "[ $PgsqlPath/bin/psql not exists  !!!]"
+                    while :; do
+                        echo
+                        read -p "Please input PostgreSQL install path (Default:${pgsqlbasepath:?}:" PgsqlPath
+                        PgsqlPath="${PgsqlPath:=${pgsqlbasepath:?}}"
+                        if [ ! -x $PgsqlPath/bin/psql ]; then
+                            FAILURE_MSG "[ $PgsqlPath/bin/psql not exists  !!!]"
+                        else
+                            break
+                        fi
+                    done
+
+                    while :; do
+                        echo
+                        read -p "Please input PostgreSQL run user (Default:${pgsql_user:?}:" PgsqlUser
+                        PgsqlUser="${PgsqlUser:=${pgsql_user:?}}"
+                        id $PgsqlUser >/dev/null 2>&1
+                        if [ $? -eq 0 ]; then
+                            break
+                        else
+                            FAILURE_MSG "[ User $PgsqlUser not exists  !!!]"
+                        fi
+                    done
+                    read -p "Please input PostgreSQL host  (Default:localhost):" PgsqlHost
+                    PgsqlHost="${PgsqlHost:=localhost}"
+
+                    read -p "Please input PostgreSQL password :" PgsqlPass
+                    PgsqlPass="${PgsqlPass}"
+
+                    # test database connect
+                    PGUSER=$PgsqlUser
+                    PGPASSWORD=$PgsqlPass
+                    PGDATABASE=postgres
+                    PGHOST=$PgsqlHost
+                    export PGUSER PGPASSWORD PGDATABASE PGHOST
+                    pg_version=${$PgsqlPath/bin/psql -A -t -c "show server_version"}
+                    if [ -z $pg_version ]; then
+                        FAILURE_MSG "[ PostgreSQL connect error  !!!]"
+                        unset PGUSER PGPASSWORD PGDATABASE PGHOST
                     else
                         break
                     fi
                 done
 
-                while :; do
-                    echo
-                    read -p "Please input PostgreSQL run user (Default:${pgsql_user:?}:" PgsqlUser
-                    PgsqlUser="${PgsqlUser:=${pgsql_user:?}}"
-                    id $PgsqlUser >/dev/null 2>&1
-                    if [ $? -eq 0 ]; then
-                        break
-                    else
-                        FAILURE_MSG "[ User $PgsqlUser not exists  !!!]"
-                    fi
-                done
-                read -p "Please input PostgreSQL host  (Default:localhost):" PgsqlHost
-                PgsqlHost="${PgsqlHost:=localhost}"
-
-                read -p "Please input PostgreSQL password :" PgsqlPass
-                PgsqlPass="${PgsqlPass}"
-
+                major=$(echo $pg_version | cut -d. -f1,2)
+                minor=$(echo $pg_version | cut -d. -f3)
+                INFO_MSG "[ current PostgreSQL version is $major.$minor ........]"
+                INFO_MSG "[ Create Redmine Database ........]"
+                redmine_pass=`mkpasswd -l 8`
+                $PgsqlPath/bin/psql -c "\"CREATE ROLE redmine LOGIN ENCRYPTED PASSWORD '$redmine_pass' NOINHERIT VALID UNTIL 'infinity';\""
+                $PgsqlPath/bin/psql -c "\"CREATE DATABASE redmine WITH ENCODING='UTF8' OWNER=redmine;\""
+                unset PGUSER PGPASSWORD PGDATABASE PGHOST
+                PGUSER='redmine'
+                PGPASSWORD=$redmine_pass
+                PGDATABASE='redmine'
+                PGHOST=$PgsqlHost
+                export PGUSER PGPASSWORD PGDATABASE PGHOST
+                if $PgsqlPath/bin/psql -lqt | cut -d \| -f 1 | grep -qw $PGDATABASE ; then
+                    # database exists
+                    # $? is 0
+                    SUCCESS_MSG "[ Redmine DataBase Create SUCCESS !!!!]"
+                    WARNING_MSG "[ User remine passwd:$redmine_pass !!!!!!!]"
+                else
+                    # ruh-roh
+                    # $? is 1
+                    FAILURE_MSG "[ Redmine DataBase Create failure  !!!]"
+                    unset PGUSER PGPASSWORD PGDATABASE PGHOST
+                    kill -9 $$
+                fi
+                unset PGUSER PGPASSWORD PGDATABASE PGHOST
 
             }
             ;;
