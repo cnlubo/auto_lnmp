@@ -13,12 +13,15 @@
 #         WARNING_MSG "[PostgreSQL is not running or install  !!!!]"
 #     fi
 # }
+SOURCE_SCRIPT ${script_dir:?}/include/check_db.sh
 
 Redmine_Var() {
 
     check_app_status ${redmine_dbtype:?}
     if [ $? -eq 0 ]; then
         WARNING_MSG "[DataBase ${redmine_dbtype:?} is not running or install  !!!!]" && exit 0
+    else
+        INFO_MSG "[ PostgreSQL have been install .........]"
     fi
 }
 
@@ -27,6 +30,7 @@ Redmine_Dep_Install(){
     INFO_MSG "[ Ruby、rubygem、rails Installing.........]"
     SOURCE_SCRIPT ${script_dir:?}/include/ruby.sh
     Install_Ruby
+    INFO_MSG "[ Redmine Database Setuping.........]"
     Setup_DataBase
 
 }
