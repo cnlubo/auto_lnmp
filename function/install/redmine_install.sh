@@ -19,9 +19,9 @@ Redmine_Var() {
 
     check_app_status ${redmine_dbtype:?}
     if [ $? -eq 0 ]; then
-        WARNING_MSG "[DataBase ${redmine_dbtype:?} is not running or install  !!!!]" && exit 0
-    else
         INFO_MSG "[ PostgreSQL have been install .........]"
+    else
+        WARNING_MSG "[DataBase ${redmine_dbtype:?} is not running or install  !!!!]" && exit 0
     fi
 }
 
