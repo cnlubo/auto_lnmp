@@ -19,7 +19,7 @@ Redmine_Var() {
 
     check_app_status ${redmine_dbtype:?}
     if [ $? -eq 0 ]; then
-        INFO_MSG "[ PostgreSQL have been install .........]"
+        WARNING_MSG "[ PostgreSQL has been install .........]"
     else
         WARNING_MSG "[DataBase ${redmine_dbtype:?} is not running or install  !!!!]" && exit 0
     fi
@@ -42,7 +42,6 @@ Setup_DataBase() {
             {
                 while :; do
                     while :; do
-                        echo
                         read -p "Please input PostgreSQL install path (Default:${pgsqlbasepath:?}:" PgsqlPath
                         PgsqlPath="${PgsqlPath:=${pgsqlbasepath:?}}"
                         if [ ! -x $PgsqlPath/bin/psql ]; then
@@ -53,9 +52,8 @@ Setup_DataBase() {
                     done
 
                     while :; do
-                        echo
-                        read -p "Please input PostgreSQL run user (Default:${pgsql_user:?}:" PgsqlUser
-                        PgsqlUser="${PgsqlUser:=${pgsql_user:?}}"
+                        read -p "Please input PostgreSQL run user (Default:${pgsqluser:?}:" PgsqlUser
+                        PgsqlUser="${PgsqlUser:=${pgsqluser:?}}"
                         id $PgsqlUser >/dev/null 2>&1
                         if [ $? -eq 0 ]; then
                             break
@@ -63,7 +61,7 @@ Setup_DataBase() {
                             FAILURE_MSG "[ User $PgsqlUser not exists  !!!]"
                         fi
                     done
-                    read -p "Please input PostgreSQL host  (Default:localhost):" PgsqlHost
+                    read -p "Please input PostgreSQL host (Default:localhost):" PgsqlHost
                     PgsqlHost="${PgsqlHost:=localhost}"
 
                     read -p "Please input PostgreSQL password :" PgsqlPass

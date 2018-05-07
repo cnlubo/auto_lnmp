@@ -9,7 +9,7 @@
 Install_Ruby() {
 
     if [ -f "${ruby_install_dir:?}/bin/ruby" ];then
-        INFO_MSG "[ Ruby has been install !!! ]"
+        WARNING_MSG "[ Ruby has been install !!! ]"
     else
         yum -y install zlib-devel curl-devel openssl-devel  apr-devel apr-util-devel libxslt-devel
         # shellcheck disable=SC2034
