@@ -66,6 +66,7 @@ Setup_DataBase() {
 
                     read -s -p "Please input PostgreSQL password :" PgsqlPass
                     PgsqlPass="${PgsqlPass}"
+                    echo
 
                     # test database connect
                     PGUSER=$PgsqlUser
