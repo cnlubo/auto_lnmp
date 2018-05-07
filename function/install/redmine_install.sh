@@ -86,28 +86,6 @@ Setup_DataBase() {
                 INFO_MSG "[ current PostgreSQL version is $pg_version ........]"
                 INFO_MSG "[ Create Redmine Database ........]"
                 # test redmine db is exists
-                # if $PgsqlPath/bin/psql -lqt | cut -d \| -f 1 | grep -qw 'redmine'; then
-                #     while :; do echo
-                #         read -n1 -p "DataBase Redmine exists Do You Want to Delete? [y/n]: " db_yn
-                #         if [[ ! ${db_yn} =~ ^[y,n]$ ]]; then
-                #             WARNING_MSG "[input error! Please only input 'y' or 'n' ....]"
-                #         else
-                #             break
-                #         fi
-                #     done
-                # fi
-                # # test role is exists
-                # if $PgsqlPath/bin/psql -t -d postgres -c '\du' | cut -d \| -f 1 | grep -w 'redmine'; then
-                #     while :; do echo
-                #         read -n1 -p "User Redmine exists Do You Want to Delete? [y/n]: " role_yn
-                #         if [[ ! ${role_yn} =~ ^[y,n]$ ]]; then
-                #             WARNING_MSG "[input error! Please only input 'y' or 'n' ....]"
-                #         else
-                #             break
-                #         fi
-                #     done
-                # fi
-                #
                 if [ "$($PgsqlPath/bin/psql -lqt | cut -d \| -f 1 | grep -qw 'redmine')" ] \
                     || [ "$($PgsqlPath/bin/psql -t -d postgres -c '\du' | cut -d \| -f 1 | grep -w 'redmine')" ]; then
                     while :; do echo
