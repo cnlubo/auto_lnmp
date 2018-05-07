@@ -81,14 +81,14 @@ Setup_DataBase() {
                         break
                     fi
                 done
-
+                echo $pg_version
                 major=$(echo $pg_version | cut -d. -f1,2)
                 minor=$(echo $pg_version | cut -d. -f3)
                 INFO_MSG "[ current PostgreSQL version is $major.$minor ........]"
                 INFO_MSG "[ Create Redmine Database ........]"
                 redmine_pass=`mkpasswd -l 8`
-                $PgsqlPath/bin/psql -c "\"CREATE ROLE redmine LOGIN ENCRYPTED PASSWORD '$redmine_pass' NOINHERIT VALID UNTIL 'infinity';\""
-                $PgsqlPath/bin/psql -c "\"CREATE DATABASE redmine WITH ENCODING='UTF8' OWNER=redmine;\""
+                $PgsqlPath/bin/psql -c " CREATE ROLE redmine LOGIN ENCRYPTED PASSWORD '$redmine_pass' NOINHERIT VALID UNTIL 'infinity';"
+                $PgsqlPath/bin/psql -c "CREATE DATABASE redmine WITH ENCODING='UTF8' OWNER=redmine;"
                 unset PGUSER PGPASSWORD PGDATABASE PGHOST
                 PGUSER='redmine'
                 PGPASSWORD=$redmine_pass
