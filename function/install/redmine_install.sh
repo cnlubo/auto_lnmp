@@ -89,7 +89,7 @@ Setup_DataBase() {
                 if [ "$($PgsqlPath/bin/psql -lqt | cut -d \| -f 1 | grep -qw 'redmine')" ] \
                     || [ "$($PgsqlPath/bin/psql -t -d postgres -c '\du' | cut -d \| -f 1 | grep -w 'redmine')" ]; then
                     while :; do echo
-                        read -n1 -p "Do You Want to Delete User and Db? [y/n]: " del_yn
+                        read -n1 -p "Db and User exists Do You Want to Delete? [y/n]: " del_yn
                         if [[ ! ${del_yn} =~ ^[y,n]$ ]]; then
                             WARNING_MSG "[input error! Please only input 'y' or 'n' ....]"
                         else
