@@ -90,7 +90,8 @@ Setup_DataBase() {
                             WARNING_MSG "[input error! Please only input 'y' or 'n' ....]"
                         else
                             if [ "${del_yn}" == 'y' ]; then
-                                echo 
+                                echo
+                                INFO_MSG "[ Drop User and Db ........]"
                                 $PgsqlPath/bin/psql -c " DROP DATABASE  IF EXISTS redmine;"
                                 $PgsqlPath/bin/psql -c " DROP ROLE IF EXISTS redmine;"
                             else
@@ -102,7 +103,7 @@ Setup_DataBase() {
                     done
                 fi
 
-                # create user and database
+                INFO_MSG "[ Create Redmine User and Db .........]"
                 redmine_pass=`mkpasswd -l 8`
                 $PgsqlPath/bin/psql -c " CREATE ROLE redmine LOGIN ENCRYPTED PASSWORD '$redmine_pass' NOINHERIT VALID UNTIL 'infinity';"
                 $PgsqlPath/bin/psql -c "CREATE DATABASE redmine WITH ENCODING='UTF8' OWNER=redmine;"
