@@ -68,7 +68,7 @@ Setup_DataBase() {
                     PgsqlPass="${PgsqlPass}"
                     echo
                     export PGUSER=$PgsqlUser PGPASSWORD=$PgsqlPass \
-                    PGDATABASE=postgres PGHOST$PgsqlHost
+                    PGDATABASE=postgres PGHOST=$PgsqlHost
                     pg_version=$($PgsqlPath/bin/psql -A -t -c "show server_version")
                     if [ -z $pg_version ]; then
                         FAILURE_MSG "[ PostgreSQL connect error  !!!]"
