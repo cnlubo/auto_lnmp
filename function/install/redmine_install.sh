@@ -93,7 +93,7 @@ Setup_DataBase() {
                                 $PgsqlPath/bin/psql -c " DROP DATABASE  IF EXISTS redmine;"
                                 $PgsqlPath/bin/psql -c " DROP ROLE IF EXISTS redmine;"
                             else
-                                exit 0
+                                FAILURE_MSG "[ Redmine DataBase can not Create  !!!]" && exit 0
                             fi
                             break
                         fi
