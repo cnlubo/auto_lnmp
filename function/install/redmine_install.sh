@@ -42,7 +42,7 @@ Setup_DataBase() {
             {
                 while :; do
                     while :; do
-                        read -p "Please input PostgreSQL install path (Default:${pgsqlbasepath:?}:" PgsqlPath
+                        read -p "Please input PostgreSQL install path (Default:${pgsqlbasepath:?}):" PgsqlPath
                         PgsqlPath="${PgsqlPath:=${pgsqlbasepath:?}}"
                         if [ ! -x $PgsqlPath/bin/psql ]; then
                             FAILURE_MSG "[ $PgsqlPath/bin/psql not exists  !!!]"
@@ -52,7 +52,7 @@ Setup_DataBase() {
                     done
 
                     while :; do
-                        read -p "Please input PostgreSQL run user (Default:${pgsqluser:?}:" PgsqlUser
+                        read -p "Please input PostgreSQL run user (Default:${pgsqluser:?}):" PgsqlUser
                         PgsqlUser="${PgsqlUser:=${pgsqluser:?}}"
                         id $PgsqlUser >/dev/null 2>&1
                         if [ $? -eq 0 ]; then
@@ -64,7 +64,7 @@ Setup_DataBase() {
                     read -p "Please input PostgreSQL host (Default:localhost):" PgsqlHost
                     PgsqlHost="${PgsqlHost:=localhost}"
 
-                    read -p "Please input PostgreSQL password :" PgsqlPass
+                    read -s -p "Please input PostgreSQL password :" PgsqlPass
                     PgsqlPass="${PgsqlPass}"
 
                     # test database connect
@@ -73,7 +73,7 @@ Setup_DataBase() {
                     PGDATABASE=postgres
                     PGHOST=$PgsqlHost
                     export PGUSER PGPASSWORD PGDATABASE PGHOST
-                    pg_version=${$PgsqlPath/bin/psql -A -t -c "show server_version"}
+                    pg_version=$($PgsqlPath/bin/psql -A -t -c "show server_version")
                     if [ -z $pg_version ]; then
                         FAILURE_MSG "[ PostgreSQL connect error  !!!]"
                         unset PGUSER PGPASSWORD PGDATABASE PGHOST
