@@ -45,13 +45,13 @@ Init_PostgreSQL(){
     chown -Rf ${pgsql_user:?}:${pgsql_user:?} ${PgsqlBasePath:?}
     # 设置环境变量
     if [ -f /home/${default_user:?}/.zshrc ]; then
-        echo export "PATH=$PATH:${PgsqlBasePath:?}/bin" >>/home/${default_user:?}/.zshrc
+        echo export 'PATH=$PATH:'"${PgsqlBasePath:?}/bin" >>/home/${default_user:?}/.zshrc
         echo export "PGHOME=${PgsqlBasePath:?}" >>/home/${default_user:?}/.zshrc
         echo export "PGHOST=${PgsqlOptPath:?}/run" >>/home/${default_user:?}/.zshrc
         echo export "PGDATA=${PgsqlOptPath:?}/data" >>/home/${default_user:?}/.zshrc
         su - ${pgsql_user:?} -c "source /home/${default_user:?}/.zshrc"
     else
-        echo export "PATH=$PATH:${PgsqlBasePath:?}/bin" >>/home/${pgsql_user:?}/.bash_profile
+        echo export 'PATH=$PATH:'"${PgsqlBasePath:?}/bin" >>/home/${pgsql_user:?}/.bash_profile
         echo export "PGHOME=${PgsqlBasePath:?}" >>/home/${pgsql_user:?}/.bash_profile
         echo export "PGHOST=${PgsqlOptPath:?}/run" >>/home/${pgsql_user:?}/.bash_profile
         echo export "PGDATA=${PgsqlOptPath:?}/data" >>/home/${pgsql_user:?}/.bash_profile
