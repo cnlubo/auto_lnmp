@@ -165,7 +165,7 @@ Install_Redmine(){
       database: redmine
       host: $PgsqlHost
       username: rdmine
-      password: $redmine_pass
+      password: "$redmine_pass"
 EOF
    INFO_MSG "[ install remine dependence.........]"
    su - ${default_user:?} -c "bundle install --without development test --path /home/${default_user:?}/.gem"
