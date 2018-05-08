@@ -168,7 +168,7 @@ production:
   password: "$redmine_pass"
 EOF
    INFO_MSG "[ install remine dependence.........]"
-   su - ${default_user:?} -c "cd/${wwwroot_dir:?}/redmine && bundle install --without development test --path /home/${default_user:?}/.gem"
+   su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && bundle install --without development test --path /home/${default_user:?}/.gem"
 
 
 }
