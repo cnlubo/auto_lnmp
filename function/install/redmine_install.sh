@@ -153,12 +153,13 @@ Install_Redmine(){
     [ -d ${wwwroot_dir:?}/redmine ] && rm -rf ${wwwroot_dir:?}/redmine
     mv redmine-${redmine_verion:?} ${wwwroot_dir:?}/redmine
     cd ${wwwroot_dir:?}/redmine
+    INFO_MSG "[ setup remine configure.........]"
     # modify redmine configure
     cp config/configuration.yml.example config/configuration.yml
     cp config/database.yml.example config/database.yml
     # 注释默认的mysql 数据库配置
-    sed -i '/^production:/,+6s/\(.*\)/#&/' database.yml
-    cat >> database.yml <<EOF
+    sed -i '/^production:/,+6s/\(.*\)/#&/' config/database.yml
+    cat >> config/database.yml <<EOF
     production:
       adapter: postgresql
       database: redmine
@@ -166,7 +167,7 @@ Install_Redmine(){
       username: rdmine
       password: $redmine_pass
 EOF
-
+   INFO_MSG "[ install remine dependence.........]"
    su - ${default_user:?} -c "bundle install --without development test --path /home/${default_user:?}/.gem"
 
 
