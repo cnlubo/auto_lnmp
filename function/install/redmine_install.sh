@@ -149,6 +149,7 @@ Install_Redmine(){
     [ -d redmine-${redmine_verion:?} ] && rm -rf redmine-${redmine_verion:?}
     tar xf redmine-${redmine_verion:?}.tar.gz
     [ ! -d ${wwwroot_dir:?} ] && mkdir -p ${wwwroot_dir:?}
+    
     [ -d ${wwwroot_dir:?}/redmine ] && rm -rf ${wwwroot_dir:?}/redmine
     mv redmine-${redmine_verion:?} ${wwwroot_dir:?}/redmine
     cd ${wwwroot_dir:?}/redmine
