@@ -160,15 +160,15 @@ Install_Redmine(){
     # 注释默认的mysql 数据库配置
     sed -i '/^production:/,+6s/\(.*\)/#&/' config/database.yml
     cat >> config/database.yml <<EOF
-    production:
-      adapter: postgresql
-      database: redmine
-      host: $PgsqlHost
-      username: rdmine
-      password: "$redmine_pass"
+production:
+  adapter: postgresql
+  database: redmine
+  host: $PgsqlHost
+  username: rdmine
+  password: "$redmine_pass"
 EOF
    INFO_MSG "[ install remine dependence.........]"
-   su - ${default_user:?} -c "bundle install --without development test --path /home/${default_user:?}/.gem"
+   su - ${default_user:?} -c "cd/${wwwroot_dir:?}/redmine && bundle install --without development test --path /home/${default_user:?}/.gem"
 
 
 }
