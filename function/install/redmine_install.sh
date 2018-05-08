@@ -160,6 +160,7 @@ Install_Redmine(){
     # 注释默认的mysql 数据库配置
     sed -i '/^production:/,+6s/\(.*\)/#&/' config/database.yml
     cat >> config/database.yml <<EOF
+
 production:
   adapter: postgresql
   database: redmine
@@ -167,6 +168,7 @@ production:
   username: rdmine
   password: "$redmine_pass"
 EOF
+
    INFO_MSG "[ install remine dependence.........]"
    su - ${default_user:?} -c "gem sources --add https://gems.ruby-china.org/ --remove https://rubygems.org/"
    # 临时修改源
