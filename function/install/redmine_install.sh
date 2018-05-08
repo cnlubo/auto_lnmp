@@ -27,11 +27,12 @@ Redmine_Var() {
 
 Redmine_Dep_Install(){
 
+    INFO_MSG "[ Redmine Deps installing.........]"
+    yum -y install ImageMagick ImageMagick-devel ImageMagick-c++-devel mysql-devel
     INFO_MSG "[ Ruby、rubygem、rails Installing.........]"
     SOURCE_SCRIPT ${script_dir:?}/include/ruby.sh
     Install_Ruby
     INFO_MSG "[ Redmine Database Setuping.........]"
-    yum -y install mysql-devel
     Setup_DataBase
 
 }

@@ -95,6 +95,8 @@ Config_PostgreSQL(){
     else
         echo ""
     fi
+    [ -L /usr/local/bin/pg_config ] && rm -f /usr/local/bin/pg_config
+    ln -s ${PgsqlBasePath:?}/bin/pg_config /usr/local/bin/pg_config
     # setting options.conf
     sed -i "s@^pgsqluser.*@pgsqluser=${pgsql_user:?}@" ${script_dir:?}/options.conf
     sed -i "s@^pgsqlbasepath.*@pgsqlbasepath=${PgsqlBasePath:?}@" ${script_dir:?}/options.conf
