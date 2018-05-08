@@ -167,7 +167,7 @@ production:
   adapter: postgresql
   database: redmine
   host: $PgsqlHost
-  username: rdmine
+  username: redmine
   password: "$redmine_pass"
 EOF
 
