@@ -103,7 +103,6 @@ Setup_DataBase() {
                         fi
                     done
                 fi
-
                 # create user and database
                 redmine_pass=`mkpasswd -l 8`
                 $PgsqlPath/bin/psql -c " CREATE ROLE redmine LOGIN ENCRYPTED PASSWORD '$redmine_pass' NOINHERIT VALID UNTIL 'infinity';"
@@ -152,6 +151,21 @@ Install_Redmine(){
     tar xf redmine-${redmine_verion:?}.tar.gz
     [ -d ${wwwroot_dir:?}/redmine ] && rm -rf ${wwwroot_dir:?}/redmine
     mv redmine-${redmine_verion:?} ${wwwroot_dir:?}/redmine
+    cd ${wwwroot_dir:?}/redmine
+    # modify redmine configure
+    cp config/configuration.yml.example config/configuration.yml
+    cp config/database.yml.example config/database.yml
+    # 注释默认的mysql 数据库配置
+    sed -i '/^production:/,+6s/\(.*\)/#&/' database.yml
+    cat >> database.yml <<EOF
+    production:
+      adapter: postgresql
+      database: redmine
+      host: $PgsqlHost
+      username: rdmine
+      password: $redmine_pass
+EOF
+
 
 }
 
