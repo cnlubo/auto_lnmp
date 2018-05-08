@@ -6,13 +6,6 @@
 # @Desc
 #----------------------------------------------------------------------------
 
-# check_prerequisites () {
-#
-#     check_app_status "postgreSQL"
-#     if [ $? -eq 0 ]; then
-#         WARNING_MSG "[PostgreSQL is not running or install  !!!!]"
-#     fi
-# }
 SOURCE_SCRIPT ${script_dir:?}/include/check_db.sh
 
 Redmine_Var() {
@@ -185,8 +178,14 @@ EOF
     su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
     bundle exec rake db:migrate RAILS_ENV=production"
     su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
-    bundle exec rake redmine:load_default_data RAILS_ENV=production"
+    bundle exec rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=zh"
+    # RAILS_ENV=production REDMINE_LANG=fr bundle exec rake redmine:load_default_data
 
+    INFO_MSG "[ Phusion Passenger Installing ......]"
+    su - ${default_user:?} -c "gem install passenger --no-ri --no-rdoc --user-install"
+    su - ${default_user:?} -c "passenger-config --root"
+    passenger_path=$(su - ${default_user:?} -c "passenger-config --root")
+    ehco $passenger_path
 
 }
 
