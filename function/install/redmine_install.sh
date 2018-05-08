@@ -170,22 +170,29 @@ EOF
     su - ${default_user:?} -c "bundle config mirror.https://rubygems.org https://gems.ruby-china.org/"
     # 安装依赖
     su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && bundle install \
-    --without development test  --path /home/${default_user:?}/.gem"
+        --without development test  --path /home/${default_user:?}/.gem"
     # Generate the secret token, then generate the database
     INFO_MSG "[ Generate the secret token,then generate the database....]"
     su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
-    bundle exec rake generate_secret_token RAILS_ENV=production"
+        bundle exec rake generate_secret_token RAILS_ENV=production"
     su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
-    bundle exec rake db:migrate RAILS_ENV=production"
+        bundle exec rake db:migrate RAILS_ENV=production"
     su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
-    bundle exec rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=zh"
+        bundle exec rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=zh"
     # RAILS_ENV=production REDMINE_LANG=fr bundle exec rake redmine:load_default_data
 
     INFO_MSG "[ Phusion Passenger Installing ......]"
     su - ${default_user:?} -c "gem install passenger --no-ri --no-rdoc --user-install"
+    if [ -f /home/${default_user:?}/.zshrc ]; then
+        echo export "PATH=$PATH:/home/${default_user:?}/.gem/ruby/2.4.0/bin" >>/home/${default_user:?}/.zshrc
+        su - ${pgsql_user:?} -c "source /home/${default_user:?}/.zshrc"
+    else
+        echo export "PATH=$PATH:/home/${default_user:?}/.gem/ruby/2.4.0/bin" >>/home/${pgsql_user:?}/.bash_profile
+        su - ${pgsql_user:?} -c "source home/${pgsql_user:?}/.bash_profile"
+    fi
     su - ${default_user:?} -c "passenger-config --root"
     passenger_path=$(su - ${default_user:?} -c "passenger-config --root")
-    ehco $passenger_path
+    echo $passenger_path
 
 }
 
