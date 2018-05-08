@@ -103,7 +103,7 @@ Setup_DataBase() {
                     done
                 fi
                 INFO_MSG "[ Create Redmine User and Db .........]"
-                redmine_pass=`mkpasswd -l 8`
+                redmine_pass=`mkpasswd -s 0 -l 8`
                 $PgsqlPath/bin/psql -c " CREATE ROLE redmine LOGIN ENCRYPTED PASSWORD '$redmine_pass' NOINHERIT VALID UNTIL 'infinity';"
                 $PgsqlPath/bin/psql -c "CREATE DATABASE redmine WITH ENCODING='UTF8' OWNER=redmine;"
                 unset PGUSER PGPASSWORD PGDATABASE PGHOST
