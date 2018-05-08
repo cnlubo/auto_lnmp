@@ -180,6 +180,6 @@ Config_Redmine(){
 
 Redmine_Install_Main() {
 
-    Redmine_Var && Redmine_Dep_Install
+    Redmine_Var && Redmine_Dep_Install && Install_Redmine
 
 }
