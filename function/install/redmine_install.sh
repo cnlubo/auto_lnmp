@@ -185,10 +185,10 @@ EOF
     su - ${default_user:?} -c "gem install passenger --no-ri --no-rdoc --user-install"
     if [ -f /home/${default_user:?}/.zshrc ]; then
         echo export "PATH=$PATH:/home/${default_user:?}/.gem/ruby/2.4.0/bin" >>/home/${default_user:?}/.zshrc
-        su - ${pgsql_user:?} -c "source /home/${default_user:?}/.zshrc"
+        su - ${default_user:?} -c "source /home/${default_user:?}/.zshrc"
     else
-        echo export "PATH=$PATH:/home/${default_user:?}/.gem/ruby/2.4.0/bin" >>/home/${pgsql_user:?}/.bash_profile
-        su - ${pgsql_user:?} -c "source home/${pgsql_user:?}/.bash_profile"
+        echo export "PATH=$PATH:/home/${default_user:?}/.gem/ruby/2.4.0/bin" >>/home//home/${default_user:?}/.bash_profile
+        su - ${default_user:?} -c "source home//home/${default_user:?}/.bash_profile"
     fi
     su - ${default_user:?} -c "passenger-config --root"
     passenger_path=$(su - ${default_user:?} -c "passenger-config --root")
