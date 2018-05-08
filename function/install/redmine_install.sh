@@ -70,7 +70,7 @@ Setup_DataBase() {
                     PgsqlPass="${PgsqlPass}"
                     echo
                     export PGUSER=$PgsqlUser PGPASSWORD=$PgsqlPass \
-                    PGDATABASE=postgres PGHOST=$PgsqlHost
+                        PGDATABASE=postgres PGHOST=$PgsqlHost
                     pg_version=$($PgsqlPath/bin/psql -A -t -c "show server_version")
                     if [ -z $pg_version ]; then
                         FAILURE_MSG "[ PostgreSQL connect error  !!!]"
@@ -171,11 +171,21 @@ production:
   password: "$redmine_pass"
 EOF
 
-   INFO_MSG "[ install remine dependence.........]"
-   su - ${default_user:?} -c "gem sources --add https://gems.ruby-china.org/ --remove https://rubygems.org/"
-   # 临时修改源
-   su - ${default_user:?} -c "bundle config mirror.https://rubygems.org https://gems.ruby-china.org/"
-   su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && bundle install --without development test  --path /home/${default_user:?}/.gem"
+    INFO_MSG "[ install remine dependence.........]"
+    su - ${default_user:?} -c "gem sources --add https://gems.ruby-china.org/ --remove https://rubygems.org/"
+    # 临时修改源
+    su - ${default_user:?} -c "bundle config mirror.https://rubygems.org https://gems.ruby-china.org/"
+    # 安装依赖
+    su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && bundle install \
+    --without development test  --path /home/${default_user:?}/.gem"
+    # Generate the secret token, then generate the database
+    INFO_MSG "[ Generate the secret token,then generate the database....]"
+    su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
+    bundle exec rake generate_secret_token RAILS_ENV=production"
+    su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
+    bundle exec rake db:migrate RAILS_ENV=production"
+    su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
+    bundle exec rake redmine:load_default_data RAILS_ENV=production"
 
 
 }
