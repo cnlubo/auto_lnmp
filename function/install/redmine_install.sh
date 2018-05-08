@@ -66,13 +66,9 @@ Setup_DataBase() {
 
                     read -s -p "Please input PostgreSQL password :" PgsqlPass
                     PgsqlPass="${PgsqlPass}"
-
-                    # test database connect
-                    PGUSER=$PgsqlUser
-                    PGPASSWORD=$PgsqlPass
-                    PGDATABASE=postgres
-                    PGHOST=$PgsqlHost
-                    export PGUSER PGPASSWORD PGDATABASE PGHOST
+                    echo
+                    export PGUSER=$PgsqlUser PGPASSWORD=$PgsqlPass \
+                    PGDATABASE=postgres PGHOST=$PgsqlHost
                     pg_version=$($PgsqlPath/bin/psql -A -t -c "show server_version")
                     if [ -z $pg_version ]; then
                         FAILURE_MSG "[ PostgreSQL connect error  !!!]"
@@ -88,22 +84,25 @@ Setup_DataBase() {
                 # test redmine db is exists
                 if [ "$($PgsqlPath/bin/psql -lqt | cut -d \| -f 1 | grep -qw 'redmine')" ] \
                     || [ "$($PgsqlPath/bin/psql -t -d postgres -c '\du' | cut -d \| -f 1 | grep -w 'redmine')" ]; then
-                    while :; do echo
-                        read -n1 -p "Do You Want to Delete User and Db? [y/n]: " del_yn
+                    while :; do
+                        read -n1 -p "Db and User exists Do You Want to Delete? [y/n]: " del_yn
                         if [[ ! ${del_yn} =~ ^[y,n]$ ]]; then
                             WARNING_MSG "[input error! Please only input 'y' or 'n' ....]"
                         else
                             if [ "${del_yn}" == 'y' ]; then
+                                echo
+                                INFO_MSG "[ Drop User and Db ........]"
                                 $PgsqlPath/bin/psql -c " DROP DATABASE  IF EXISTS redmine;"
                                 $PgsqlPath/bin/psql -c " DROP ROLE IF EXISTS redmine;"
                             else
-                                exit 0
+                                echo
+                                FAILURE_MSG "[ Redmine DataBase can not Create  !!!]" && exit 0
                             fi
                             break
                         fi
                     done
                 fi
-                # create user and database
+                INFO_MSG "[ Create Redmine User and Db .........]"
                 redmine_pass=`mkpasswd -l 8`
                 $PgsqlPath/bin/psql -c " CREATE ROLE redmine LOGIN ENCRYPTED PASSWORD '$redmine_pass' NOINHERIT VALID UNTIL 'infinity';"
                 $PgsqlPath/bin/psql -c "CREATE DATABASE redmine WITH ENCODING='UTF8' OWNER=redmine;"
