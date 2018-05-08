@@ -173,7 +173,7 @@ EOF
    su - ${default_user:?} -c "gem sources --add https://gems.ruby-china.org/ --remove https://rubygems.org/"
    # 临时修改源
    su - ${default_user:?} -c "bundle config mirror.https://rubygems.org https://gems.ruby-china.org/"
-   su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && bundle install --without development test mysql --path /home/${default_user:?}/.gem"
+   su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && bundle install --without development test mysql2 --path /home/${default_user:?}/.gem"
 
 
 }
