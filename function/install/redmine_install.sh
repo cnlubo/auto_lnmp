@@ -190,9 +190,17 @@ EOF
         echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/2.4.0/bin" >>/home/${default_user:?}/.bash_profile
         su - ${default_user:?} -c "source /home/${default_user:?}/.bash_profile"
     fi
-    su - ${default_user:?} -c " export PATH=$PATH:/home/${default_user:?}/.gem/ruby/2.4.0/bin \
-        && passenger_path=$(/home/${default_user:?}/.gem/ruby/2.4.0/bin/passenger-config --root)"
-    # passenger_path=$(su - ${default_user:?} -c "passenger-config --root")
+    # su - ${default_user:?} -c " export PATH=$PATH:/home/${default_user:?}/.gem/ruby/2.4.0/bin \
+    #     && passenger_path=$(/home/${default_user:?}/.gem/ruby/2.4.0/bin/passenger-config --root)"
+    for file in /home/${default_user:?}/.gem/ruby/2.4.0/bin/passenger*
+    do
+        fname=$(basename $file)
+        [ -L /usr/local/bin/$fname ] && rm -rf /usr/local/bin/$fname
+        ln -s $file /usr/local/bin/$fname
+    done
+
+    passenger_path=$(su - ${default_user:?} -c "passenger-config --root")
+    
     echo ${passenger_path:?}
 
 }
