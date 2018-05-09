@@ -184,14 +184,14 @@ EOF
     INFO_MSG "[ Phusion Passenger Installing ......]"
     su - ${default_user:?} -c "gem install passenger --no-ri --no-rdoc --user-install"
     if [ -f /home/${default_user:?}/.zshrc ]; then
-        echo export 'PATH=$PATH:/home/${default_user:?}/.gem/ruby/2.4.0/bin' >>/home/${default_user:?}/.zshrc
+        echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/2.4.0/bin" >>/home/${default_user:?}/.zshrc
         su - ${default_user:?} -c "source /home/${default_user:?}/.zshrc"
     else
-        echo export 'PATH=$PATH:/home/${default_user:?}/.gem/ruby/2.4.0/bin' >>/home/${default_user:?}/.bash_profile
+        echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/2.4.0/bin" >>/home/${default_user:?}/.bash_profile
         su - ${default_user:?} -c "source /home/${default_user:?}/.bash_profile"
     fi
     su - ${default_user:?} -c " export PATH=$PATH:/home/${default_user:?}/.gem/ruby/2.4.0/bin \
-     && passenger_path=$(passenger-config --root)"
+        && passenger_path=$(/home/${default_user:?}/.gem/ruby/2.4.0/bin/passenger-config --root)"
     # passenger_path=$(su - ${default_user:?} -c "passenger-config --root")
     echo ${passenger_path:?}
 
