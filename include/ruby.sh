@@ -13,7 +13,7 @@ Install_Ruby() {
     else
         yum -y install zlib-devel curl-devel openssl-devel  apr-devel apr-util-devel libxslt-devel
         # shellcheck disable=SC2034
-        src_url=http://cache.ruby-lang.org/pub/ruby/2.4/ruby-${ruby_version:?}.tar.gz
+        src_url=http://cache.ruby-lang.org/pub/ruby/${ruby_major_version:?}/ruby-${ruby_version:?}.tar.gz
         INFO_MSG "[ Ruby-${ruby_version:?} installing ]"
         cd ${script_dir:?}/src
         [ -f ruby-${ruby_version:?}.tar.gz ] && Download_src

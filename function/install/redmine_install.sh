@@ -190,9 +190,10 @@ EOF
         echo export 'PATH=$PATH:/home/${default_user:?}/.gem/ruby/2.4.0/bin' >>/home/${default_user:?}/.bash_profile
         su - ${default_user:?} -c "source /home/${default_user:?}/.bash_profile"
     fi
-    su - ${default_user:?} -c "passenger-config --root"
-    passenger_path=$(su - ${default_user:?} -c "passenger-config --root")
-    echo $passenger_path
+    su - ${default_user:?} -c " export PATH=$PATH:/home/${default_user:?}/.gem/ruby/2.4.0/bin \
+     && passenger_path=$(passenger-config --root)"
+    # passenger_path=$(su - ${default_user:?} -c "passenger-config --root")
+    echo ${passenger_path:?}
 
 }
 
