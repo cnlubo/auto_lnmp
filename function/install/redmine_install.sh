@@ -84,9 +84,9 @@ EOF
             SOURCE_SCRIPT ${FunctionPath:?}/install/nginx_install.sh
             nginx_install_version=${nginx_mainline_version:?}
             Nginx_install='Nginx'
-            lua_install='y'
+            lua_install='n'
             Passenger_install='y'
-            Nginx_Var && Nginx_Base_Dep_Install
+            Nginx_Var && Nginx_Base_Dep_Install && Install_Nginx
             select_redmine_install
             ;;
         3)
