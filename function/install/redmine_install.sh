@@ -82,7 +82,7 @@ EOF
             ;;
         2)
             SOURCE_SCRIPT ${FunctionPath:?}/install/nginx_install.sh
-            SOURCE_SCRIPT ${FunctionPath:?}/install/nginx.sh
+            SOURCE_SCRIPT ${FunctionPath:?}/install/Nginx.sh
             nginx_install_version=${nginx_mainline_version:?}
             Nginx_install='Nginx'
             lua_install='n'
