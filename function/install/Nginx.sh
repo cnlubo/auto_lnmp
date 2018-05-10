@@ -110,7 +110,8 @@ Config_Nginx(){
             sed -i "s#@passenger_ruby#${passenger_ruby:?}#g" $nginx_install_dir/conf.d/redmine.conf
             sed -i "s#@passenger_user#${redmine_run_user:?}#g" $nginx_install_dir/conf.d/redmine.conf
             sed -i "s#@server_name#127.0.0.1#g" $nginx_install_dir/conf.d/redmine.conf
-            sed -i "s#@nginx_root#${wwwroot_dir:?}/redmine#g" $nginx_install_dir/conf.d/redmine.conf
+            sed -i "s#@redmine_root#${wwwroot_dir:?}/redmine#g" $nginx_install_dir/conf.d/redmine.conf
+            sed -i "s#@nginx_root#$nginx_install_dir#g" $nginx_install_dir/conf.d/redmine.conf
         fi
 
         sed -i "s#@run_user#${run_user:?}#g" $nginx_install_dir/conf/nginx.conf
