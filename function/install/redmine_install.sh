@@ -49,7 +49,8 @@ passenger_install (){
     # passenger_dir=$(su - ${default_user:?} -c "passenger-config --root")
     sed -i "s@^passenger_root.*@passenger_root=$(su - ${default_user:?} -c "passenger-config --root")@" ${script_dir:?}/config/redmine.conf
     sed -i "s@^nginx_addon_dir.*@nginx_addon_dir=$(su - ${default_user:?} -c "passenger-config --nginx-addon-dir")@" ${script_dir:?}/config/redmine.conf
-    sed -i "s@^passenger_ruby.*@passenger_ruby=$(su - ${default_user:?} -c "passenger-config --ruby-command")@" ${script_dir:?}/config/redmine.conf
+    # sed -i "s@^passenger_ruby.*@passenger_ruby=$(su - ${default_user:?} -c "passenger-config --ruby-command")@" ${script_dir:?}/config/redmine.conf
+    sed -i "s@^passenger_ruby.*@passenger_ruby=/usr/local/software/ruby/bin/ruby@" ${script_dir:?}/config/redmine.conf
 
     SOURCE_SCRIPT ${script_dir:?}/config/redmine.conf
     if [ -f ${nginx_addon_dir:?}/config ]; then
