@@ -153,6 +153,8 @@ EOF
             nginx_install_version=${nginx_mainline_version:?}
             Nginx_install='Nginx'
             lua_install='n'
+            # shellcheck disable=SC2034
+            Passenger_install='n'
             Nginx_Install_Main 2>&1 | tee $script_dir/logs/Install_Nginx.log
             select_nginx_install
             ;;
@@ -163,6 +165,8 @@ EOF
             Nginx_install='Nginx'
             # shellcheck disable=SC2034
             lua_install='y'
+            # shellcheck disable=SC2034
+            Passenger_install='n'
             Nginx_Install_Main 2>&1 | tee $script_dir/logs/Install_Nginx.log
             select_nginx_install
             ;;
@@ -172,6 +176,8 @@ EOF
             tengine_install_version=${Tengine_version:?}
             Nginx_install='Tengine'
             lua_install='y'
+            # shellcheck disable=SC2034
+            Passenger_install='n'
             Tengine_Install_Main 2>&1 | tee $script_dir/logs/Install_Tengine.log
             select_nginx_install
             ;;
@@ -182,6 +188,8 @@ EOF
             OpenResty_install_version=${openresty_version:?}
             Nginx_install='OpenResty'
             lua_install='n'
+            # shellcheck disable=SC2034
+            Passenger_install='n'
             OpenResty_Install_Main 2>&1 | tee $script_dir/logs/Install_OpenResty.log
             select_nginx_install
             ;;

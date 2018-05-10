@@ -19,6 +19,45 @@ Redmine_Var() {
     fi
 }
 
+Redmine_Dep_Install(){
+
+    INFO_MSG "[ Redmine Deps installing.........]"
+    yum -y install ImageMagick ImageMagick-devel ImageMagick-c++-devel mysql-devel
+    INFO_MSG "[ Ruby、rubygem、rails Installing.........]"
+    SOURCE_SCRIPT ${script_dir:?}/include/ruby.sh
+    Install_Ruby
+    passenger_install
+}
+
+passenger_install (){
+
+    INFO_MSG "[ Phusion Passenger Installing ......]"
+    su - ${default_user:?} -c "gem install passenger --no-ri --no-rdoc --user-install"
+    if [ -f /home/${default_user:?}/.zshrc ]; then
+        echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin" >>/home/${default_user:?}/.zshrc
+        su - ${default_user:?} -c "source /home/${default_user:?}/.zshrc"
+    else
+        echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin" >>/home/${default_user:?}/.bash_profile
+        su - ${default_user:?} -c "source /home/${default_user:?}/.bash_profile"
+    fi
+    for file in /home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin/passenger*
+    do
+        fname=$(basename $file)
+        [ -L /usr/local/bin/$fname ] && rm -rf /usr/local/bin/$fname
+        ln -s $file /usr/local/bin/$fname
+    done
+    # passenger_dir=$(su - ${default_user:?} -c "passenger-config --root")
+    sed -i "s@^passenger_path.*@passenger_path=$(su - ${default_user:?} -c \"passenger-config --root\")@" ${script_dir:?}/config/redmine.conf
+    sed -i "s@^nginx_addon_dir.*@nginx_addon_dir=$(su - ${default_user:?} -c \"passenger-config --root\")@" ${script_dir:?}/config/redmine.conf
+    SOURCE_SCRIPT ${script_dir:?}/config/redmine.conf
+    if [ -f ${nginx_addon_dir:?}/config ]; then
+        SUCCESS_MSG "[Phusion Passenger installed successful !!!]"
+    else
+        FAILURE_MSG "[install Phusion Passenger failed,Please contact the author !!!]"
+        kill -9 $$
+    fi
+}
+
 select_redmine_install(){
 
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
@@ -43,6 +82,7 @@ EOF
             nginx_install_version=${nginx_mainline_version:?}
             Nginx_install='Nginx'
             lua_install='y'
+            Passenger_install='y'
             Nginx_Var && Nginx_Base_Dep_Install
             select_redmine_install
             ;;

@@ -5,20 +5,6 @@
 # @file_name:                              redmine.sh
 # @Desc
 #----------------------------------------------------------------------------
-
-
-Redmine_Dep_Install(){
-
-    INFO_MSG "[ Redmine Deps installing.........]"
-    yum -y install ImageMagick ImageMagick-devel ImageMagick-c++-devel mysql-devel
-    INFO_MSG "[ Ruby、rubygem、rails Installing.........]"
-    SOURCE_SCRIPT ${script_dir:?}/include/ruby.sh
-    Install_Ruby
-    INFO_MSG "[ Redmine Database Setuping.........]"
-    Setup_DataBase
-
-}
-
 Setup_DataBase() {
 
     case   ${redmine_dbtype:?} in
@@ -125,6 +111,8 @@ Setup_DataBase() {
 
 Install_Redmine(){
 
+    INFO_MSG "[ Redmine Database Setuping.........]"
+    Setup_DataBase
     INFO_MSG "[ redmine-${redmine_verion:?} Installing.........]"
     cd ${script_dir:?}/src
     # shellcheck disable=SC2034
@@ -178,31 +166,11 @@ Config_Redmine(){
     fi
     sed -i "s@^redmine_run_user.*@redmine_run_user=${run_user:?}@" ${script_dir:?}/config/redmine.conf
     SOURCE_SCRIPT ${script_dir:?}/config/redmine.conf
-    #sed -i "s@^pgsqlbasepath.*@pgsqlbasepath=${PgsqlBasePath:?}@" ${script_dir:?}/config/postgresql.conf
     chown -Rf ${redmine_run_user:?}:$redmine_run_user ${wwwroot_dir:?}/redmine
     chmod 0666 ${wwwroot_dir:?}/redmine/log/production.log
     cd ${wwwroot_dir:?}/redmine && mkdir -p tmp tmp/pdf public/plugin_assets
     chown -R ${redmine_run_user:?}:$redmine_run_user files log tmp public/plugin_assets
     chmod -R 755 files log tmp public/plugin_assets
-    INFO_MSG "[ Phusion Passenger Installing ......]"
-    su - ${default_user:?} -c "gem install passenger --no-ri --no-rdoc --user-install"
-    if [ -f /home/${default_user:?}/.zshrc ]; then
-        echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin" >>/home/${default_user:?}/.zshrc
-        su - ${default_user:?} -c "source /home/${default_user:?}/.zshrc"
-    else
-        echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin" >>/home/${default_user:?}/.bash_profile
-        su - ${default_user:?} -c "source /home/${default_user:?}/.bash_profile"
-    fi
-    for file in /home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin/passenger*
-    do
-        fname=$(basename $file)
-        [ -L /usr/local/bin/$fname ] && rm -rf /usr/local/bin/$fname
-        ln -s $file /usr/local/bin/$fname
-    done
-    passenger_dir=$(su - ${default_user:?} -c "passenger-config --root")
-    # echo ${passenger_path:?}
-    sed -i "s@^passenger_path.*@passenger_path=${passenger_dir:?}@" ${script_dir:?}/config/redmine.conf
-    SOURCE_SCRIPT ${script_dir:?}/config/redmine.conf
     INFO_MSG "[Redmine-${redmine_verion:?} install finish ......]"
 }
 
