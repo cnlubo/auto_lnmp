@@ -7,12 +7,13 @@
 # @Desc
 #----------------------------------------------------------------------------
 SOURCE_SCRIPT ${script_dir:?}/include/check_db.sh
+SOURCE_SCRIPT ${ScriptPath:?}/config/postgresql.conf
 
 Redmine_Var() {
 
     check_app_status ${redmine_dbtype:?}
     if [ $? -eq 0 ]; then
-        WARNING_MSG "[ PostgreSQL has been install .........]"
+        WARNING_MSG "[ PostgreSQL installed .........]"
     else
         WARNING_MSG "[DataBase ${redmine_dbtype:?} is not running or install  !!!!]" && exit 0
     fi

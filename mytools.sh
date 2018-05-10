@@ -14,7 +14,8 @@ parentdir=$(dirname "$0")
 ScriptPath=$(cd ${parentdir:?} && pwd)
 # BASH_SOURCE[0] 等价于 BASH_SOURCE,取得当前执行的shell文件所在的路径及文件名
 scriptdir=$(dirname "${BASH_SOURCE[0]}")
-sed -i "s@^script_dir.*@script_dir=`(cd ${scriptdir:?} && pwd)`@" ./options.conf
+#sed -i "s@^script_dir.*@script_dir=`(cd ${scriptdir:?} && pwd)`@" ./options.conf
+sed -i "s@^script_dir.*@script_dir=`(cd ${scriptdir:?} && pwd)`@" ./config/common.conf
 
 # mac 需要在sed -i 后增加一个"" 不能忽略否则报错
 #sed -i "" "s@^script_dir.*@script_dir=`(cd $(dirname "$BASH_SOURCE[0]") && pwd)`@" ./options.conf
@@ -23,7 +24,8 @@ sed -i "s@^script_dir.*@script_dir=`(cd ${scriptdir:?} && pwd)`@" ./options.conf
 source $ScriptPath/include/color.sh
 # shellcheck source=$ScriptPath/include/common.sh
 source $ScriptPath/include/common.sh
-SOURCE_SCRIPT $ScriptPath/options.conf
+SOURCE_SCRIPT $ScriptPath/config/common.conf
+SOURCE_SCRIPT ${script_dir:?}/options.conf
 SOURCE_SCRIPT ${script_dir:?}/apps.conf
 SOURCE_SCRIPT $script_dir/include/check_os.sh
 SOURCE_SCRIPT $script_dir/include/set_dir.sh
