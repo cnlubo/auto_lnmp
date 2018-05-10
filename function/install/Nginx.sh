@@ -20,17 +20,6 @@ Nginx_Dep_Install(){
 }
 Install_Nginx(){
 
-    # echo -e "${CMSG}[create user and group ]***********************************>>${CEND}\n"
-    #
-    # grep ${run_user:?} /etc/group >/dev/null 2>&1
-    # if [ ! $? -eq 0 ]; then
-    #     groupadd $run_user
-    # fi
-    # id $run_user >/dev/null 2>&1
-    # if [ ! $? -eq 0 ]; then
-    #     useradd -g $run_user  -M -s /sbin/nologin $run_user
-    # fi
-
     echo -e "${CMSG}[prepare nginx install ]***********************************>>${CEND}\n"
     [ -d ${nginx_install_dir:?} ] && rm -rf ${nginx_install_dir:?}
     cd ${script_dir:?}/src

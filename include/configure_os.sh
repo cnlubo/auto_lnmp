@@ -88,9 +88,28 @@ $system_user   ALL=(ALL)  NOPASSWD: ALL
 EOF
         chmod 400 /etc/sudoers.d/$system_user
     fi
-    sed -i "s@^default_user.*@default_user=$system_user@" ./options.conf
-    SOURCE_SCRIPT ${ScriptPath:?}/options.conf
+    sed -i "s@^default_user.*@default_user=$system_user@" ./config/common.conf
+    SOURCE_SCRIPT ${ScriptPath:?}/config/options.conf
 }
+
+ app_user_setup()
+{
+    app_user="$1"
+    id $app_user >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        WARNING_MSG "[ Application user($app_user) already exists !!!]"
+    else
+        grep ${app_user:?} /etc/group >/dev/null 2>&1
+        if [ ! $? -eq 0 ]; then
+            groupadd $app_user;
+        fi
+        id $app_user >/dev/null 2>&1
+        if [ ! $? -eq 0 ]; then
+            useradd -g $app_user  -M -s /sbin/nologin $app_user
+        fi
+    fi
+}
+
 
 share_software_install(){
 

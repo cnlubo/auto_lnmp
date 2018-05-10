@@ -133,7 +133,6 @@ Install_Redmine(){
     [ -d redmine-${redmine_verion:?} ] && rm -rf redmine-${redmine_verion:?}
     tar xf redmine-${redmine_verion:?}.tar.gz
     [ ! -d ${wwwroot_dir:?} ] && mkdir -p ${wwwroot_dir:?}
-
     [ -d ${wwwroot_dir:?}/redmine ] && rm -rf ${wwwroot_dir:?}/redmine
     mv redmine-${redmine_verion:?} ${wwwroot_dir:?}/redmine
     cd ${wwwroot_dir:?}/redmine
@@ -168,47 +167,42 @@ EOF
         bundle exec rake db:migrate RAILS_ENV=production"
     su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
         bundle exec rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=zh"
-
-
-
-    # INFO_MSG "[ Phusion Passenger Installing ......]"
-    # su - ${default_user:?} -c "gem install passenger --no-ri --no-rdoc --user-install"
-    # if [ -f /home/${default_user:?}/.zshrc ]; then
-    #     echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/2.4.0/bin" >>/home/${default_user:?}/.zshrc
-    #     su - ${default_user:?} -c "source /home/${default_user:?}/.zshrc"
-    # else
-    #     echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/2.4.0/bin" >>/home/${default_user:?}/.bash_profile
-    #     su - ${default_user:?} -c "source /home/${default_user:?}/.bash_profile"
-    # fi
-    # for file in /home/${default_user:?}/.gem/ruby/2.4.0/bin/passenger*
-    # do
-    #     fname=$(basename $file)
-    #     [ -L /usr/local/bin/$fname ] && rm -rf /usr/local/bin/$fname
-    #     ln -s $file /usr/local/bin/$fname
-    # done
-    #
-    # passenger_path=$(su - ${default_user:?} -c "passenger-config --root")
-    #
-    # echo ${passenger_path:?}
-
 }
 
 Config_Redmine(){
 
     INFO_MSG "[ Setup Directorys Permission ............. ]"
-    grep ${run_user:?} /etc/group >/dev/null 2>&1
+    id ${run_user:?} >/dev/null 2>&1
     if [ ! $? -eq 0 ]; then
-        groupadd $run_user
+        app_user_setup ${run_user:?}
     fi
-    id $run_user >/dev/null 2>&1
-    if [ ! $? -eq 0 ]; then
-        useradd -g $run_user  -M -s /sbin/nologin $run_user
-    fi
-    chown -Rf ${run_user:?}:$run_user ${wwwroot_dir:?}/redmine
+    sed -i "s@^redmine_run_user.*@redmine_run_user=${run_user:?}@" ${script_dir:?}/config/redmine.conf
+    SOURCE_SCRIPT ${script_dir:?}/config/redmine.conf
+    #sed -i "s@^pgsqlbasepath.*@pgsqlbasepath=${PgsqlBasePath:?}@" ${script_dir:?}/config/postgresql.conf
+    chown -Rf ${redmine_run_user:?}:$redmine_run_user ${wwwroot_dir:?}/redmine
     chmod 0666 ${wwwroot_dir:?}/redmine/log/production.log
     cd ${wwwroot_dir:?}/redmine && mkdir -p tmp tmp/pdf public/plugin_assets
-    chown -R ${run_user:?}:$run_user files log tmp public/plugin_assets
+    chown -R ${redmine_run_user:?}:$redmine_run_user files log tmp public/plugin_assets
     chmod -R 755 files log tmp public/plugin_assets
+    INFO_MSG "[ Phusion Passenger Installing ......]"
+    su - ${default_user:?} -c "gem install passenger --no-ri --no-rdoc --user-install"
+    if [ -f /home/${default_user:?}/.zshrc ]; then
+        echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin" >>/home/${default_user:?}/.zshrc
+        su - ${default_user:?} -c "source /home/${default_user:?}/.zshrc"
+    else
+        echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin" >>/home/${default_user:?}/.bash_profile
+        su - ${default_user:?} -c "source /home/${default_user:?}/.bash_profile"
+    fi
+    for file in /home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin/passenger*
+    do
+        fname=$(basename $file)
+        [ -L /usr/local/bin/$fname ] && rm -rf /usr/local/bin/$fname
+        ln -s $file /usr/local/bin/$fname
+    done
+    passenger_dir=$(su - ${default_user:?} -c "passenger-config --root")
+    # echo ${passenger_path:?}
+    sed -i "s@^passenger_path.*@passenger_path=${passenger_dir:?}@" ${script_dir:?}/config/redmine.conf
+    SOURCE_SCRIPT ${script_dir:?}/config/redmine.conf
     INFO_MSG "[Redmine-${redmine_verion:?} install finish ......]"
 }
 

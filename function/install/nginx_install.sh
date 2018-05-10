@@ -8,28 +8,17 @@
 #----------------------------------------------------------------------------
 
 Nginx_Var() {
-
-    #第二种，准确判断pid的信息，
-    #-C 表示的是nginx完整命令，不带匹配的操作
-    #--no-header 表示不要表头的数据
-    #wc -l 表示计数
-    COUNT=$(ps -C nginx --no-header |wc -l)
-    #echo "ps -c|方法:"$COUNT
-    if [ $COUNT -gt 0 ]
-    then
-        echo -e "${CWARNING}[Error nginx or Tengine is running please stop !!!!]${CEND}\n" && exit
+    check_app_status "Nginx"
+    if [ $? -eq 0 ]; then
+        WARNING_MSG "[nginx or Tengine is running please stop !!!!]" && exit 0
     fi
     echo -e "${CMSG}[create user and group ]***********************************>>${CEND}\n"
-
-    grep ${run_user:?} /etc/group >/dev/null 2>&1
-    if [ ! $? -eq 0 ]; then
-        groupadd $run_user
+    id ${run_user:?} >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        WARNING_MSG "[ running user($run_user) exist !!!]"
+    else
+        app_user_setup ${run_user:?}
     fi
-    id $run_user >/dev/null 2>&1
-    if [ ! $? -eq 0 ]; then
-        useradd -g $run_user  -M -s /sbin/nologin $run_user
-    fi
-
 }
 
 Nginx_Base_Dep_Install() {

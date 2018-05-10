@@ -6,9 +6,6 @@
 #@Filename       :              postgresql_install.sh
 #@desc           :               postgresql install main
 #------------------------------------------------------------------
-SOURCE_SCRIPT ${script_dir:?}/include/configure_os.sh
-SOURCE_SCRIPT ${script_dir:?}/include/check_db.sh
-
 PostgreSQL_Var(){
 
     check_app_status "postgreSQL"

@@ -30,6 +30,8 @@ SOURCE_SCRIPT ${script_dir:?}/apps.conf
 SOURCE_SCRIPT $script_dir/include/check_os.sh
 SOURCE_SCRIPT $script_dir/include/set_dir.sh
 SOURCE_SCRIPT $script_dir/include/set_menu.sh
+SOURCE_SCRIPT ${script_dir:?}/include/check_db.sh
+SOURCE_SCRIPT ${script_dir:?}/include/configure_os.sh
 # SOURCE_SCRIPT $script_dir/include/memory.sh
 # Check if user is root
 [[ $(id -u) != '0' ]] && EXIT_MSG "Please use root to run this script."

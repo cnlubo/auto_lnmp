@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # shellcheck disable=SC2164
+# shellcheck disable=SC2034
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
 # @file_name:                              redmine_install.sh
 # @Desc
 #----------------------------------------------------------------------------
-SOURCE_SCRIPT ${script_dir:?}/include/check_db.sh
 SOURCE_SCRIPT ${ScriptPath:?}/config/postgresql.conf
 
 Redmine_Var() {
@@ -39,7 +39,12 @@ EOF
             select_redmine_install
             ;;
         2)
-            select_devops_install
+            SOURCE_SCRIPT ${FunctionPath:?}/install/nginx_install.sh
+            nginx_install_version=${nginx_mainline_version:?}
+            Nginx_install='Nginx'
+            lua_install='y'
+            Nginx_Var && Nginx_Base_Dep_Install
+            select_redmine_install
             ;;
         3)
             select_devops_install
