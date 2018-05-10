@@ -46,9 +46,11 @@ passenger_install (){
         [ -L /usr/local/bin/$fname ] && rm -rf /usr/local/bin/$fname
         ln -s $file /usr/local/bin/$fname
     done
-    passenger_dir=$(su - ${default_user:?} -c "passenger-config --root")
-    sed -i "s@^passenger_path.*@passenger_path=$(su - ${default_user:?} -c "passenger-config --root")@" ${script_dir:?}/config/redmine.conf
+    # passenger_dir=$(su - ${default_user:?} -c "passenger-config --root")
+    sed -i "s@^passenger_root.*@passenger_root=$(su - ${default_user:?} -c "passenger-config --root")@" ${script_dir:?}/config/redmine.conf
     sed -i "s@^nginx_addon_dir.*@nginx_addon_dir=$(su - ${default_user:?} -c "passenger-config --nginx-addon-dir")@" ${script_dir:?}/config/redmine.conf
+    sed -i "s@^passenger_ruby.*@passenger_ruby=$(su - ${default_user:?} -c "passenger-config --ruby-command")@" ${script_dir:?}/config/redmine.conf
+
     SOURCE_SCRIPT ${script_dir:?}/config/redmine.conf
     if [ -f ${nginx_addon_dir:?}/config ]; then
         SUCCESS_MSG "[Phusion Passenger installed successful !!!]"

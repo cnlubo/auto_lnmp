@@ -97,15 +97,27 @@ Config_Nginx(){
         echo -e "${CMSG}[configure nginx]****************************************************>>${CEND}\n"
         mkdir -p ${nginx_install_dir:?}/conf.d
         mv $nginx_install_dir/conf/nginx.conf $nginx_install_dir/conf/nginx.conf_bak
+        [ ! -d $nginx_install_dir/conf.d ] && mkdir -p $nginx_install_dir/conf.d
         if [ ${lua_install:?} = 'y' ]; then
             cp ${script_dir:?}/template/nginx/nginx_lua_template.conf $nginx_install_dir/conf/nginx.conf
         else
             cp ${script_dir:?}/template/nginx/nginx_template.conf $nginx_install_dir/conf/nginx.conf
         fi
+        cp ${script_dir:?}/template/nginx/conf.d/default.conf $nginx_install_dir/conf.d/default.conf
+        if [ ${Passenger_install:?} = 'y' ]; then
+            cp ${script_dir:?}/template/nginx/conf.d/redmine.conf $nginx_install_dir/conf.d/redmine.conf
+            sed -i "s#@passenger_root#${passenger_root:?}#g" $nginx_install_dir/conf.d/redmine.conf
+            sed -i "s#@passenger_ruby#${passenger_ruby:?}#g" $nginx_install_dir/conf.d/redmine.conf
+            sed -i "s#@passenger_user#${redmine_run_user:?}#g" $nginx_install_dir/conf.d/redmine.conf
+            sed -i "s#@server_name#127.0.0.1#g" $nginx_install_dir/conf.d/redmine.conf
+            sed -i "s#@nginx_root#${wwwroot_dir:?}/redmine#g" $nginx_install_dir/conf.d/redmine.conf
+        fi
 
         sed -i "s#@run_user#${run_user:?}#g" $nginx_install_dir/conf/nginx.conf
         # sed -i "s#@worker_processes#2#g" $nginx_install_dir/conf/nginx.conf
         sed -i "s#@nginx_install_dir#$nginx_install_dir#g" $nginx_install_dir/conf/nginx.conf
+
+
         # logrotate nginx log
         cat > /etc/logrotate.d/nginx << EOF
         $nginx_install_dir/logs/*.log {
