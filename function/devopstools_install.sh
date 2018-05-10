@@ -31,8 +31,7 @@ EOF
             ;;
         3)
             SOURCE_SCRIPT ${FunctionPath:?}/install/redmine_install.sh
-            Redmine_Install_Main
-            select_devops_install
+            select_redmine_install
             ;;
         4)
             clear

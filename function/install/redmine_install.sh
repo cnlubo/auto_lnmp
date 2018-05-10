@@ -1,11 +1,11 @@
 #!/bin/bash
+
 # shellcheck disable=SC2164
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
 # @file_name:                              redmine_install.sh
 # @Desc
 #----------------------------------------------------------------------------
-
 SOURCE_SCRIPT ${script_dir:?}/include/check_db.sh
 
 Redmine_Var() {
@@ -18,204 +18,155 @@ Redmine_Var() {
     fi
 }
 
-Redmine_Dep_Install(){
+# Nginx_Base_Dep_Install() {
+#
+#     echo -e "${CMSG}[zlib pcre jemalloc ]********************************>>${CEND}\n"
+#     cd ${script_dir:?}/src
+#     # zlib
+#     # shellcheck disable=SC2034
+#     src_url=http://zlib.net/zlib-${zlib_version:?}.tar.gz
+#     [ ! -f zlib-${zlib_version:?}.tar.gz ] && Download_src
+#     [ -d zlib-${zlib_version:?} ] && rm -rf zlib-${zlib_version:?}
+#     tar xf zlib-${zlib_version:?}.tar.gz
+#     # && cd zlib-${zlib_version:?}
+#     # ./configure --prefix=/usr/local/software/sharelib && make && make install
+#     # cd ..
+#     # pcre
+#     # shellcheck disable=SC2034
+#     src_url=https://sourceforge.net/projects/pcre/files/pcre/${pcre_version:?}/pcre-$pcre_version.tar.gz/download
+#     [ ! -f pcre-$pcre_version.tar.gz ] && Download_src && mv download pcre-$pcre_version.tar.gz
+#     [ -d pcre-$pcre_version ] && rm -rf pcre-$pcre_version
+#     tar xf pcre-$pcre_version.tar.gz
+#     # && cd pcre-$pcre_version
+#     # ./configure --prefix=/usr/local/software/pcre --enable-utf8 --enable-unicode-properties
+#     # make && make install
+#     # cd ..
+#     # jemalloc
+#     SOURCE_SCRIPT ${script_dir:?}/include/jemalloc.sh
+#     Install_Jemalloc
+#     # openssl
+#     if [ $Nginx_install == 'Nginx' ] || [ $Nginx_install == 'Tengine' ]; then
+#
+#         echo -e "${CMSG}[ Openssl-${openssl_latest_version:?} ]***********************************>>${CEND}\n"
+#         # shellcheck disable=SC2034
+#         cd ${script_dir:?}/src
+#         src_url=https://www.openssl.org/source/openssl-${openssl_latest_version:?}.tar.gz
+#         [ ! -f openssl-${openssl_latest_version:?}.tar.gz ] && Download_src
+#         [ -d openssl-${openssl_latest_version:?} ] && rm -rf openssl-${openssl_latest_version:?}
+#         tar xf openssl-${openssl_latest_version:?}.tar.gz
+#     else
+#         echo -e "${CMSG}[ Openssl-${openssl_version:?} ]***********************************>>${CEND}\n"
+#         # openssl
+#         # shellcheck disable=SC2034
+#         cd ${script_dir:?}/src
+#         src_url=https://www.openssl.org/source/openssl-${openssl_version:?}.tar.gz
+#         [ ! -f openssl-${openssl_version:?}.tar.gz ] && Download_src
+#         [ -d openssl-${openssl_version:?} ] && rm -rf openssl-${openssl_version:?}
+#         tar xf openssl-${openssl_version:?}.tar.gz
+#     fi
+#     # ngx_brotli ngx-ct
+#     if [ $Nginx_install == 'Nginx' ] || [ $Nginx_install == 'OpenResty' ]; then
+#
+#         echo -e "${CMSG}[ngx_brotli ngx-ct ]*************************>>${CEND}\n"
+#         #[ -d ngx_brotli ] && rm -rf ngx_brotli
+#         #git clone https://github.com/google/ngx_brotli.git
+#         #cd ngx_brotli && git submodule update --init
+#         if  [ ! -d ngx_brotli ]; then
+#             git clone https://github.com/google/ngx_brotli.git
+#             cd ngx_brotli && git submodule update --init
+#         fi
+#         src_url=https://github.com/grahamedgecombe/nginx-ct/archive/v${ngx_ct_version:?}.tar.gz
+#         [ ! -f v${ngx_ct_version:?}.tar.gz ] && Download_src
+#         [ -d nginx-ct-${ngx_ct_version:?} ] && rm -rf nginx-ct-${ngx_ct_version:?}
+#         tar xf v${ngx_ct_version:?}.tar.gz
+#     fi
+#     # echo-nginx-module
+#     if [ $Nginx_install == 'Nginx' ] || [ $Nginx_install == 'Tengine' ]; then
+#
+#         echo -e "${CMSG}[ echo-nginx-module ]*************************>>${CEND}\n"
+#         [ -d echo-nginx-module ] && rm -rf echo-nginx-module
+#         git clone https://github.com/openresty/echo-nginx-module.git
+#     fi
+#
+#     echo -e "${CMSG}[ ngx_pagespeed ]*************************>>${CEND}\n"
+#     cd ${script_dir:?}/src
+#     src_url=https://github.com/apache/incubator-pagespeed-ngx/archive/v${pagespeed_version:?}.tar.gz
+#     [ ! -f v${pagespeed_version:?}.tar.gz ] && Download_src
+#     [ -d incubator-pagespeed-ngx-${pagespeed_version:?} ] && rm -rf incubator-pagespeed-ngx-${pagespeed_version:?}
+#     tar xf v${pagespeed_version:?}.tar.gz
+#     src_url=https://dl.google.com/dl/page-speed/psol/${psol_version:?}-x$OS_BIT.tar.gz
+#     [ ! -f ${psol_version:?}-x$OS_BIT.tar.gz ] && Download_src
+#     mv ${psol_version:?}-x$OS_BIT.tar.gz  incubator-pagespeed-ngx-${pagespeed_version:?}/ && cd incubator-pagespeed-ngx-${pagespeed_version:?}
+#     [ -d psol ] && rm -rf psol
+#     tar xf ${psol_version:?}-x$OS_BIT.tar.gz
+#
+#
+#     if [ ${lua_install:?} = 'y' ]; then
+#         yum -y install readline readline-deve
+#         SOURCE_SCRIPT ${script_dir:?}/include/LuaJIT.sh
+#         Install_LuaJIT
+#         echo -e "${CMSG}[ ngx_devel_kit（NDK）]***********************************>>${CEND}\n"
+#         cd ${script_dir:?}/src
+#         src_url=https://github.com/simplresty/ngx_devel_kit/archive/v${ngx_devel_kit_version:?}.tar.gz
+#         [ ! -f v${ngx_devel_kit_version:?}.tar.gz ] && Download_src
+#         [ -d ngx_devel_kit-${ngx_devel_kit_version:?} ] && rm -rf ngx_devel_kit-${ngx_devel_kit_version:?}
+#         tar xf v${ngx_devel_kit_version:?}.tar.gz
+#         echo -e "${CMSG}[ lua-nginx-module（NDK）]***********************************>>${CEND}\n"
+#         cd ${script_dir:?}/src
+#         # shellcheck disable=SC2034
+#         src_url=https://github.com/openresty/lua-nginx-module/archive/v${lua_nginx_module_version:?}.tar.gz
+#         [ ! -f v${lua_nginx_module_version:?}.tar.gz ] && Download_src
+#         [ -d lua-nginx-module-${lua_nginx_module_version:?} ] && rm -rf lua-nginx-module-${lua_nginx_module_version:?}
+#         tar xf v${lua_nginx_module_version:?}.tar.gz
+#         echo -e "${CMSG}[ stream-lua-nginx-module ]***********************************>>${CEND}\n"
+#         cd ${script_dir:?}/src
+#         if  [ ! -d stream-lua-nginx-module ]; then
+#             git clone https://github.com/openresty/stream-lua-nginx-module.git
+#         else
+#             cd stream-lua-nginx-module && git pull
+#         fi
+#     fi
+#     # other
+#     yum -y install gcc automake autoconf libtool make gcc-c++ libuuid-devel
+# }
 
-    INFO_MSG "[ Redmine Deps installing.........]"
-    yum -y install ImageMagick ImageMagick-devel ImageMagick-c++-devel mysql-devel
-    INFO_MSG "[ Ruby、rubygem、rails Installing.........]"
-    SOURCE_SCRIPT ${script_dir:?}/include/ruby.sh
-    Install_Ruby
-    INFO_MSG "[ Redmine Database Setuping.........]"
-    Setup_DataBase
+select_redmine_install(){
 
-}
+    echo "${CMSG}-----------------------------------------------------------------------${CEND}"
+    cat << EOF
+*  `echo -e "$CMAGENTA  1) Redmine-${redmine_verion:?}   "`
+*  `echo -e "$CMAGENTA  2) Nginx-${nginx_mainline_version:?} with Passenger"`
+*  `echo -e "$CMAGENTA  3) Redmine Common plug-in "`
+*  `echo -e "$CMAGENTA  4) Upgrade Redmine "`
+*  `echo -e "$CMAGENTA  5) Back             "`
+*  `echo -e "$CMAGENTA  6) Quit             "`
+EOF
+    read -p "${CBLUE}Which function are you want to select:${CEND} " num3
 
-Setup_DataBase() {
-
-    case   ${redmine_dbtype:?} in
-        "postgreSQL")
-            {
-                while :; do
-                    while :; do
-                        read -p "Please input PostgreSQL install path (Default:${pgsqlbasepath:?}):" PgsqlPath
-                        PgsqlPath="${PgsqlPath:=${pgsqlbasepath:?}}"
-                        if [ ! -x $PgsqlPath/bin/psql ]; then
-                            FAILURE_MSG "[ $PgsqlPath/bin/psql not exists  !!!]"
-                        else
-                            break
-                        fi
-                    done
-
-                    while :; do
-                        read -p "Please input PostgreSQL run user (Default:${pgsqluser:?}):" PgsqlUser
-                        PgsqlUser="${PgsqlUser:=${pgsqluser:?}}"
-                        id $PgsqlUser >/dev/null 2>&1
-                        if [ $? -eq 0 ]; then
-                            break
-                        else
-                            FAILURE_MSG "[ User $PgsqlUser not exists  !!!]"
-                        fi
-                    done
-                    read -p "Please input PostgreSQL host (Default:localhost):" PgsqlHost
-                    PgsqlHost="${PgsqlHost:=localhost}"
-
-                    read -s -p "Please input PostgreSQL password :" PgsqlPass
-                    PgsqlPass="${PgsqlPass}"
-                    echo
-                    export PGUSER=$PgsqlUser PGPASSWORD=$PgsqlPass \
-                        PGDATABASE=postgres PGHOST=$PgsqlHost
-                    pg_version=$($PgsqlPath/bin/psql -A -t -c "show server_version")
-                    if [ -z $pg_version ]; then
-                        FAILURE_MSG "[ PostgreSQL connect error  !!!]"
-                        unset PGUSER PGPASSWORD PGDATABASE PGHOST
-                    else
-                        break
-                    fi
-                done
-                #major=$(echo $pg_version | cut -d. -f1,2)
-                #minor=$(echo $pg_version | cut -d. -f3)
-                INFO_MSG "[ current PostgreSQL version is $pg_version ........]"
-                INFO_MSG "[ Create Redmine Database ........]"
-                # test redmine db is exists
-                if [ "$($PgsqlPath/bin/psql -lqt | cut -d \| -f 1 | grep -qw 'redmine')" ] \
-                    || [ "$($PgsqlPath/bin/psql -t -d postgres -c '\du' | cut -d \| -f 1 | grep -w 'redmine')" ]; then
-                    while :; do
-                        read -n1 -p "Db and User exists Do You Want to Delete? [y/n]: " del_yn
-                        if [[ ! ${del_yn} =~ ^[y,n]$ ]]; then
-                            WARNING_MSG "[input error! Please only input 'y' or 'n' ....]"
-                        else
-                            if [ "${del_yn}" == 'y' ]; then
-                                echo
-                                INFO_MSG "[ Drop User and Db ........]"
-                                $PgsqlPath/bin/psql -c " DROP DATABASE  IF EXISTS redmine;"
-                                $PgsqlPath/bin/psql -c " DROP ROLE IF EXISTS redmine;"
-                            else
-                                echo
-                                FAILURE_MSG "[ Redmine DataBase can not Create  !!!]" && exit 0
-                            fi
-                            break
-                        fi
-                    done
-                fi
-                INFO_MSG "[ Create Redmine User and Db .........]"
-                redmine_pass=`mkpasswd -s 0 -l 8`
-                $PgsqlPath/bin/psql -c " CREATE ROLE redmine LOGIN ENCRYPTED PASSWORD '$redmine_pass' NOINHERIT VALID UNTIL 'infinity';"
-                $PgsqlPath/bin/psql -c "CREATE DATABASE redmine WITH ENCODING='UTF8' OWNER=redmine;"
-                unset PGUSER PGPASSWORD PGDATABASE PGHOST
-                PGUSER='redmine'
-                PGPASSWORD=$redmine_pass
-                PGDATABASE='redmine'
-                PGHOST=$PgsqlHost
-                export PGUSER PGPASSWORD PGDATABASE PGHOST
-                if $PgsqlPath/bin/psql -lqt | cut -d \| -f 1 | grep -qw $PGDATABASE ; then
-                    # database exists
-                    # $? is 0
-                    SUCCESS_MSG "[ Redmine DataBase Create SUCCESS !!!!]"
-                    WARNING_MSG "[ User remine passwd:$redmine_pass !!!!!!!]"
-                else
-                    # ruh-roh
-                    # $? is 1
-                    FAILURE_MSG "[ Redmine DataBase Create failure  !!!]"
-                    unset PGUSER PGPASSWORD PGDATABASE PGHOST
-                    kill -9 $$
-                fi
-                unset PGUSER PGPASSWORD PGDATABASE PGHOST
-
-            }
+    case $num3 in
+        1)
+            SOURCE_SCRIPT ${FunctionPath:?}/install/redmine.sh
+            Redmine_Install_Main
+            select_redmine_install
+            ;;
+        2)
+            select_devops_install
+            ;;
+        3)
+            select_devops_install
             ;;
 
-        "MySql")
-            {
-                echo
-            }
+        4)
+            select_devops_install
+            ;;
+        5)
+            select_devops_install
+            ;;
+        6)
+            clear
+            exit 0
             ;;
         *)
-            echo "unknow Dbtype" && exit ;;
+            select_redmine_install
     esac
-}
-
-Install_Redmine(){
-
-    INFO_MSG "[ redmine-${redmine_verion:?} Installing.........]"
-    cd ${script_dir:?}/src
-    # shellcheck disable=SC2034
-    src_url=https://www.redmine.org/releases/redmine-${redmine_verion:?}.tar.gz
-    [ ! -f redmine-${redmine_verion:?}.tar.gz ] && Download_src
-    [ -d redmine-${redmine_verion:?} ] && rm -rf redmine-${redmine_verion:?}
-    tar xf redmine-${redmine_verion:?}.tar.gz
-    [ ! -d ${wwwroot_dir:?} ] && mkdir -p ${wwwroot_dir:?}
-
-    [ -d ${wwwroot_dir:?}/redmine ] && rm -rf ${wwwroot_dir:?}/redmine
-    mv redmine-${redmine_verion:?} ${wwwroot_dir:?}/redmine
-    cd ${wwwroot_dir:?}/redmine
-    INFO_MSG "[ setup remine configure.........]"
-    # modify redmine configure
-    cp config/configuration.yml.example config/configuration.yml
-    cp config/database.yml.example config/database.yml
-    # 注释默认的mysql 数据库配置
-    sed -i '/^production:/,+6s/\(.*\)/#&/' config/database.yml
-    cat >> config/database.yml <<EOF
-
-production:
-  adapter: postgresql
-  database: redmine
-  host: $PgsqlHost
-  username: redmine
-  password: "$redmine_pass"
-EOF
-
-    INFO_MSG "[ install remine dependence.........]"
-    su - ${default_user:?} -c "gem sources --add https://gems.ruby-china.org/ --remove https://rubygems.org/"
-    # 临时修改源
-    su - ${default_user:?} -c "bundle config mirror.https://rubygems.org https://gems.ruby-china.org/"
-    # 安装依赖
-    su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && bundle install \
-        --without development test  --path /home/${default_user:?}/.gem"
-    # Generate the secret token, then generate the database
-    INFO_MSG "[ Generate the secret token,then generate the database....]"
-    su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
-        bundle exec rake generate_secret_token RAILS_ENV=production"
-    su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
-        bundle exec rake db:migrate RAILS_ENV=production"
-    su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
-        bundle exec rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=zh"
-    # RAILS_ENV=production REDMINE_LANG=fr bundle exec rake redmine:load_default_data
-
-    INFO_MSG "[ Phusion Passenger Installing ......]"
-    su - ${default_user:?} -c "gem install passenger --no-ri --no-rdoc --user-install"
-    if [ -f /home/${default_user:?}/.zshrc ]; then
-        echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/2.4.0/bin" >>/home/${default_user:?}/.zshrc
-        su - ${default_user:?} -c "source /home/${default_user:?}/.zshrc"
-    else
-        echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/2.4.0/bin" >>/home/${default_user:?}/.bash_profile
-        su - ${default_user:?} -c "source /home/${default_user:?}/.bash_profile"
-    fi
-    # su - ${default_user:?} -c " export PATH=$PATH:/home/${default_user:?}/.gem/ruby/2.4.0/bin \
-    #     && passenger_path=$(/home/${default_user:?}/.gem/ruby/2.4.0/bin/passenger-config --root)"
-    for file in /home/${default_user:?}/.gem/ruby/2.4.0/bin/passenger*
-    do
-        fname=$(basename $file)
-        [ -L /usr/local/bin/$fname ] && rm -rf /usr/local/bin/$fname
-        ln -s $file /usr/local/bin/$fname
-    done
-
-    passenger_path=$(su - ${default_user:?} -c "passenger-config --root")
-    
-    echo ${passenger_path:?}
-
-}
-
-Config_Redmine(){
-
-
-    echo ""
-
-
-}
-
-
-Redmine_Install_Main() {
-
-    Redmine_Var && Redmine_Dep_Install && Install_Redmine
-
 }
