@@ -88,8 +88,8 @@ $system_user   ALL=(ALL)  NOPASSWD: ALL
 EOF
         chmod 400 /etc/sudoers.d/$system_user
     fi
-    sed -i "s@^default_user.*@default_user=$system_user@" ./config/common.conf
-    SOURCE_SCRIPT ${ScriptPath:?}/config/options.conf
+    sed -i "s@^default_user.*@default_user=$system_user@" ${ScriptPath:?}/config/common.conf
+    SOURCE_SCRIPT ${ScriptPath:?}/config/common.conf
 }
 
  app_user_setup()
