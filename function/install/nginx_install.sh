@@ -14,9 +14,9 @@ Nginx_Var() {
     fi
     echo -e "${CMSG}[create user and group ]***********************************>>${CEND}\n"
     id ${run_user:?} >/dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        WARNING_MSG "[ running user($run_user) exist !!!]"
-    else
+    if [ ! $? -eq 0 ]; then
+    #     WARNING_MSG "[ running user($run_user) exist !!!]"
+    # else
         app_user_setup ${run_user:?}
     fi
 }
