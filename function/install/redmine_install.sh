@@ -33,27 +33,39 @@ Redmine_Dep_Install(){
 passenger_install (){
 
     INFO_MSG "[ Phusion Passenger Installing ......]"
-    su - ${default_user:?} -c "gem install passenger --no-ri --no-rdoc --user-install"
-    if [ -f /home/${default_user:?}/.zshrc ]; then
-        echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin" >>/home/${default_user:?}/.zshrc
-        su - ${default_user:?} -c "source /home/${default_user:?}/.zshrc"
+    # su - ${default_user:?} -c "gem install passenger --no-ri --no-rdoc --user-install"
+    gem install passenger --no-ri --no-rdoc
+    # if [ -f /home/${default_user:?}/.zshrc ]; then
+    #     echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin" >>/home/${default_user:?}/.zshrc
+    #     su - ${default_user:?} -c "source /home/${default_user:?}/.zshrc"
+    # else
+    #     echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin" >>/home/${default_user:?}/.bash_profile
+    #     su - ${default_user:?} -c "source /home/${default_user:?}/.bash_profile"
+    # fi
+    if [ -f /root/.zshrc ]; then
+        echo export 'PATH=$PATH:'"${ruby_install_dir:?}/bin" >>/root/.zshrc
+        source /root/.zshrc
     else
-        echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin" >>/home/${default_user:?}/.bash_profile
-        su - ${default_user:?} -c "source /home/${default_user:?}/.bash_profile"
+        echo export 'PATH=$PATH:'"${ruby_install_dir:?}/bin" >>/root/.bash_profile
+        source /root/.bash_profile
     fi
-    for file in /home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin/passenger*
-    do
-        fname=$(basename $file)
-        [ -L /usr/local/bin/$fname ] && rm -rf /usr/local/bin/$fname
-        ln -s $file /usr/local/bin/$fname
-    done
+    # /usr/local/software/ruby/lib/ruby/gems/2.4.0/gems
+    # for file in /home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin/passenger*
+    # do
+    #     fname=$(basename $file)
+    #     [ -L /usr/local/bin/$fname ] && rm -rf /usr/local/bin/$fname
+    #     ln -s $file /usr/local/bin/$fname
+    # done
     # passenger_dir=$(su - ${default_user:?} -c "passenger-config --root")
-    sed -i "s@^passenger_root.*@passenger_root=$(su - ${default_user:?} -c "passenger-config --root")@" ${script_dir:?}/config/redmine.conf
-    sed -i "s@^nginx_addon_dir.*@nginx_addon_dir=$(su - ${default_user:?} -c "passenger-config --nginx-addon-dir")@" ${script_dir:?}/config/redmine.conf
-    # sed -i "s@^passenger_ruby.*@passenger_ruby=$(su - ${default_user:?} -c "passenger-config --ruby-command")@" ${script_dir:?}/config/redmine.conf
-    sed -i "s@^passenger_ruby.*@passenger_ruby=/usr/local/software/ruby/bin/ruby@" ${script_dir:?}/config/redmine.conf
+    # sed -i "s@^passenger_root.*@passenger_root=$(su - ${default_user:?} -c "passenger-config --root")@" ${script_dir:?}/config/redmine.conf
+    # sed -i "s@^nginx_addon_dir.*@nginx_addon_dir=$(su - ${default_user:?} -c "passenger-config --nginx-addon-dir")@" ${script_dir:?}/config/redmine.conf
+    # # sed -i "s@^passenger_ruby.*@passenger_ruby=$(su - ${default_user:?} -c "passenger-config --ruby-command")@" ${script_dir:?}/config/redmine.conf
+    # sed -i "s@^passenger_ruby.*@passenger_ruby=/usr/local/software/ruby/bin/ruby@" ${script_dir:?}/config/redmine.conf
+
+    sed -i "s@^passenger_root.*@passenger_root=$(passenger-config --root)@" ${script_dir:?}/config/redmine.conf
+    sed -i "s@^nginx_addon_dir.*@nginx_addon_dir=$(passenger-config --nginx-addon-dir)@" ${script_dir:?}/config/redmine.conf
+    sed -i "s@^passenger_ruby.*@passenger_ruby=${ruby_install_dir:?}/bin/ruby@" ${script_dir:?}/config/redmine.conf
     SOURCE_SCRIPT ${script_dir:?}/config/redmine.conf
-    echo ${nginx_addon_dir:?}
     if [ -f ${nginx_addon_dir:?}/config ]; then
         SUCCESS_MSG "[Phusion Passenger installed successful !!!]"
     else

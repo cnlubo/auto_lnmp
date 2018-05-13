@@ -42,7 +42,7 @@ Install_Nginx(){
         nginx_modules_options="--with-ld-opt=-ljemalloc"
     fi
     if [ ${Passenger_install:?} = 'y' ]; then
-        nginx_modules_options=$nginx_modules_options" --add-module=${nginx_addon_dir:?}"
+        nginx_modules_options=$nginx_modules_options" --add-dynamic-module=${nginx_addon_dir:?}"
     fi
 
     ./configure --prefix=${nginx_install_dir:?} \
@@ -101,10 +101,12 @@ Config_Nginx(){
         if [ ${lua_install:?} = 'y' ]; then
             cp ${script_dir:?}/template/nginx/nginx_lua_template.conf $nginx_install_dir/conf/nginx.conf
         else
+            cp ${script_dir:?}/template/nginx/conf.d/default.conf $nginx_install_dir/conf.d/default.conf
             cp ${script_dir:?}/template/nginx/nginx_template.conf $nginx_install_dir/conf/nginx.conf
         fi
-        cp ${script_dir:?}/template/nginx/conf.d/default.conf $nginx_install_dir/conf.d/default.conf
+
         if [ ${Passenger_install:?} = 'y' ]; then
+            [ -f $nginx_install_dir/conf.d/default.conf ] && rm -rf $nginx_install_dir/conf.d/default.conf
             cp ${script_dir:?}/template/nginx/conf.d/redmine.conf $nginx_install_dir/conf.d/redmine.conf
             sed -i "s#@passenger_root#${passenger_root:?}#g" $nginx_install_dir/conf.d/redmine.conf
             sed -i "s#@passenger_ruby#${passenger_ruby:?}#g" $nginx_install_dir/conf.d/redmine.conf

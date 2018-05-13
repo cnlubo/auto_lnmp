@@ -6,8 +6,8 @@ Type=forking
 #PIDFile=@nginx_basedir/run/nginx.pid
 ExecStartPre=@nginx_basedir/sbin/nginx -t -c @nginx_basedir/conf/nginx.conf
 ExecStart=@nginx_basedir/sbin/nginx -c @nginx_basedir/conf/nginx.conf
-ExecReload=/bin/kill -s HUP $MAINPID
-ExecStop=/bin/kill -s QUIT $MAINPID
+ExecReload=@nginx_basedir/sbin/nginx -s reload
+ExecStop=@nginx_basedir/sbin/nginx -s stop
 PrivateTmp=true
 [Install]
 WantedBy=multi-user.target

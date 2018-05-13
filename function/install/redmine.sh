@@ -141,25 +141,37 @@ production:
 EOF
 
     INFO_MSG "[ install remine dependence.........]"
-    su - ${default_user:?} -c "gem sources --add https://gems.ruby-china.org/ --remove https://rubygems.org/"
+    # su - ${default_user:?} -c "gem sources --add https://gems.ruby-china.org/ --remove https://rubygems.org/"
+    # # 临时修改源
+    # su - ${default_user:?} -c "bundle config mirror.https://rubygems.org https://gems.ruby-china.org/"
+    # # 安装依赖
+    # su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && bundle install \
+    #     --without development test  --path /home/${default_user:?}/.gem"
+    # # Generate the secret token, then generate the database
+    # INFO_MSG "[ Generate the secret token,then generate the database....]"
+    # su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
+    #     bundle exec rake generate_secret_token RAILS_ENV=production"
+    # su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
+    #     bundle exec rake db:migrate RAILS_ENV=production"
+    # su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
+    #     bundle exec rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=zh"
+
+    #gem sources --add https://gems.ruby-china.org/ --remove https://rubygems.org/
     # 临时修改源
-    su - ${default_user:?} -c "bundle config mirror.https://rubygems.org https://gems.ruby-china.org/"
+    bundle config mirror.https://rubygems.org https://gems.ruby-china.org/
     # 安装依赖
-    su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && bundle install \
-        --without development test  --path /home/${default_user:?}/.gem"
+    cd ${wwwroot_dir:?}/redmine
+    bundle install --without development test
     # Generate the secret token, then generate the database
     INFO_MSG "[ Generate the secret token,then generate the database....]"
-    su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
-        bundle exec rake generate_secret_token RAILS_ENV=production"
-    su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
-        bundle exec rake db:migrate RAILS_ENV=production"
-    su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
-        bundle exec rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=zh"
+    bundle exec rake generate_secret_token RAILS_ENV=production
+    bundle exec rake db:migrate RAILS_ENV=production
+    bundle exec rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=zh
 }
 
 Config_Redmine(){
 
-    INFO_MSG "[ Setup Directorys Permission ............. ]"
+    INFO_MSG "[ Setup User and Directorys Permission ............. ]"
     id ${run_user:?} >/dev/null 2>&1
     if [ ! $? -eq 0 ]; then
         app_user_setup ${run_user:?}
@@ -171,6 +183,7 @@ Config_Redmine(){
     cd ${wwwroot_dir:?}/redmine && mkdir -p tmp tmp/pdf public/plugin_assets
     chown -R ${redmine_run_user:?}:$redmine_run_user files log tmp public/plugin_assets
     chmod -R 755 files log tmp public/plugin_assets
+    usermod -a -G ${default_user:?} ${redmine_run_user:?}
     INFO_MSG "[Redmine-${redmine_verion:?} install finish ......]"
 }
 
