@@ -104,7 +104,9 @@ EOF
             select_redmine_install
             ;;
         3)
-            select_devops_install
+            SOURCE_SCRIPT ${FunctionPath:?}/install/redmine.sh
+            Redmine_Plugin_Install
+            select_redmine_install
             ;;
 
         4)

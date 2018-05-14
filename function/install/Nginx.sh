@@ -42,7 +42,7 @@ Install_Nginx(){
         nginx_modules_options="--with-ld-opt=-ljemalloc"
     fi
     if [ ${Passenger_install:?} = 'y' ]; then
-        nginx_modules_options=$nginx_modules_options" --add-dynamic-module=${nginx_addon_dir:?}"
+        nginx_modules_options=$nginx_modules_options" --add-module=${nginx_addon_dir:?}"
     fi
 
     ./configure --prefix=${nginx_install_dir:?} \

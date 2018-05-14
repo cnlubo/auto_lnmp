@@ -125,8 +125,6 @@ Install_Redmine(){
     mv redmine-${redmine_verion:?} ${wwwroot_dir:?}/redmine
     cd ${wwwroot_dir:?}/redmine
     INFO_MSG "[ setup remine configure.........]"
-    # modify redmine configure
-    cp config/configuration.yml.example config/configuration.yml
     cp config/database.yml.example config/database.yml
     # 注释默认的mysql 数据库配置
     sed -i '/^production:/,+6s/\(.*\)/#&/' config/database.yml
@@ -146,15 +144,15 @@ EOF
     # su - ${default_user:?} -c "bundle config mirror.https://rubygems.org https://gems.ruby-china.org/"
     # # 安装依赖
     # su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && bundle install \
-    #     --without development test  --path /home/${default_user:?}/.gem"
+        #     --without development test  --path /home/${default_user:?}/.gem"
     # # Generate the secret token, then generate the database
     # INFO_MSG "[ Generate the secret token,then generate the database....]"
     # su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
-    #     bundle exec rake generate_secret_token RAILS_ENV=production"
+        #     bundle exec rake generate_secret_token RAILS_ENV=production"
     # su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
-    #     bundle exec rake db:migrate RAILS_ENV=production"
+        #     bundle exec rake db:migrate RAILS_ENV=production"
     # su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
-    #     bundle exec rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=zh"
+        #     bundle exec rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=zh"
 
     #gem sources --add https://gems.ruby-china.org/ --remove https://rubygems.org/
     # 临时修改源
@@ -184,7 +182,34 @@ Config_Redmine(){
     chown -R ${redmine_run_user:?}:$redmine_run_user files log tmp public/plugin_assets
     chmod -R 755 files log tmp public/plugin_assets
     usermod -a -G ${default_user:?} ${redmine_run_user:?}
+    # modify redmine configure
+    cp config/configuration.yml.example config/configuration.yml
+    cp config/additional_environment.rb.example config/additional_environment.rb
+    INFO_MSG "[setup log configuration ....]"
+    cat >> config/additional_environment.rb <<EOF
+
+config.logger = Logger.new(Rails.root.join("log",Rails.env + ".log"),3,5*1024*1024)
+config.logger.level = Logger::WARN
+EOF
+
     INFO_MSG "[Redmine-${redmine_verion:?} install finish ......]"
+}
+
+Redmine_Plugin_Install() {
+
+    if [ -d ${wwwroot_dir:?}/redmine ] && [ ! -z ${redmine_run_user:?} ];then
+        INFO_MSG "[redmine_ckeditor Plugin install ......]"
+        #redmine_ckeditor
+        su - ${redmine_run_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
+        git clone https://github.com/a-ono/redmine_ckeditor.git plugins/"
+        cd ${wwwroot_dir:?}/redmine
+        bundle install --without development test
+        rake redmine:plugins:migrate RAILS_ENV=production
+
+    else
+        WARNING_MSG "[ Redmine not exits, Please first installation !!!!!!]"
+    fi
+
 }
 
 
