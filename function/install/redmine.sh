@@ -198,24 +198,64 @@ EOF
 Redmine_Plugin_Install() {
 
     if [ -d ${wwwroot_dir:?}/redmine ] && [ ! -z ${redmine_run_user:?} ];then
-        INFO_MSG "[redmine_ckeditor Plugin install ......]"
-        #redmine_ckeditor
-        sudo -u ${redmine_run_user:?} -H git clone https://github.com/a-ono/redmine_ckeditor.git \
-            ${wwwroot_dir:?}/redmine/plugins/redmine_ckeditor
-        bundle config mirror.https://rubygems.org https://gems.ruby-china.org/
         cd ${wwwroot_dir:?}/redmine
+        bundle config mirror.https://rubygems.org https://gems.ruby-china.org/
+        INFO_MSG "[redmine_ckeditor Plugin ......]"
+        if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_ckeditor ]; then
+            cd ${wwwroot_dir:?}/redmine/plugins/redmine_ckeditor && git pull
+        else
+            sudo -u ${redmine_run_user:?} -H git clone https://github.com/a-ono/redmine_ckeditor.git \
+                ${wwwroot_dir:?}/redmine/plugins/redmine_ckeditor
+        fi
         bundle install --without development test
         rake redmine:plugins:migrate RAILS_ENV=production
-        INFO_MSG "[redmine_dmsf Plugin install ......]"
+        rm -r public/plugin_assets/redmine_ckeditor
+        INFO_MSG "[redmine_dmsf Plugin ......]"
         yum -y install xapian-core xapian-bindings-ruby libxapian-dev xpdf \
             poppler-utils antiword unzip catdoc libwpd-tools \
             libwps-tools gzip unrtf catdvi djview djview3 uuid \
             uuid-dev xz libemail-outlook-message-perl
-        sudo -u ${redmine_run_user:?} -H git clone https://github.com/danmunn/redmine_dmsf.git \
-            ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf
-        cd ${wwwroot_dir:?}/redmine
+        if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf ]; then
+            cd ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf && git pull
+        else
+            sudo -u ${redmine_run_user:?} -H git clone https://github.com/danmunn/redmine_dmsf.git \
+                ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf
+        fi
         bundle install --without development test
         bundle exec rake redmine:plugins:migrate RAILS_ENV="production"
+        INFO_MSG "[redmine_lightbox2 Plugin ......]"
+        if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_lightbox2 ]; then
+            cd ${wwwroot_dir:?}/redmine/plugins/redmine_lightbox2 && git pull
+        else
+            sudo -u ${redmine_run_user:?} -H git clone https://github.com/paginagmbh/redmine_lightbox2.git \
+                ${wwwroot_dir:?}/redmine/plugins/redmine_lightbox2
+        fi
+        rake redmine:plugins:migrate RAILS_ENV=production
+        INFO_MSG " [ redmine_work_time Plugin ......]"
+        [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_work_time ] && rm -rf ${wwwroot_dir:?}/redmine/plugins/redmine_work_time
+        wget https://github.com/tkusukawa/redmine_work_time/archive/${redmine_work_time_version:?}.tar.gz
+        if [ -f ${redmine_work_time_version:?}.tar.gz ]; then
+            tar xf ${redmine_work_time_version:?}.tar.gz && mv redmine_work_time-${redmine_work_time_version:?} plugins/redmine_work_time
+            chown -Rf ${redmine_run_user:?}:${redmine_run_user:?} plugins/redmine_work_time
+            rm -rf ${redmine_work_time_version:?}.tar.gz
+            bundle exec rake redmine:plugins:migrate RAILS_ENV="production"
+        fi
+        INFO_MSG " [ Timesheet Plugin ......]"
+        if [ -d ${wwwroot_dir:?}/redmine/plugins/timesheet ]; then
+            cd ${wwwroot_dir:?}/redmine/plugins/timesheet && git pull
+        else
+            sudo -u ${redmine_run_user:?} -H git clone https://github.com/Contargo/redmine-timesheet-plugin.git \
+                ${wwwroot_dir:?}/redmine/plugins/timesheet
+        fi
+        INFO_MSG " [ redmine_banner Plugin ......]"
+        if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_banner ]; then
+            cd ${wwwroot_dir:?}/redmine/plugins/redmine_banner && git pull
+        else
+            sudo -u ${redmine_run_user:?} -H git clone https://github.com/akiko-pusu/redmine_banner.git \
+                ${wwwroot_dir:?}/redmine/plugins/redmine_banner
+        fi
+        bundle exec rake redmine:plugins:migrate RAILS_ENV="production"
+
     else
         WARNING_MSG "[ Redmine not exits, Please first installation !!!!!!]"
     fi
