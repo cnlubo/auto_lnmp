@@ -202,10 +202,20 @@ Redmine_Plugin_Install() {
         #redmine_ckeditor
         sudo -u ${redmine_run_user:?} -H git clone https://github.com/a-ono/redmine_ckeditor.git \
             ${wwwroot_dir:?}/redmine/plugins/redmine_ckeditor
+        bundle config mirror.https://rubygems.org https://gems.ruby-china.org/
         cd ${wwwroot_dir:?}/redmine
         bundle install --without development test
         rake redmine:plugins:migrate RAILS_ENV=production
-
+        INFO_MSG "[redmine_dmsf Plugin install ......]"
+        yum -y install xapian-core xapian-bindings-ruby libxapian-dev xpdf \
+            poppler-utils antiword unzip catdoc libwpd-tools \
+            libwps-tools gzip unrtf catdvi djview djview3 uuid \
+            uuid-dev xz libemail-outlook-message-perl
+        sudo -u ${redmine_run_user:?} -H git clone https://github.com/danmunn/redmine_dmsf.git \
+            ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf
+        cd ${wwwroot_dir:?}/redmine
+        bundle install --without development test
+        bundle exec rake redmine:plugins:migrate RAILS_ENV="production"
     else
         WARNING_MSG "[ Redmine not exits, Please first installation !!!!!!]"
     fi
