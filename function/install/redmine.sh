@@ -197,7 +197,7 @@ EOF
 
 Redmine_Plugin_Install() {
 
-    if [ -d ${wwwroot_dir:?}/redmine ] && [ ! -z ${redmine_run_user:?} ];then
+    if [ -d ${wwwroot_dir:?}/redmine ] && [ -z ${redmine_run_user:?} ];then
         INFO_MSG "[redmine_ckeditor Plugin install ......]"
         #redmine_ckeditor
         su - ${redmine_run_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
