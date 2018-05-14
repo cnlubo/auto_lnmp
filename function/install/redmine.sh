@@ -201,7 +201,7 @@ Redmine_Plugin_Install() {
         INFO_MSG "[redmine_ckeditor Plugin install ......]"
         #redmine_ckeditor
         sudo -u ${redmine_run_user:?} -H git clone https://github.com/a-ono/redmine_ckeditor.git \
-            ${wwwroot_dir:?}/redmine/plugins/
+            ${wwwroot_dir:?}/redmine/plugins/redmine_ckeditor
         cd ${wwwroot_dir:?}/redmine
         bundle install --without development test
         rake redmine:plugins:migrate RAILS_ENV=production
