@@ -202,7 +202,7 @@ Redmine_Plugin_Install() {
         bundle config mirror.https://rubygems.org https://gems.ruby-china.org/
         INFO_MSG "[redmine_ckeditor Plugin ......]"
         if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_ckeditor ]; then
-            cd ${wwwroot_dir:?}/redmine/plugins/redmine_ckeditor && git pull
+            cd ${wwwroot_dir:?}/redmine/plugins/redmine_ckeditor && git pull && cd ${wwwroot_dir:?}/redmine
         else
             sudo -u ${redmine_run_user:?} -H git clone https://github.com/a-ono/redmine_ckeditor.git \
                 ${wwwroot_dir:?}/redmine/plugins/redmine_ckeditor
@@ -216,7 +216,7 @@ Redmine_Plugin_Install() {
             libwps-tools gzip unrtf catdvi djview djview3 uuid \
             uuid-dev xz libemail-outlook-message-perl
         if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf ]; then
-            cd ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf && git pull
+            cd ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf && git pull && cd ${wwwroot_dir:?}/redmine
         else
             sudo -u ${redmine_run_user:?} -H git clone https://github.com/danmunn/redmine_dmsf.git \
                 ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf
@@ -225,7 +225,7 @@ Redmine_Plugin_Install() {
         bundle exec rake redmine:plugins:migrate RAILS_ENV="production"
         INFO_MSG "[redmine_lightbox2 Plugin ......]"
         if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_lightbox2 ]; then
-            cd ${wwwroot_dir:?}/redmine/plugins/redmine_lightbox2 && git pull
+            cd ${wwwroot_dir:?}/redmine/plugins/redmine_lightbox2 && git pull && cd ${wwwroot_dir:?}/redmine
         else
             sudo -u ${redmine_run_user:?} -H git clone https://github.com/paginagmbh/redmine_lightbox2.git \
                 ${wwwroot_dir:?}/redmine/plugins/redmine_lightbox2
@@ -235,6 +235,7 @@ Redmine_Plugin_Install() {
         [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_work_time ] && rm -rf ${wwwroot_dir:?}/redmine/plugins/redmine_work_time
         wget https://github.com/tkusukawa/redmine_work_time/archive/${redmine_work_time_version:?}.tar.gz
         if [ -f ${redmine_work_time_version:?}.tar.gz ]; then
+            # redmine_work_time-0.3.4
             tar xf ${redmine_work_time_version:?}.tar.gz && mv redmine_work_time-${redmine_work_time_version:?} plugins/redmine_work_time
             chown -Rf ${redmine_run_user:?}:${redmine_run_user:?} plugins/redmine_work_time
             rm -rf ${redmine_work_time_version:?}.tar.gz
@@ -242,14 +243,14 @@ Redmine_Plugin_Install() {
         fi
         INFO_MSG " [ Timesheet Plugin ......]"
         if [ -d ${wwwroot_dir:?}/redmine/plugins/timesheet ]; then
-            cd ${wwwroot_dir:?}/redmine/plugins/timesheet && git pull
+            cd ${wwwroot_dir:?}/redmine/plugins/timesheet && git pull && cd ${wwwroot_dir:?}/redmine
         else
             sudo -u ${redmine_run_user:?} -H git clone https://github.com/Contargo/redmine-timesheet-plugin.git \
                 ${wwwroot_dir:?}/redmine/plugins/timesheet
         fi
         INFO_MSG " [ redmine_banner Plugin ......]"
         if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_banner ]; then
-            cd ${wwwroot_dir:?}/redmine/plugins/redmine_banner && git pull
+            cd ${wwwroot_dir:?}/redmine/plugins/redmine_banner && git pull && cd ${wwwroot_dir:?}/redmine
         else
             sudo -u ${redmine_run_user:?} -H git clone https://github.com/akiko-pusu/redmine_banner.git \
                 ${wwwroot_dir:?}/redmine/plugins/redmine_banner
