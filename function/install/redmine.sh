@@ -208,18 +208,21 @@ Redmine_Plugin_Install() {
                 ${wwwroot_dir:?}/redmine/plugins/redmine_ckeditor
         fi
 
-        # INFO_MSG "[redmine_dmsf Plugin ......]"
-        #
-        # yum -y install xapian-core xapian-bindings-ruby libxapian-dev xpdf \
-        #     poppler-utils antiword unzip catdoc libwpd-tools \
-        #     libwps-tools gzip unrtf catdvi djview djview3 uuid \
-        #     uuid-dev xz libemail-outlook-message-perl
-        # if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf ]; then
-        #     cd ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf && git pull && cd ${wwwroot_dir:?}/redmine
-        # else
-        #     sudo -u ${redmine_run_user:?} -H git clone https://github.com/danmunn/redmine_dmsf.git \
-        #         ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf
-        # fi
+        INFO_MSG "[redmine_dmsf Plugin ......]"
+
+        yum -y install xapian-core xapian-bindings-ruby libxapian-dev xpdf \
+            poppler-utils antiword unzip catdoc libwpd-tools \
+            libwps-tools gzip unrtf catdvi djview djview3 uuid \
+            uuid-dev xz libemail-outlook-message-perl
+        if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf ]; then
+            cd ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf && git pull && cd ${wwwroot_dir:?}/redmine
+        else
+            sudo -u ${redmine_run_user:?} -H git clone https://github.com/danmunn/redmine_dmsf.git \
+                ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf
+            cd ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf
+            sudo -u ${redmine_run_user:?} -H git checkout v1.6.0
+            cd ${wwwroot_dir:?}/redmine
+        fi
 
         INFO_MSG "[redmine_lightbox2 Plugin ......]"
         if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_lightbox2 ]; then
@@ -295,11 +298,19 @@ Redmine_Plugin_Install() {
             sudo -u ${redmine_run_user:?} -H git clone https://github.com/stgeneral/redmine-progressive-projects-list.git \
                 ${wwwroot_dir:?}/redmine/plugins/progressive_projects_list
         fi
+        INFO_MSG "[Redmine Theme Changer Plugin ......]"
+        if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_theme_changer ]; then
+            cd ${wwwroot_dir:?}/redmine/plugins/redmine_theme_changer && git pull && cd ${wwwroot_dir:?}/redmine
+        else
+            sudo -u ${redmine_run_user:?} -H git clone https://github.com/haru/redmine_theme_changer.git \
+                ${wwwroot_dir:?}/redmine/plugins/redmine_theme_changer
+        fi
 
         # install plugin
         bundle config mirror.https://rubygems.org https://gems.ruby-china.org/
         bundle install --without development test
-        rake redmine:plugins:migrate RAILS_ENV=production
+        #rake redmine:plugins:migrate RAILS_ENV=production
+        bundle exec rake redmine:plugins:migrate RAILS_ENV="production"
         [ -d public/plugin_assets/redmine_ckeditor ] && rm -r public/plugin_assets/redmine_ckeditor
 
         INFO_MSG "[Plugin install finish, Please restart redmine ......]"
