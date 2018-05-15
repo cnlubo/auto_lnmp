@@ -288,7 +288,15 @@ Redmine_Plugin_Install() {
                 ${wwwroot_dir:?}/redmine/plugins/redmine_issues_tree
         fi
 
-        # install
+        INFO_MSG "[Progressive Projects List Plugin ......]"
+        if [ -d ${wwwroot_dir:?}/redmine/plugins/progressive_projects_list ]; then
+            cd ${wwwroot_dir:?}/redmine/plugins/progressive_projects_list && git pull && cd ${wwwroot_dir:?}/redmine
+        else
+            sudo -u ${redmine_run_user:?} -H git clone https://github.com/stgeneral/redmine-progressive-projects-list.git \
+                ${wwwroot_dir:?}/redmine/plugins/progressive_projects_list
+        fi
+
+        # install plugin
         bundle config mirror.https://rubygems.org https://gems.ruby-china.org/
         bundle install --without development test
         rake redmine:plugins:migrate RAILS_ENV=production
