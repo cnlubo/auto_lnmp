@@ -36,6 +36,8 @@ Redmine_Dep_Install(){
 passenger_install (){
 
     if [ -f ${nginx_addon_dir:?}/config ]&&[ -e "$( which passenger )" ] ; then
+        INFO_MSG "[Phusion Passenger is already installed ......]"
+    else
         INFO_MSG "[ Phusion Passenger Installing ......]"
         gem install passenger --no-ri --no-rdoc
         if [ -f /root/.zshrc ]; then
@@ -55,8 +57,6 @@ passenger_install (){
             FAILURE_MSG "[install Phusion Passenger failed,Please contact the author !!!]"
             kill -9 $$
         fi
-    else
-        INFO_MSG "[Phusion Passenger is already installed ......]"
     fi
 }
 
