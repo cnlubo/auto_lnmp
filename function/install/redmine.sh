@@ -208,18 +208,18 @@ Redmine_Plugin_Install() {
                 ${wwwroot_dir:?}/redmine/plugins/redmine_ckeditor
         fi
 
-        INFO_MSG "[redmine_dmsf Plugin ......]"
-
-        yum -y install xapian-core xapian-bindings-ruby libxapian-dev xpdf \
-            poppler-utils antiword unzip catdoc libwpd-tools \
-            libwps-tools gzip unrtf catdvi djview djview3 uuid \
-            uuid-dev xz libemail-outlook-message-perl
-        if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf ]; then
-            cd ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf && git pull && cd ${wwwroot_dir:?}/redmine
-        else
-            sudo -u ${redmine_run_user:?} -H git clone https://github.com/danmunn/redmine_dmsf.git \
-                ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf
-        fi
+        # INFO_MSG "[redmine_dmsf Plugin ......]"
+        #
+        # yum -y install xapian-core xapian-bindings-ruby libxapian-dev xpdf \
+        #     poppler-utils antiword unzip catdoc libwpd-tools \
+        #     libwps-tools gzip unrtf catdvi djview djview3 uuid \
+        #     uuid-dev xz libemail-outlook-message-perl
+        # if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf ]; then
+        #     cd ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf && git pull && cd ${wwwroot_dir:?}/redmine
+        # else
+        #     sudo -u ${redmine_run_user:?} -H git clone https://github.com/danmunn/redmine_dmsf.git \
+        #         ${wwwroot_dir:?}/redmine/plugins/redmine_dmsf
+        # fi
 
         INFO_MSG "[redmine_lightbox2 Plugin ......]"
         if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_lightbox2 ]; then
@@ -301,6 +301,8 @@ Redmine_Plugin_Install() {
         bundle install --without development test
         rake redmine:plugins:migrate RAILS_ENV=production
         [ -d public/plugin_assets/redmine_ckeditor ] && rm -r public/plugin_assets/redmine_ckeditor
+
+        INFO_MSG "[Plugin install finish, Please restart redmine ......]"
 
 
     else
