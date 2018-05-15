@@ -35,18 +35,19 @@ Redmine_Dep_Install(){
 
 passenger_install (){
 
-    if [ -f ${nginx_addon_dir:?}/config ]&&[ ! -z "$(passenger-config --root)" ] ; then
+    if [ -f ${nginx_addon_dir:?}/config ]&&[ -f ${ruby_install_dir:?}/bin/passenger ] ; then
         INFO_MSG "[Phusion Passenger is already installed ......]"
     else
         INFO_MSG "[ Phusion Passenger Installing ......]"
         gem install passenger --no-ri --no-rdoc
         if [ -f /root/.zshrc ]; then
             echo export 'PATH=$PATH:'"${ruby_install_dir:?}/bin" >>/root/.zshrc
-            SOURCE_SCRIPT /root/.zshrc
+            #SOURCE_SCRIPT /root/.zshrc
         else
             echo export 'PATH=$PATH:'"${ruby_install_dir:?}/bin" >>/root/.bash_profile
-            SOURCE_SCRIPT /root/.bash_profile
+            #SOURCE_SCRIPT /root/.bash_profile
         fi
+        export 'PATH=$PATH:'"${ruby_install_dir:?}/bin"
         sed -i "s@^passenger_root.*@passenger_root=$(passenger-config --root)@" ${script_dir:?}/config/redmine.conf
         sed -i "s@^nginx_addon_dir.*@nginx_addon_dir=$(passenger-config --nginx-addon-dir)@" ${script_dir:?}/config/redmine.conf
         sed -i "s@^passenger_ruby.*@passenger_ruby=${ruby_install_dir:?}/bin/ruby@" ${script_dir:?}/config/redmine.conf
