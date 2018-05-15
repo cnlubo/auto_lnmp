@@ -37,6 +37,7 @@ passenger_install (){
 
     if [ -f ${nginx_addon_dir:?}/config ]&&[ -f ${ruby_install_dir:?}/bin/passenger ] ; then
         INFO_MSG "[Phusion Passenger is already installed ......]"
+        SOURCE_SCRIPT /root/.zshrc
     else
         INFO_MSG "[ Phusion Passenger Installing ......]"
         gem install passenger --no-ri --no-rdoc
