@@ -47,7 +47,8 @@ passenger_install (){
             echo export 'PATH=$PATH:'"${ruby_install_dir:?}/bin" >>/root/.bash_profile
             #SOURCE_SCRIPT /root/.bash_profile
         fi
-        export 'PATH=$PATH:'"${ruby_install_dir:?}/bin"
+        export PATH=$PATH:${ruby_install_dir:?}/bin
+        echo $PATH
         sed -i "s@^passenger_root.*@passenger_root=$(passenger-config --root)@" ${script_dir:?}/config/redmine.conf
         sed -i "s@^nginx_addon_dir.*@nginx_addon_dir=$(passenger-config --nginx-addon-dir)@" ${script_dir:?}/config/redmine.conf
         sed -i "s@^passenger_ruby.*@passenger_ruby=${ruby_install_dir:?}/bin/ruby@" ${script_dir:?}/config/redmine.conf
