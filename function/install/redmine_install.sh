@@ -35,24 +35,28 @@ Redmine_Dep_Install(){
 
 passenger_install (){
 
-    INFO_MSG "[ Phusion Passenger Installing ......]"
-    gem install passenger --no-ri --no-rdoc
-    if [ -f /root/.zshrc ]; then
-        echo export 'PATH=$PATH:'"${ruby_install_dir:?}/bin" >>/root/.zshrc
-        SOURCE_SCRIPT /root/.zshrc
+    if [ -f ${nginx_addon_dir:?}/config ]&&[ -e "$( which passenger )" ] ; then
+        INFO_MSG "[ Phusion Passenger Installing ......]"
+        gem install passenger --no-ri --no-rdoc
+        if [ -f /root/.zshrc ]; then
+            echo export 'PATH=$PATH:'"${ruby_install_dir:?}/bin" >>/root/.zshrc
+            SOURCE_SCRIPT /root/.zshrc
+        else
+            echo export 'PATH=$PATH:'"${ruby_install_dir:?}/bin" >>/root/.bash_profile
+            SOURCE_SCRIPT /root/.bash_profile
+        fi
+        sed -i "s@^passenger_root.*@passenger_root=$(passenger-config --root)@" ${script_dir:?}/config/redmine.conf
+        sed -i "s@^nginx_addon_dir.*@nginx_addon_dir=$(passenger-config --nginx-addon-dir)@" ${script_dir:?}/config/redmine.conf
+        sed -i "s@^passenger_ruby.*@passenger_ruby=${ruby_install_dir:?}/bin/ruby@" ${script_dir:?}/config/redmine.conf
+        SOURCE_SCRIPT ${script_dir:?}/config/redmine.conf
+        if [ -f ${nginx_addon_dir:?}/config ]; then
+            SUCCESS_MSG "[Phusion Passenger installed successful !!!]"
+        else
+            FAILURE_MSG "[install Phusion Passenger failed,Please contact the author !!!]"
+            kill -9 $$
+        fi
     else
-        echo export 'PATH=$PATH:'"${ruby_install_dir:?}/bin" >>/root/.bash_profile
-        SOURCE_SCRIPT /root/.bash_profile
-    fi
-    sed -i "s@^passenger_root.*@passenger_root=$(passenger-config --root)@" ${script_dir:?}/config/redmine.conf
-    sed -i "s@^nginx_addon_dir.*@nginx_addon_dir=$(passenger-config --nginx-addon-dir)@" ${script_dir:?}/config/redmine.conf
-    sed -i "s@^passenger_ruby.*@passenger_ruby=${ruby_install_dir:?}/bin/ruby@" ${script_dir:?}/config/redmine.conf
-    SOURCE_SCRIPT ${script_dir:?}/config/redmine.conf
-    if [ -f ${nginx_addon_dir:?}/config ]; then
-        SUCCESS_MSG "[Phusion Passenger installed successful !!!]"
-    else
-        FAILURE_MSG "[install Phusion Passenger failed,Please contact the author !!!]"
-        kill -9 $$
+        INFO_MSG "[Phusion Passenger is already installed ......]"
     fi
 }
 
