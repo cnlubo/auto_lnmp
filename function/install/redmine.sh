@@ -241,13 +241,13 @@ Redmine_Plugin_Install() {
             chown -Rf ${redmine_run_user:?}:${redmine_run_user:?} plugins/redmine_work_time
             rm -rf ${redmine_work_time_version:?}.tar.gz
         fi
-        # INFO_MSG " [ Timesheet Plugin ......]"
-        # if [ -d ${wwwroot_dir:?}/redmine/plugins/timesheet ]; then
-        #     cd ${wwwroot_dir:?}/redmine/plugins/timesheet && git pull && cd ${wwwroot_dir:?}/redmine
-        # else
-        #     sudo -u ${redmine_run_user:?} -H git clone https://github.com/Contargo/redmine-timesheet-plugin.git \
-            #         ${wwwroot_dir:?}/redmine/plugins/timesheet
-        # fi
+        INFO_MSG " [ Timesheet Plugin ......]"
+        if [ -d ${wwwroot_dir:?}/redmine/plugins/timesheet ]; then
+            cd ${wwwroot_dir:?}/redmine/plugins/timesheet && git pull && cd ${wwwroot_dir:?}/redmine
+        else
+            sudo -u ${redmine_run_user:?} -H git clone https://github.com/Contargo/redmine-timesheet-plugin.git \
+                    ${wwwroot_dir:?}/redmine/plugins/timesheet
+        fi
         INFO_MSG " [ redmine_banner Plugin ......]"
         if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_banner ]; then
             cd ${wwwroot_dir:?}/redmine/plugins/redmine_banner && git pull && cd ${wwwroot_dir:?}/redmine
