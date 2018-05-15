@@ -13,9 +13,7 @@ SOURCE_SCRIPT ${script_dir:?}/config/redmine.conf
 Redmine_Var() {
 
     check_app_status ${redmine_dbtype:?}
-    if [ $? -eq 0 ]; then
-        WARNING_MSG "[ PostgreSQL installed .........]"
-    else
+    if [ $? -eq 1 ]; then
         WARNING_MSG "[DataBase ${redmine_dbtype:?} is not running or install  !!!!]" && exit 0
     fi
     # check redmine running
@@ -23,8 +21,6 @@ Redmine_Var() {
     if [ $COUNT -gt 0 ];then
         WARNING_MSG "[ Redmine is running please firest stop it .........]" && exit 0
     fi
-
-
 }
 
 Redmine_Dep_Install(){
