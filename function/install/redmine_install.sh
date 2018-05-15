@@ -21,7 +21,7 @@ Redmine_Var() {
     # check redmine running
     COUNT=$(ps aux|grep ${wwwroot_dir:?}/redmine|grep -v grep |wc -l)
     if [ $COUNT -gt 0 ];then
-        WARNING_MSG "[ Redmine is running .........]" && exit 0
+        WARNING_MSG "[ Redmine is running please firest stop it .........]" && exit 0
     fi
 
 
