@@ -37,6 +37,7 @@ passenger_install (){
 
     if [ -f ${nginx_addon_dir:?}/config ]&&[ -f ${ruby_install_dir:?}/bin/passenger ] ; then
         INFO_MSG "[Phusion Passenger is already installed ......]"
+        echo export 'PATH=$PATH:'"${ruby_install_dir:?}/bin" >>/root/.zshrc
         #export SHELL=/usr/local/bin/zsh
         #source /root/.zshrc
         #export SHELL=/bin/bash
