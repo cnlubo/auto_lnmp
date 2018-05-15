@@ -18,6 +18,13 @@ Redmine_Var() {
     else
         WARNING_MSG "[DataBase ${redmine_dbtype:?} is not running or install  !!!!]" && exit 0
     fi
+    # check redmine running
+    COUNT=$(ps aux|grep ${wwwroot_dir:?}/redmine|grep -v grep |wc -l)
+    if [ $COUNT -gt 0 ];then
+        WARNING_MSG "[ Redmine is running ß.........]"
+    fi
+
+
 }
 
 Redmine_Dep_Install(){
@@ -33,35 +40,14 @@ Redmine_Dep_Install(){
 passenger_install (){
 
     INFO_MSG "[ Phusion Passenger Installing ......]"
-    # su - ${default_user:?} -c "gem install passenger --no-ri --no-rdoc --user-install"
     gem install passenger --no-ri --no-rdoc
-    # if [ -f /home/${default_user:?}/.zshrc ]; then
-    #     echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin" >>/home/${default_user:?}/.zshrc
-    #     su - ${default_user:?} -c "source /home/${default_user:?}/.zshrc"
-    # else
-    #     echo export 'PATH=$PATH:'"/home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin" >>/home/${default_user:?}/.bash_profile
-    #     su - ${default_user:?} -c "source /home/${default_user:?}/.bash_profile"
-    # fi
     if [ -f /root/.zshrc ]; then
         echo export 'PATH=$PATH:'"${ruby_install_dir:?}/bin" >>/root/.zshrc
-        source /root/.zshrc
+        SOURCE_SCRIPT /root/.zshrc
     else
         echo export 'PATH=$PATH:'"${ruby_install_dir:?}/bin" >>/root/.bash_profile
-        source /root/.bash_profile
+        SOURCE_SCRIPT /root/.bash_profile
     fi
-    # /usr/local/software/ruby/lib/ruby/gems/2.4.0/gems
-    # for file in /home/${default_user:?}/.gem/ruby/${ruby_major_version:?}.0/bin/passenger*
-    # do
-    #     fname=$(basename $file)
-    #     [ -L /usr/local/bin/$fname ] && rm -rf /usr/local/bin/$fname
-    #     ln -s $file /usr/local/bin/$fname
-    # done
-    # passenger_dir=$(su - ${default_user:?} -c "passenger-config --root")
-    # sed -i "s@^passenger_root.*@passenger_root=$(su - ${default_user:?} -c "passenger-config --root")@" ${script_dir:?}/config/redmine.conf
-    # sed -i "s@^nginx_addon_dir.*@nginx_addon_dir=$(su - ${default_user:?} -c "passenger-config --nginx-addon-dir")@" ${script_dir:?}/config/redmine.conf
-    # # sed -i "s@^passenger_ruby.*@passenger_ruby=$(su - ${default_user:?} -c "passenger-config --ruby-command")@" ${script_dir:?}/config/redmine.conf
-    # sed -i "s@^passenger_ruby.*@passenger_ruby=/usr/local/software/ruby/bin/ruby@" ${script_dir:?}/config/redmine.conf
-
     sed -i "s@^passenger_root.*@passenger_root=$(passenger-config --root)@" ${script_dir:?}/config/redmine.conf
     sed -i "s@^nginx_addon_dir.*@nginx_addon_dir=$(passenger-config --nginx-addon-dir)@" ${script_dir:?}/config/redmine.conf
     sed -i "s@^passenger_ruby.*@passenger_ruby=${ruby_install_dir:?}/bin/ruby@" ${script_dir:?}/config/redmine.conf

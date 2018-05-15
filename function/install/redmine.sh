@@ -139,22 +139,6 @@ production:
 EOF
 
     INFO_MSG "[ install remine dependence.........]"
-    # su - ${default_user:?} -c "gem sources --add https://gems.ruby-china.org/ --remove https://rubygems.org/"
-    # # 临时修改源
-    # su - ${default_user:?} -c "bundle config mirror.https://rubygems.org https://gems.ruby-china.org/"
-    # # 安装依赖
-    # su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && bundle install \
-        #     --without development test  --path /home/${default_user:?}/.gem"
-    # # Generate the secret token, then generate the database
-    # INFO_MSG "[ Generate the secret token,then generate the database....]"
-    # su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
-        #     bundle exec rake generate_secret_token RAILS_ENV=production"
-    # su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
-        #     bundle exec rake db:migrate RAILS_ENV=production"
-    # su - ${default_user:?} -c "cd ${wwwroot_dir:?}/redmine && \
-        #     bundle exec rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=zh"
-
-    #gem sources --add https://gems.ruby-china.org/ --remove https://rubygems.org/
     # 临时修改源
     bundle config mirror.https://rubygems.org https://gems.ruby-china.org/
     # 安装依赖
@@ -241,13 +225,13 @@ Redmine_Plugin_Install() {
             chown -Rf ${redmine_run_user:?}:${redmine_run_user:?} plugins/redmine_work_time
             rm -rf ${redmine_work_time_version:?}.tar.gz
         fi
-        INFO_MSG " [ Timesheet Plugin ......]"
-        if [ -d ${wwwroot_dir:?}/redmine/plugins/timesheet ]; then
-            cd ${wwwroot_dir:?}/redmine/plugins/timesheet && git pull && cd ${wwwroot_dir:?}/redmine
-        else
-            sudo -u ${redmine_run_user:?} -H git clone https://github.com/Contargo/redmine-timesheet-plugin.git \
-                    ${wwwroot_dir:?}/redmine/plugins/timesheet
-        fi
+        # INFO_MSG " [ Timesheet Plugin ......]" # uncompatible with redmine 3.4
+        # if [ -d ${wwwroot_dir:?}/redmine/plugins/timesheet ]; then
+        #     cd ${wwwroot_dir:?}/redmine/plugins/timesheet && git pull && cd ${wwwroot_dir:?}/redmine
+        # else
+        #     sudo -u ${redmine_run_user:?} -H git clone https://github.com/Contargo/redmine-timesheet-plugin.git \
+        #             ${wwwroot_dir:?}/redmine/plugins/timesheet
+        # fi
         INFO_MSG " [ redmine_banner Plugin ......]"
         if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_banner ]; then
             cd ${wwwroot_dir:?}/redmine/plugins/redmine_banner && git pull && cd ${wwwroot_dir:?}/redmine
@@ -283,13 +267,13 @@ Redmine_Plugin_Install() {
             sudo -u ${redmine_run_user:?} -H git clone https://github.com/akiko-pusu/redmine_issue_templates.git \
                 ${wwwroot_dir:?}/redmine/plugins/redmine_issue_templates
         fi
-        INFO_MSG "[RedmineIssuesTree Plugin ......]"
-        if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_issues_tree ]; then
-            cd ${wwwroot_dir:?}/redmine/plugins/redmine_issues_tree && git pull && cd ${wwwroot_dir:?}/redmine
-        else
-            sudo -u ${redmine_run_user:?} -H git clone https://github.com/Loriowar/redmine_issues_tree.git \
-                ${wwwroot_dir:?}/redmine/plugins/redmine_issues_tree
-        fi
+        # INFO_MSG "[RedmineIssuesTree Plugin ......]" # uncompatible with redmine 3.4
+        # if [ -d ${wwwroot_dir:?}/redmine/plugins/redmine_issues_tree ]; then
+        #     cd ${wwwroot_dir:?}/redmine/plugins/redmine_issues_tree && git pull && cd ${wwwroot_dir:?}/redmine
+        # else
+        #     sudo -u ${redmine_run_user:?} -H git clone https://github.com/Loriowar/redmine_issues_tree.git \
+        #         ${wwwroot_dir:?}/redmine/plugins/redmine_issues_tree
+        # fi
 
         INFO_MSG "[Progressive Projects List Plugin ......]"
         if [ -d ${wwwroot_dir:?}/redmine/plugins/progressive_projects_list ]; then
@@ -309,9 +293,15 @@ Redmine_Plugin_Install() {
         # install plugin
         bundle config mirror.https://rubygems.org https://gems.ruby-china.org/
         bundle install --without development test
-        #rake redmine:plugins:migrate RAILS_ENV=production
         bundle exec rake redmine:plugins:migrate RAILS_ENV="production"
         [ -d public/plugin_assets/redmine_ckeditor ] && rm -r public/plugin_assets/redmine_ckeditor
+
+        # themes install
+        [ -d ${wwwroot_dir:?}/redmine/public/themes/a1 ] && rm -rf  ${wwwroot_dir:?}/redmine/public/themes/a1
+        unzip ${script_dir:?}/template/redmine/themes/a1_theme-2_0_0.zip -d ${wwwroot_dir:?}/redmine/public/themes/
+        [ -d ${wwwroot_dir:?}/redmine/public/themes/minimalflat2 ] && rm -rf  ${wwwroot_dir:?}/redmine/public/themes/minimalflat2
+        unzip ${script_dir:?}/template/redmine/themes/minimalflat2-1.4.0.zip -d ${wwwroot_dir:?}/redmine/public/themes/
+        chown -Rf ${redmine_run_user:?}:${redmine_run_user:?} ${wwwroot_dir:?}/redmine/public/themes/
 
         INFO_MSG "[Plugin install finish, Please restart redmine ......]"
 
