@@ -42,7 +42,7 @@ passenger_install (){
         gem install passenger --no-ri --no-rdoc
         if [ -f /root/.zshrc ]; then
             echo export 'PATH=$PATH:'"${ruby_install_dir:?}/bin" >>/root/.zshrc
-            SOURCE_SCRIPT ${script_dir:?}/include.test_zsh.sh
+            source ${script_dir:?}/include/test_zsh.sh
         else
             echo export 'PATH=$PATH:'"${ruby_install_dir:?}/bin" >>/root/.bash_profile
             SOURCE_SCRIPT /root/.bash_profile
