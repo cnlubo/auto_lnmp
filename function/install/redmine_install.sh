@@ -35,7 +35,7 @@ Redmine_Dep_Install(){
 
 passenger_install (){
 
-    if [ -f ${nginx_addon_dir:?}/config ]&&[ -f ${ruby_install_dir:?}/bin/passenger ] ; then
+    if [ -f ${ruby_install_dir:?}/bin/passenger ] ; then
         INFO_MSG "[Phusion Passenger is already installed ......]"
     else
         INFO_MSG "[ Phusion Passenger Installing ......]"
