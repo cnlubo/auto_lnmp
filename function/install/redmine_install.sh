@@ -52,7 +52,7 @@ passenger_install (){
         sed -i "s@^passenger_ruby.*@passenger_ruby=${ruby_install_dir:?}/bin/ruby@" ${script_dir:?}/config/redmine.conf
         SOURCE_SCRIPT ${script_dir:?}/config/redmine.conf
         if [ -f ${nginx_addon_dir:?}/config ]; then
-            SUCCESS_MSG "[Phusion Passenger installed successful !!!]"
+            SUCCESS_MSG "[Phusion Passenger installed successful, Please Restart Your Shell !!!!]"
         else
             FAILURE_MSG "[install Phusion Passenger failed,Please contact the author !!!]"
             kill -9 $$
