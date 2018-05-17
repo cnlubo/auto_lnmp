@@ -22,8 +22,8 @@ EOF
 
     case $num3 in
         1)
-            clear
-            select_main_menu
+            SOURCE_SCRIPT ${FunctionPath:?}/install/gitlab_install.sh
+            select_gitlab_install
             ;;
         2)
             clear
