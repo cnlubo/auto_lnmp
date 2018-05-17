@@ -75,7 +75,7 @@ EOF
     case $num3 in
         1)
             SOURCE_SCRIPT ${FunctionPath:?}/install/redmine.sh
-            Redmine_Install_Main
+            Redmine_Install_Main 2>&1 | tee $script_dir/logs/Install_Redmine.log
             select_redmine_install
             ;;
         2)

@@ -9,7 +9,7 @@
 SOURCE_SCRIPT ${ScriptPath:?}/config/postgresql.conf
 SOURCE_SCRIPT ${script_dir:?}/config/gitlab.conf
 
-Gitlab_Var() {
+GitLab_Var() {
 
     check_app_status ${gitlab_dbtype:?}
     if [ $? -eq 1 ]; then
@@ -17,7 +17,7 @@ Gitlab_Var() {
     fi
 }
 
-gitlab_Dep_Install(){
+GitLab_Dep_Install(){
 
     INFO_MSG "[ Ruby、rubygem Installing.........]"
     SOURCE_SCRIPT ${script_dir:?}/include/ruby.sh
@@ -29,8 +29,6 @@ gitlab_Dep_Install(){
     curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
     yum -y install nodejs
     npm install -g yarn
-
-
 }
 
 select_gitlab_install(){
@@ -48,7 +46,7 @@ EOF
     case $num3 in
         1)
             SOURCE_SCRIPT ${FunctionPath:?}/install/gitlab.sh
-            Gitlab_Install_Main
+            Gitlab_Install_Main 2>&1 | tee $script_dir/logs/Install_GitLab.log
             select_gitlab_install
             ;;
         2)
