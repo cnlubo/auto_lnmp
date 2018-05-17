@@ -176,7 +176,7 @@ config.logger = Logger.new(Rails.root.join("log",Rails.env + ".log"),3,5*1024*10
 config.logger.level = Logger::WARN
 EOF
 
-    INFO_MSG "[Redmine-${redmine_verion:?} install finish ......]"
+    INFO_MSG "[Redmine-${redmine_verion:?} install finish Please Restart Your Shell ......]"
 }
 
 Redmine_Plugin_Install() {

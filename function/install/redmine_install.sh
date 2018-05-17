@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # shellcheck disable=SC2164
-# shellcheck disable=SC2034
 #---------------------------------------------------------------------------
 # @Author:                                 ak47(454331202@qq.com)
 # @file_name:                              redmine_install.sh
@@ -82,9 +81,13 @@ EOF
         2)
             SOURCE_SCRIPT ${FunctionPath:?}/install/nginx_install.sh
             SOURCE_SCRIPT ${FunctionPath:?}/install/Nginx.sh
+            # shellcheck disable=SC2034
             nginx_install_version=${nginx_mainline_version:?}
+            # shellcheck disable=SC2034
             Nginx_install='Nginx'
+            # shellcheck disable=SC2034
             lua_install='n'
+            # shellcheck disable=SC2034
             Passenger_install='y'
             Nginx_Var && Nginx_Base_Dep_Install && Install_Nginx
             select_redmine_install

@@ -16,7 +16,7 @@ Install_Ruby() {
         src_url=http://cache.ruby-lang.org/pub/ruby/${ruby_major_version:?}/ruby-${ruby_version:?}.tar.gz
         INFO_MSG "[ Ruby-${ruby_version:?} installing ]"
         cd ${script_dir:?}/src
-        [ -f ruby-${ruby_version:?}.tar.gz ] && Download_src
+        [ ! -f ruby-${ruby_version:?}.tar.gz ] && Download_src
         [ -d ruby-${ruby_version:?} ] && rm -rf ruby-${ruby_version:?}
         tar xf  ruby-${ruby_version:?}.tar.gz && cd ruby-${ruby_version:?}
         ./configure --prefix=${ruby_install_dir:?} --disable-install-rdoc
