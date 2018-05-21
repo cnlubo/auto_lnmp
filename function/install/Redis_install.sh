@@ -5,7 +5,7 @@
 # @file_name:                              redis_install.sh
 # @Desc
 #----------------------------------------------------------------------------
-
+SOURCE_SCRIPT ${ScriptPath:?}/config/redis.conf
 Redis_Var() {
 
     #通过服务名来判断服务器是否有这个进程
@@ -16,7 +16,7 @@ Redis_Var() {
     # fi
     check_app_status 'Redis'
     if [ $? -eq 0 ]; then
-         WARNING_MSG "[Error Redis is running please stop !!!!]" && exit
+        WARNING_MSG "[Error Redis is running please stop !!!!]" && exit
     fi
     INFO_MSG "[create user and group ..........]"
     grep ${redis_user:?} /etc/group >/dev/null 2>&1
@@ -51,6 +51,7 @@ Install_Redis(){
 
     if [ -f "${redis_install_dir:?}/bin/redis-server" ]; then
         redisport=${redis_port:?}
+        redissock=${redis_install_dir}/run/redis.sock
         mkdir -p ${redis_install_dir}/{run,etc,init.d,logs,$redisport}
         cp redis.conf ${redis_install_dir}/etc/redis_$redisport.conf
         # setting conf file
@@ -66,8 +67,17 @@ Install_Redis(){
         redispass=`mkpasswd -l 20 -d 5 -c 7 -C 8 -s 0`
         #sed -i "s@^# requirepass foobared@requirepass $redispass@" ${redis_install_dir}/etc/redis_$redisport.conf
         sed -i "s@^# requirepass.*@requirepass $redispass@" ${redis_install_dir}/etc/redis_$redisport.conf
-        # setting Port
-        sed -i "s@port 6379@port $redisport@" ${redis_install_dir}/etc/redis_$redisport.conf
+        # setting Port or sock
+        if [ ${listen_type:?} = 'tcp' ]; then
+            sed -i "s@port 6379@port $redisport@" ${redis_install_dir}/etc/redis_$redisport.conf
+        elif [ ${listen_type:?} = 'sock' ]; then
+            sed -i "s@port 6379@port 0@" ${redis_install_dir}/etc/redis_$redisport.conf
+            cat >> ${redis_install_dir}/etc/redis_$redisport.conf <<EOF
+
+unixsocket $redissock
+unixsocketperm 0770
+EOF
+        fi
         chown -Rf $redis_user:$redis_user ${redis_install_dir}/
         [ -L /usr/local/bin/redis-cli ] && rm -f /usr/local/bin/redis-cli
         ln -s ${redis_install_dir}/bin/redis-cli /usr/local/bin/redis-cli
@@ -118,6 +128,14 @@ Config_Redis(){
         sed -i "s#@redisport#$redisport#g" /lib/systemd/system/redis.service
         sed -i "s#@redis_user#${redis_user:?}#g" /lib/systemd/system/redis.service
         sed -i "s#@redispass#$redispass#g" /lib/systemd/system/redis.service
+        sed -i "s#@redissock#$redissock#g" /lib/systemd/system/redis.service
+        if [ ${listen_type:?} = 'tcp' ]; then
+            sed -i "s@^ExecStop=.*@ExecStop=${redis_install_dir:?}/bin/redis-cli -p $redisport -a $redispass shutdown@" \
+            /lib/systemd/system/redis.service
+        elif [ ${listen_type:?} = 'sock' ]; then
+            sed -i "s@^ExecStop=.*@ExecStop=${redis_install_dir:?}/bin/redis-cli -s $redissock -a $redispass shutdown@" \
+            /lib/systemd/system/redis.service
+        fi
         systemctl enable redis.service
         INFO_MSG "[starting nginx ........]"
         systemctl start redis.service

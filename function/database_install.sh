@@ -35,7 +35,9 @@ EOF
             ;;
         3)
             SOURCE_SCRIPT $FunctionPath/install/Redis_install.sh
-            Redis_Install_Main
+            # shellcheck disable=SC2034
+            listen_type='tcp'
+            Redis_Install_Main 2>&1 | tee ${script_dir:?}/logs/Install_Redis.log
             select_database_install
             ;;
         4)
