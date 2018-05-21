@@ -94,7 +94,7 @@ EOF
             ;;
         3)
             SOURCE_SCRIPT ${FunctionPath:?}/install/redmine.sh
-            Redmine_Plugin_Install
+            Redmine_Plugin_Install 2>&1 | tee $script_dir/logs/Install_Redmine_Plugin.log
             select_redmine_install
             ;;
 

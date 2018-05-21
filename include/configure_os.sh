@@ -78,7 +78,8 @@ system_user_setup()
         default_pass=`mkpasswd -l 8`
         echo ${default_pass:?} | passwd $system_user --stdin  &>/dev/null
         echo
-        echo "${CRED}[system user $system_user passwd:${default_pass:?} !!!!! ] ****>>${CEND}" | tee ${script_dir:?}/logs/pp.log
+        echo "${CRED}[system user $system_user passwd:${default_pass:?} !!!!! ] ****>>${CEND}"
+        #| tee ${script_dir:?}/logs/pp.log
         echo
         # sudo 权限
         [ -f /etc/sudoers.d/$system_user ] && rm -rf /etc/sudoers.d/$system_user

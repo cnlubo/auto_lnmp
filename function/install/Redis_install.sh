@@ -8,12 +8,15 @@
 
 Redis_Var() {
 
-
     #通过服务名来判断服务器是否有这个进程
-    COUNT=$(pgrep -f redis-server|wc -l)
-    if [ $COUNT -gt 0 ]
-    then
-        WARNING_MSG "[Error Redis is running please stop !!!!]" && exit
+    # COUNT=$(pgrep -f redis-server|wc -l)
+    # if [ $COUNT -gt 0 ]
+    # then
+    #     WARNING_MSG "[Error Redis is running please stop !!!!]" && exit
+    # fi
+    check_app_status 'Redis'
+    if [ $? -eq 0 ]; then
+         WARNING_MSG "[Error Redis is running please stop !!!!]" && exit
     fi
     INFO_MSG "[create user and group ..........]"
     grep ${redis_user:?} /etc/group >/dev/null 2>&1
@@ -59,7 +62,8 @@ Install_Redis(){
         sed -i "s@^dir.*@dir ${redis_install_dir}/$redisport@" ${redis_install_dir}/etc/redis_$redisport.conf
         #sed -i "s@^# bind 127.0.0.1@bind 127.0.0.1@" ${redis_install_dir}/etc/redis_$RedisPort.conf
         # redis pass
-        redispass='admin5678'
+        #redispass='admin5678'
+        redispass=`mkpasswd -l 16`
         sed -i "s@^# requirepass foobared@requirepass $redispass@" ${redis_install_dir}/etc/redis_$redisport.conf
         # setting Port
         sed -i "s@port 6379@port $redisport@" ${redis_install_dir}/etc/redis_$redisport.conf

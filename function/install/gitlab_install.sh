@@ -15,6 +15,10 @@ GitLab_Var() {
     if [ $? -eq 1 ]; then
         WARNING_MSG "[DataBase ${gitlab_dbtype:?} is not running or install  !!!!]" && exit 0
     fi
+    check_app_status'Redis'
+    if [ $? -eq 1 ]; then
+        WARNING_MSG "[Redis is not running or install  !!!!]" && exit 0
+    fi
 }
 
 GitLab_Dep_Install(){
@@ -29,6 +33,8 @@ GitLab_Dep_Install(){
     curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
     yum -y install nodejs
     npm install -g yarn
+    # other
+    yum -y install libicu-devel re2-devel
 }
 
 select_gitlab_install(){

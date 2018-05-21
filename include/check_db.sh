@@ -33,20 +33,31 @@ function  check_app_status () {
                 fi
             }
             ;;
-            "Nginx")
-                {
-                    #-C 表示的是nginx完整命令，不带匹配的操作
-                    #--no-header 表示不要表头的数据
-                    #wc -l 表示计数
-                    COUNT=$(ps -C nginx --no-header |wc -l)
-                    if [ $COUNT -gt 0 ]
-                    then
-                        return 0
-                    else
-                        return 1
-                    fi
-                }
-                ;;
+        "Nginx")
+            {
+                #-C 表示的是nginx完整命令，不带匹配的操作
+                #--no-header 表示不要表头的数据
+                #wc -l 表示计数
+                COUNT=$(ps -C nginx --no-header |wc -l)
+                if [ $COUNT -gt 0 ]
+                then
+                    return 0
+                else
+                    return 1
+                fi
+            }
+            ;;
+        "Redis")
+            {
+                COUNT=$(pgrep -f redis-server|wc -l)
+                if [ $COUNT -gt 0 ]
+                then
+                    return 0
+                else
+                    return 1
+                fi
+            }
+            ;;
         *)
             echo "unknow App ${db_type:?}" && return 9 ;;
     esac

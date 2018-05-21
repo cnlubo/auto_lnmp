@@ -79,7 +79,7 @@ Setup_DataBase() {
                 $PgsqlPath/bin/psql -c " ALTER USER git with password '$gitlab_pass';"
                 $PgsqlPath/bin/psql -c " CREATE EXTENSION IF NOT EXISTS pg_trgm;"
                 $PgsqlPath/bin/psql -c "CREATE DATABASE gitlabhq_production template template1 OWNER git;"
-                 unset PGUSER PGPASSWORD PGDATABASE PGHOST
+                unset PGUSER PGPASSWORD PGDATABASE PGHOST
                 PGUSER='git'
                 PGPASSWORD=$gitlab_pass
                 PGDATABASE='gitlabhq_production'
@@ -123,11 +123,93 @@ Install_GitLab (){
         default_pass=`mkpasswd -l 8`
         echo ${default_pass:?} | passwd git --stdin  &>/dev/null
         echo
-        echo "${CRED}[GitLab user git passwd:${default_pass:?} !!!!! ] ****>>${CEND}" | tee ${script_dir:?}/logs/pp.log
+        echo "${CRED}[GitLab user git passwd:${default_pass:?} !!!!! ] ****>>${CEND}"
         echo
     fi
-    INFO_MSG "[ GitLab Database Setuping.........]"
+    INFO_MSG "[ Create GitLab Database .........]"
     Setup_DataBase
+    INFO_MSG "[ Download GitLab-${gitlab_verson:?}.........]"
+    cd /home/git
+    sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b v$gitlab_verson gitlab
+    INFO_MSG "[ Configuration file and directory permissions ......]"
+    cd /home/git/gitlab
+    sudo -u git -H cp config/gitlab.yml.example config/gitlab.yml
+    # Copy the example secrets file
+    sudo -u git -H cp config/secrets.yml.example config/secrets.yml
+    sudo -u git -H chmod 0600 config/secrets.yml
+    # Make sure GitLab can write to the log/ and tmp/ directories
+    chown -R git log/ && chown -R git tmp/
+    chmod -R u+rwX,go-w log/ && chmod -R u+rwX tmp/
+    # Make sure GitLab can write to the tmp/pids/ and tmp/sockets/ directories
+    chmod -R u+rwX tmp/pids/ && chmod -R u+rwX tmp/sockets/
+    # Create the public/uploads/ directory
+    sudo -u git -H mkdir public/uploads/
+    # Make sure only the GitLab user has access to the public/uploads/ directory
+    # now that files in public/uploads are served by gitlab-workhorse
+    chmod 0700 public/uploads
+    # Change the permissions of the directory where CI build traces are stored
+    chmod -R u+rwX builds/
+    # Change the permissions of the directory where CI artifacts are stored
+    chmod -R u+rwX shared/artifacts/
+    # Change the permissions of the directory where GitLab Pages are stored
+    chmod -R ug+rwX shared/pages/
+    # Copy the example Unicorn config
+    sudo -u git -H cp config/unicorn.rb.example config/unicorn.rb
+    worker_num=$(nproc)
+    sed -i "s@^worker_processes.*@ worker_processes  $worker_num@" config/unicorn.rb
+    # Copy the example Rack attack config
+    sudo -u git -H cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb
+    # Configure Git global settings for git user
+    # 'autocrlf' is needed for the web editor
+    sudo -u git -H git config --global core.autocrlf input
+    # Disable 'git gc --auto' because GitLab already runs 'git gc' when needed
+    sudo -u git -H git config --global gc.auto 0
+    # Enable packfile bitmaps
+    sudo -u git -H git config --global repack.writeBitmaps true
+    # Enable push options
+    sudo -u git -H git config --global receive.advertisePushOptions true
+    #Configure Redis connection settings
+    sudo -u git -H cp config/resque.yml.example config/resque.yml
+    # Change the Redis socket path if you are not using the default Debian / Ubuntu configuration
+    #sudo -u git -H editor config/resque.yml
+    
+    INFO_MSG "[Configure GitLab DB Settings ......]"
+    sudo -u git cp config/database.yml.postgresql config/database.yml
+    # 注释默认的数据库配置
+    sed -i '/^production:/,+8s/\(.*\)/#&/' config/database.yml
+    cat >> config/database.yml <<EOF
+
+production:
+  adapter: postgresql
+  encoding: unicode
+  database: gitlabhq_production
+  pool: 10
+  username: git
+  password: "$gitlab_pass"
+  host: $PgsqlHost
+EOF
+    sudo -u git -H chmod o-rwx config/database.yml
+    INFO_MSG "[Install Gems ......]"
+    cd /home/git/gitlab
+    sudo -u git -H bundle config mirror.https://rubygems.org https://gems.ruby-china.org/
+    sudo -u git -H bundle install --deployment --without development  test mysql aws kerberos --path /home/git/.gem
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 Gitlab_Install_Main() {

@@ -86,7 +86,7 @@ Setup_DataBase() {
                     # database exists
                     # $? is 0
                     SUCCESS_MSG "[ Redmine DataBase Create SUCCESS !!!!]"
-                    WARNING_MSG "[ User remine passwd:$redmine_pass !!!!!!!]"
+                    WARNING_MSG "[ User remine password:$redmine_pass !!!!!!!]"
                 else
                     # ruh-roh
                     # $? is 1
