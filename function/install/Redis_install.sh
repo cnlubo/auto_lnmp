@@ -130,10 +130,10 @@ Config_Redis(){
         sed -i "s#@redispass#$redispass#g" /lib/systemd/system/redis.service
         sed -i "s#@redissock#$redissock#g" /lib/systemd/system/redis.service
         if [ ${listen_type:?} = 'tcp' ]; then
-            sed -i "s@^ExecStop=.*@ExecStop=${redis_install_dir:?}/bin/redis-cli -p $redisport -a $redispass shutdown@" \
+            sed -i "s@^ExecStop=.*@ExecStop=${redis_install_dir:?}/bin/redis-cli -p \$RedisPort -a \$PASS shutdown@" \
             /lib/systemd/system/redis.service
         elif [ ${listen_type:?} = 'sock' ]; then
-            sed -i "s@^ExecStop=.*@ExecStop=${redis_install_dir:?}/bin/redis-cli -s $redissock -a $redispass shutdown@" \
+            sed -i "s@^ExecStop=.*@ExecStop=${redis_install_dir:?}/bin/redis-cli -s \$RedisSock -a \$PASS shutdown@" \
             /lib/systemd/system/redis.service
         fi
         systemctl enable redis.service
