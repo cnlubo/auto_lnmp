@@ -8,6 +8,7 @@
 #----------------------------------------------------------------------------
 SOURCE_SCRIPT ${ScriptPath:?}/config/postgresql.conf
 SOURCE_SCRIPT ${script_dir:?}/config/gitlab.conf
+SOURCE_SCRIPT ${script_dir:?}/config/redis.conf
 
 GitLab_Var() {
 
@@ -16,8 +17,22 @@ GitLab_Var() {
         WARNING_MSG "[DataBase ${gitlab_dbtype:?} is not running or install  !!!!]" && exit 0
     fi
     check_app_status'Redis'
-    if [ $? -eq 1 ]; then
-        WARNING_MSG "[Redis is not running or install  !!!!]" && exit 0
+    if [ $? -eq 0 ]; then
+        WARNING_MSG "[Redis is running Please stop and remove it !!!!]" && exit 0
+    fi
+}
+
+Install_Redis() {
+
+    SOURCE_SCRIPT ${FunctionPath:?}/install/Redis_install.sh
+    # shellcheck disable=SC2034
+    listen_type='sock'
+    Redis_Install_Main 2>&1 | tee ${script_dir:?}/logs/Install_Redis.log
+    # check redis is ok
+    ERROR_MSG=`${redis_install_dir:?}/bin/redis-cli -a ${redispass:?} -s ${redissock:?} PING`
+    if [ "$ERROR_MSG" != "PONG" ];then
+        FAILURE_MSG "[Redis Install failure,Please contact the author !!!]"
+        kill -9 $$
     fi
 }
 
@@ -35,6 +50,8 @@ GitLab_Dep_Install(){
     npm install -g yarn
     # other
     yum -y install libicu-devel re2-devel
+    # Redis install
+    Install_Redis
 }
 
 select_gitlab_install(){

@@ -172,7 +172,8 @@ Install_GitLab (){
     sudo -u git -H cp config/resque.yml.example config/resque.yml
     # Change the Redis socket path if you are not using the default Debian / Ubuntu configuration
     #sudo -u git -H editor config/resque.yml
-    
+
+
     INFO_MSG "[Configure GitLab DB Settings ......]"
     sudo -u git cp config/database.yml.postgresql config/database.yml
     # 注释默认的数据库配置
@@ -193,22 +194,6 @@ EOF
     cd /home/git/gitlab
     sudo -u git -H bundle config mirror.https://rubygems.org https://gems.ruby-china.org/
     sudo -u git -H bundle install --deployment --without development  test mysql aws kerberos --path /home/git/.gem
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
 
