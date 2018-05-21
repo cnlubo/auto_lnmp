@@ -63,8 +63,10 @@ Install_Redis(){
         #sed -i "s@^# bind 127.0.0.1@bind 127.0.0.1@" ${redis_install_dir}/etc/redis_$RedisPort.conf
         # redis pass
         #redispass='admin5678'
-        redispass=`mkpasswd -l 16`
-        sed -i "s@^# requirepass foobared@requirepass $redispass@" ${redis_install_dir}/etc/redis_$redisport.conf
+        redispass=`mkpasswd -l 20 -d 5 -c 5 -C 5 -s 5`
+        echo $ redispass
+        #sed -i "s@^# requirepass foobared@requirepass $redispass@" ${redis_install_dir}/etc/redis_$redisport.conf
+        sed -i "s@^# requirepass.*@requirepass $redispass@" ${redis_install_dir}/etc/redis_$redisport.conf
         # setting Port
         sed -i "s@port 6379@port $redisport@" ${redis_install_dir}/etc/redis_$redisport.conf
         chown -Rf $redis_user:$redis_user ${redis_install_dir}/
