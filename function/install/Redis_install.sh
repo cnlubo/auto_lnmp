@@ -151,6 +151,8 @@ Config_Redis(){
     if [ "$ERROR_MSG" != "PONG" ];then
         FAILURE_MSG "[Redis Install failure,Please contact the author !!!]"
         kill -9 $$
+    else
+        SUCCESS_MSG "[Redis Install SUCCESS !!!]"
     fi
 
 
