@@ -33,6 +33,9 @@ Install_Redis() {
     if [ "$ERROR_MSG" != "PONG" ];then
         FAILURE_MSG "[Redis Install failure,Please contact the author !!!]"
         kill -9 $$
+    else
+        INFO_MSG "[ Add user git to the redis group......]"
+        usermod -aG redis git
     fi
 }
 
@@ -44,14 +47,14 @@ GitLab_Dep_Install(){
     INFO_MSG "[ Golang Installing.........]"
     SOURCE_SCRIPT ${script_dir:?}/include/golang.sh
     install_golang
+    # Redis install
+    Install_Redis
     INFO_MSG "[ Node.js v8.x Installing.........]"
     curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
     yum -y install nodejs
     npm install -g yarn
     # other
     yum -y install libicu-devel re2-devel
-    # Redis install
-    Install_Redis
 }
 
 select_gitlab_install(){

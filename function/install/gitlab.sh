@@ -171,9 +171,13 @@ Install_GitLab (){
     #Configure Redis connection settings
     sudo -u git -H cp config/resque.yml.example config/resque.yml
     # Change the Redis socket path if you are not using the default Debian / Ubuntu configuration
-    #sudo -u git -H editor config/resque.yml
+    sed -i '/^production:/,+3s/\(.*\)/#&/' config/resque.yml
+    cat >> config/resque.yml <<EOF
 
-
+production:
+ url: unix:${redissock:?}
+ password: ${redispass:?}
+EOF
     INFO_MSG "[Configure GitLab DB Settings ......]"
     sudo -u git cp config/database.yml.postgresql config/database.yml
     # 注释默认的数据库配置
@@ -193,7 +197,51 @@ EOF
     INFO_MSG "[Install Gems ......]"
     cd /home/git/gitlab
     sudo -u git -H bundle config mirror.https://rubygems.org https://gems.ruby-china.org/
+    #sudo -u git -H bundle config build.pg --with-pg-config=/usr/local/bin/pg_config
     sudo -u git -H bundle install --deployment --without development  test mysql aws kerberos --path /home/git/.gem
+    INFO_MSG "[Install GitLab shell ......]"
+    sudo -u git -H bundle exec rake gitlab:shell:install REDIS_URL=unix:${redissock:?} \
+        RAILS_ENV=production SKIP_STORAGE_VALIDATION=true
+    INFO_MSG "[Install gitlab-workhorse ......]"
+    sudo -u git -H bundle exec rake "gitlab:workhorse:install[/home/git/gitlab-workhorse]" RAILS_ENV=production
+    INFO_MSG "[Initialize Database and Activate Advanced Features ......]"
+    sudo -u git -H bundle exec rake gitlab:setup RAILS_ENV=production
+
+}
+
+Config_GitLab() {
+
+    INFO_MSG "[Install Init Script ......]"
+    cd /home/git/gitlab
+    cp lib/support/init.d/gitlab /etc/init.d/gitlab
+    cp lib/support/init.d/gitlab.default.example /etc/default/gitlab
+    # if you installed GitLab in another directory or as a user other than the default
+    # you should change these settings in /etc/default/gitlab. Do not edit /etc/init.d/gitlab
+    # as it will be changed on upgrade.
+    chkconfig gitlab on
+    chkconfig --add gitlab
+    INFO_MSG "[Install Gitaly ......]"
+    # Fetch Gitaly source with Git and compile with Go
+    sudo -u git -H bundle exec rake "gitlab:gitaly:install[/home/git/gitaly]" RAILS_ENV=production
+    # You can specify a different Git repository by providing it as an extra paramter:
+    sudo -u git -H bundle exec rake "gitlab:gitaly:install[/home/git/gitaly,https://example.com/gitaly.git]" RAILS_ENV=production
+    # Next, make sure gitaly configured:
+    # Restrict Gitaly socket access
+    chmod 0700 /home/git/gitlab/tmp/sockets/private && chown git /home/git/gitlab/tmp/sockets/private
+    # If you are using non-default settings you need to update config.toml
+    #cd /home/git/gitaly
+    #sudo -u git -H vim config.toml
+    # For more information about configuring Gitaly see
+    #[doc/administration/gitaly](https://gitlab.com/gitlab-org/gitlab-ce/tree/master/doc/administration/gitaly).
+    INFO_MSG "[Set up logrotate ......]"
+    cp lib/support/logrotate/gitlab /etc/logrotate.d/gitlab
+    INFO_MSG "[Check Application Status ......]"
+    sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
+    INFO_MSG "[Compile assets ......]"
+    sudo -u git -H bundle exec rake assets:precompile RAILS_ENV=production
+
+
+
 
 }
 
