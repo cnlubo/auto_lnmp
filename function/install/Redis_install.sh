@@ -134,15 +134,16 @@ Config_Redis(){
                 /lib/systemd/system/redis.service
         fi
         systemctl enable redis.service
-        INFO_MSG "[starting nginx ........]"
+        INFO_MSG "[starting redis ........]"
         systemctl start redis.service
 
     else
         [ -L /etc/init.d/redis ] && rm -f /etc/init.d/redis
         ln -s ${redis_install_dir:?}/init.d/redis /etc/init.d/redis
-        INFO_MSG "[starting nginx ........]"
+        INFO_MSG "[starting redis ........]"
         service start redis
     fi
+    
     if [ ${listen_type:?} = 'tcp' ]; then
         ERROR_MSG=`${redis_install_dir:?}/bin/redis-cli -a ${redispass:?} -p $redisport PING`
     else

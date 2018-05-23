@@ -50,6 +50,7 @@ GitLab_Dep_Install(){
     SOURCE_SCRIPT ${script_dir:?}/include/golang.sh
     install_golang
     Install_Redis
+    
     INFO_MSG "[ Node.js v8.x Installing.........]"
     curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
     yum -y install nodejs
