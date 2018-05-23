@@ -15,12 +15,12 @@ GitLab_Var() {
     check_app_status ${gitlab_dbtype:?}
     if [ $? -eq 1 ]; then
         WARNING_MSG "[DataBase ${gitlab_dbtype:?} is not running or install  !!!!]"
-        kill -9 $$
+        exit 0
     fi
     check_app_status "Redis"
     if [ $? -eq 0 ]; then
         WARNING_MSG "[Redis is running Please stop and remove it !!!!]"
-        kill -9 $$
+        exit 0
     fi
 }
 
