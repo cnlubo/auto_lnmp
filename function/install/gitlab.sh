@@ -126,10 +126,18 @@ Install_GitLab (){
         echo "${CRED}[GitLab user git passwd:${default_pass:?} !!!!! ] ****>>${CEND}"
         echo
     fi
+    id redis >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        INFO_MSG "[ Add user git to the redis group......]"
+        usermod -aG redis git
+    else
+        WARNING_MSG "[ user Redis not exists !!!]"
+    fi
     INFO_MSG "[ Create GitLab Database .........]"
     Setup_DataBase
     INFO_MSG "[ Download GitLab-${gitlab_verson:?}.........]"
     cd /home/git
+    [ -d gitlab ] && rm -rf gitlab
     sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b v$gitlab_verson gitlab
     INFO_MSG "[ Configuration file and directory permissions ......]"
     cd /home/git/gitlab
@@ -199,6 +207,7 @@ EOF
     sudo -u git -H bundle config mirror.https://rubygems.org https://gems.ruby-china.org/
     #sudo -u git -H bundle config build.pg --with-pg-config=/usr/local/bin/pg_config
     sudo -u git -H bundle install --deployment --without development  test mysql aws kerberos --path /home/git/.gem
+
     INFO_MSG "[Install GitLab shell ......]"
     sudo -u git -H bundle exec rake gitlab:shell:install REDIS_URL=unix:${redissock:?} \
         RAILS_ENV=production SKIP_STORAGE_VALIDATION=true

@@ -34,10 +34,7 @@ Install_Redis() {
     # check redis status
     ERROR_MSG=`${redis_install_dir:?}/bin/redis-cli -a ${redispass:?} -s ${redissock:?} PING`
     if [ "$ERROR_MSG" != "PONG" ];then
-        FAILURE_MSG "[Redis Install failure,Please contact the author !!!]" && exit 0
-    else
-        INFO_MSG "[ Add user git to the redis group......]"
-        usermod -aG redis git
+        FAILURE_MSG "[Redis Install failure,Please contact the author !!!]"
     fi
 }
 
