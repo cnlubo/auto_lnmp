@@ -29,7 +29,10 @@ Install_Redis() {
     SOURCE_SCRIPT ${FunctionPath:?}/install/Redis_install.sh
     # shellcheck disable=SC2034
     listen_type='sock'
-    Redis_Install_Main 2>&1 | tee ${script_dir:?}/logs/Install_Redis.log
+    #Redis_Install_Main 2>&1 | tee ${script_dir:?}/logs/Install_Redis.log
+    Redis_Var && Redis_Dep_Install && Install_Redis
+    rpass=${redispass:?}
+    rsock=${redissock:?}
     # check redis is ok
     echo "r"${rpass:?}
     echo "rq"${rsock:?}
