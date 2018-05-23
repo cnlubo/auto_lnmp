@@ -31,13 +31,11 @@ Install_Redis() {
     listen_type='sock'
     Redis_Install_Main 2>&1 | tee ${script_dir:?}/logs/Install_Redis.log
     # check redis is ok
-    #
-    echo "r"${redispass:?}
-    echo "rq"${redissock:?}
+    echo "r"${rpass:?}
+    echo "rq"${rsock:?}
     ERROR_MSG=`${redis_install_dir:?}/bin/redis-cli -a ${redispass:?} -s ${redissock:?} PING`
     if [ "$ERROR_MSG" != "PONG" ];then
-        FAILURE_MSG "[Redis Install failure,Please contact the author !!!]"
-        kill -9 $$
+        FAILURE_MSG "[Redis Install failure,Please contact the author !!!]" && exit 0
     else
         INFO_MSG "[ Add user git to the redis group......]"
         usermod -aG redis git

@@ -152,7 +152,7 @@ Config_Redis(){
     if [ "$ERROR_MSG" != "PONG" ];then
         FAILURE_MSG "[Redis Install failure,Please contact the author !!!]" && exit 1
     else
-        SUCCESS_MSG "[Redis Install SUCCESS !!!]"
+        SUCCESS_MSG "[Redis Install Success !!!]"
     fi
 
 
@@ -161,5 +161,7 @@ Config_Redis(){
 Redis_Install_Main() {
 
     Redis_Var && Redis_Dep_Install && Install_Redis
+    rpass=${redispass:?}
+    rsock=${redissock:?}
 
 }
