@@ -143,7 +143,8 @@ Config_Redis(){
         INFO_MSG "[starting redis ........]"
         service start redis
     fi
-    
+    echo ${redispass:?}
+    sleep 2s
     if [ ${listen_type:?} = 'tcp' ]; then
         ERROR_MSG=`${redis_install_dir:?}/bin/redis-cli -a ${redispass:?} -p $redisport PING`
     else
