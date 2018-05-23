@@ -161,7 +161,4 @@ Config_Redis(){
 Redis_Install_Main() {
 
     Redis_Var && Redis_Dep_Install && Install_Redis
-    rpass=${redispass:?}
-    rsock=${redissock:?}
-
 }

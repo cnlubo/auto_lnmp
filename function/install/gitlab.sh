@@ -95,7 +95,7 @@ Setup_DataBase() {
                     # $? is 1
                     FAILURE_MSG "[ GitLab DataBase Create failure  !!!]"
                     unset PGUSER PGPASSWORD PGDATABASE PGHOST
-                    kill -9 $$
+                    exit 1
                 fi
                 unset PGUSER PGPASSWORD PGDATABASE PGHOST
 
@@ -245,7 +245,6 @@ Config_GitLab() {
 
 Gitlab_Install_Main() {
 
-    GitLab_Var && GitLab_Dep_Install
-    # && Install_GitLab && Config_GitLab
+    GitLab_Var && GitLab_Dep_Install && Install_GitLab && Config_GitLab
 
 }
