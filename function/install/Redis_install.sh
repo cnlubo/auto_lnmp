@@ -69,11 +69,6 @@ Install_Redis(){
                 ${redis_install_dir}/etc/redis_$redisport.conf
             sed -i "s@^# unixsocketperm 700@unixsocketperm 770@" \
                 ${redis_install_dir}/etc/redis_$redisport.conf
-            #             cat >> ${redis_install_dir}/etc/redis_$redisport.conf <<EOF
-            #
-            # unixsocket $redissock
-            # unixsocketperm 0770
-            # EOF
         fi
         chown -Rf $redis_user:$redis_user ${redis_install_dir}/
         [ -L /usr/local/bin/redis-cli ] && rm -f /usr/local/bin/redis-cli
