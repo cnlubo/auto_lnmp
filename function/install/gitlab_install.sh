@@ -16,10 +16,11 @@ GitLab_Var() {
     if [ $? -eq 1 ]; then
         WARNING_MSG "[DataBase ${gitlab_dbtype:?} is not running or install  !!!!]" && exit 0
     fi
-    check_app_status'Redis'
+    check_app_status "Redis"
     if [ $? -eq 0 ]; then
         WARNING_MSG "[Redis is running Please stop and remove it !!!!]" && exit 0
     fi
+    exit 0 
 }
 
 Install_Redis() {
@@ -47,7 +48,6 @@ GitLab_Dep_Install(){
     INFO_MSG "[ Golang Installing.........]"
     SOURCE_SCRIPT ${script_dir:?}/include/golang.sh
     install_golang
-    # Redis install
     Install_Redis
     INFO_MSG "[ Node.js v8.x Installing.........]"
     curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
