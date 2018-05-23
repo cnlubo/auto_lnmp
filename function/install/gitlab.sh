@@ -245,6 +245,7 @@ Config_GitLab() {
 
 Gitlab_Install_Main() {
 
-    GitLab_Var && GitLab_Dep_Install && Install_GitLab && Config_GitLab
+    GitLab_Var && GitLab_Dep_Install
+    # && Install_GitLab && Config_GitLab
 
 }
