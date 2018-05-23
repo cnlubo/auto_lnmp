@@ -67,7 +67,7 @@ Install_Redis(){
             sed -i "s@port 6379@port 0@" ${redis_install_dir}/etc/redis_$redisport.conf
             sed -i "s@^# unixsocket /tmp/redis.sock@unixsocket $redissock@" \
                 ${redis_install_dir}/etc/redis_$redisport.conf
-            sed -i "s@^# unixsocketperm 700@unixsocketperm 700@" \
+            sed -i "s@^# unixsocketperm 700@unixsocketperm 770@" \
                 ${redis_install_dir}/etc/redis_$redisport.conf
             #             cat >> ${redis_install_dir}/etc/redis_$redisport.conf <<EOF
             #
