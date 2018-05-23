@@ -218,35 +218,33 @@ Config_GitLab() {
     # if you installed GitLab in another directory or as a user other than the default
     # you should change these settings in /etc/default/gitlab. Do not edit /etc/init.d/gitlab
     # as it will be changed on upgrade.
-    chkconfig gitlab on
     chkconfig --add gitlab
+
     INFO_MSG "[Install Gitaly ......]"
     # Fetch Gitaly source with Git and compile with Go
     sudo -u git -H bundle exec rake "gitlab:gitaly:install[/home/git/gitaly]" RAILS_ENV=production
-    # You can specify a different Git repository by providing it as an extra paramter:
-    sudo -u git -H bundle exec rake "gitlab:gitaly:install[/home/git/gitaly,https://example.com/gitaly.git]" RAILS_ENV=production
-    # Next, make sure gitaly configured:
     # Restrict Gitaly socket access
     chmod 0700 /home/git/gitlab/tmp/sockets/private && chown git /home/git/gitlab/tmp/sockets/private
-    # If you are using non-default settings you need to update config.toml
-    #cd /home/git/gitaly
-    #sudo -u git -H vim config.toml
-    # For more information about configuring Gitaly see
-    #[doc/administration/gitaly](https://gitlab.com/gitlab-org/gitlab-ce/tree/master/doc/administration/gitaly).
-    INFO_MSG "[Set up logrotate ......]"
+
+    INFO_MSG INFO_MSG "[Set up logrotate ......]"
     cp lib/support/logrotate/gitlab /etc/logrotate.d/gitlab
+
     INFO_MSG "[Check Application Status ......]"
     sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
-    INFO_MSG "[Compile assets ......]"
-    sudo -u git -H bundle exec rake assets:precompile RAILS_ENV=production
 
+    INFO_MSG "[Compile GetText PO files ......]"
+    sudo -u git -H bundle exec rake gettext:compile RAILS_ENV=production
 
+    INFO_MSG "[Compile Assets .....]"
+    sudo -u git -H yarn install --production --pure-lockfile
+    sudo -u git -H bundle exec rake gitlab:assets:compile RAILS_ENV=production NODE_ENV=production
 
-
+    INFO_MSG "[Start GitLab service ......]"
+    service gitlab start
 }
 
 Gitlab_Install_Main() {
 
-    GitLab_Var && GitLab_Dep_Install && Install_GitLab
+    GitLab_Var && GitLab_Dep_Install && Install_GitLab && Config_GitLab
 
 }
