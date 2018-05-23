@@ -31,6 +31,9 @@ Install_Redis() {
     listen_type='sock'
     Redis_Install_Main 2>&1 | tee ${script_dir:?}/logs/Install_Redis.log
     # check redis is ok
+    #
+    echo "r"${redispass:?}
+    echo "rq"${redissock:?}
     ERROR_MSG=`${redis_install_dir:?}/bin/redis-cli -a ${redispass:?} -s ${redissock:?} PING`
     if [ "$ERROR_MSG" != "PONG" ];then
         FAILURE_MSG "[Redis Install failure,Please contact the author !!!]"
@@ -50,7 +53,7 @@ GitLab_Dep_Install(){
     SOURCE_SCRIPT ${script_dir:?}/include/golang.sh
     install_golang
     Install_Redis
-    
+
     INFO_MSG "[ Node.js v8.x Installing.........]"
     curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
     yum -y install nodejs

@@ -143,7 +143,6 @@ Config_Redis(){
         INFO_MSG "[starting redis ........]"
         service start redis
     fi
-    echo ${redispass:?}
     sleep 2s
     if [ ${listen_type:?} = 'tcp' ]; then
         ERROR_MSG=`${redis_install_dir:?}/bin/redis-cli -a ${redispass:?} -p $redisport PING`
@@ -151,8 +150,7 @@ Config_Redis(){
         ERROR_MSG=`${redis_install_dir:?}/bin/redis-cli -a ${redispass:?} -s ${redissock:?} PING`
     fi
     if [ "$ERROR_MSG" != "PONG" ];then
-        FAILURE_MSG "[Redis Install failure,Please contact the author !!!]"
-        kill -9 $$
+        FAILURE_MSG "[Redis Install failure,Please contact the author !!!]" && exit 1
     else
         SUCCESS_MSG "[Redis Install SUCCESS !!!]"
     fi
