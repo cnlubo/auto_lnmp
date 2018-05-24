@@ -207,6 +207,13 @@ EOF
     sudo -u git -H bundle config mirror.https://rubygems.org https://gems.ruby-china.org/
     #sudo -u git -H bundle config build.pg --with-pg-config=/usr/local/bin/pg_config
     sudo -u git -H bundle install --deployment --without development  test mysql aws kerberos --path /home/git/.gem
+    INFO_MSG "[Install GitLab shell ......]"
+    sudo -u git -H bundle exec rake gitlab:shell:install REDIS_URL=unix:${redissock:?} \
+        RAILS_ENV=production SKIP_STORAGE_VALIDATION=true
+    INFO_MSG "[Install gitlab-workhorse ......]"
+    sudo -u git -H bundle exec rake "gitlab:workhorse:install[/home/git/gitlab-workhorse]" RAILS_ENV=production
+    INFO_MSG "[Initialize Database and Activate Advanced Features ......]"
+    sudo -u git -H bundle exec rake gitlab:setup RAILS_ENV=production
 
 }
 
@@ -221,13 +228,6 @@ Config_GitLab() {
     # you should change these settings in /etc/default/gitlab. Do not edit /etc/init.d/gitlab
     # as it will be changed on upgrade.
     chkconfig --add gitlab
-    INFO_MSG "[Install GitLab shell ......]"
-    sudo -u git -H bundle exec rake gitlab:shell:install REDIS_URL=unix:${redissock:?} \
-        RAILS_ENV=production SKIP_STORAGE_VALIDATION=true
-    INFO_MSG "[Install gitlab-workhorse ......]"
-    sudo -u git -H bundle exec rake "gitlab:workhorse:install[/home/git/gitlab-workhorse]" RAILS_ENV=production
-    INFO_MSG "[Initialize Database and Activate Advanced Features ......]"
-    sudo -u git -H bundle exec rake gitlab:setup RAILS_ENV=production
     INFO_MSG "[Install Gitaly ......]"
     # Fetch Gitaly source with Git and compile with Go
     sudo -u git -H bundle exec rake "gitlab:gitaly:install[/home/git/gitaly]" RAILS_ENV=production
