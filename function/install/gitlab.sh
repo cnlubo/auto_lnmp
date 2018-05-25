@@ -212,8 +212,9 @@ EOF
         RAILS_ENV=production SKIP_STORAGE_VALIDATION=true
     INFO_MSG "[Install gitlab-workhorse ......]"
     sudo -u git -H bundle exec rake "gitlab:workhorse:install[/home/git/gitlab-workhorse]" RAILS_ENV=production
+
     INFO_MSG "[Initialize Database and Activate Advanced Features ......]"
-    sudo -u git -H bundle exec rake gitlab:setup RAILS_ENV=production
+    sudo -u git -H bundle exec rake gitlab:setup RAILS_ENV=production force='yes'
 
 }
 
@@ -221,7 +222,7 @@ Config_GitLab() {
 
     INFO_MSG "[Install Init Script ......]"
     cd /home/git/gitlab
-    [ -f /etc/init.d/gitlab ] rm -rf /etc/init.d/gitlab
+    [ -f /etc/init.d/gitlab ] rm -rf /etc/init.d/gitlab]
     cp lib/support/init.d/gitlab /etc/init.d/gitlab
     cp lib/support/init.d/gitlab.default.example /etc/default/gitlab
     # if you installed GitLab in another directory or as a user other than the default
@@ -246,6 +247,8 @@ Config_GitLab() {
     INFO_MSG "[Compile Assets .....]"
     sudo -u git -H yarn install --production --pure-lockfile
     sudo -u git -H bundle exec rake gitlab:assets:compile RAILS_ENV=production NODE_ENV=production
+    # sudo -u git -H yarn install --production --pure-lockfile
+    # sudo -u git -H bundle exec rake gitlab:assets:compile RAILS_ENV=production NODE_ENV=production
 
     INFO_MSG "[Start GitLab service ......]"
     service gitlab start
