@@ -225,7 +225,7 @@ Config_GitLab() {
     if [ -d /home/git/gitlab ]; then
         INFO_MSG "[Install Init Script ......]"
         cd /home/git/gitlab
-        [ -f /etc/init.d/gitlab ] rm -rf /etc/init.d/gitlab]
+        [ -f /etc/init.d/gitlab ] rm -rf /etc/init.d/gitlab
         cp lib/support/init.d/gitlab /etc/init.d/gitlab
         cp lib/support/init.d/gitlab.default.example /etc/default/gitlab
         chkconfig --add gitlab
