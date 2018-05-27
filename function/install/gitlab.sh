@@ -52,7 +52,6 @@ Setup_DataBase() {
                 INFO_MSG "[ current PostgreSQL version is $pg_version ........]"
                 INFO_MSG "[ Create GitLab Database ........]"
 
-                # test Gitlab db is exists
                 if [ "$($PgsqlPath/bin/psql -lqt | cut -d \| -f 1 | grep -qw 'gitlabhq_production')" ] \
                     || [ "$($PgsqlPath/bin/psql -t -d postgres -c '\du' | cut -d \| -f 1 | grep -w 'git')" ]; then
                     while :; do
@@ -101,7 +100,6 @@ Setup_DataBase() {
 
             }
             ;;
-
         "MySql")
             {
                 echo
