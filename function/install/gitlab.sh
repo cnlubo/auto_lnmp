@@ -139,58 +139,59 @@ Install_GitLab (){
     cd /home/git
     [ -d gitlab ] && rm -rf gitlab
     sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b v$gitlab_verson gitlab
-    INFO_MSG "[ Configuration file and directory permissions ......]"
-    cd /home/git/gitlab
-    sudo -u git -H cp config/gitlab.yml.example config/gitlab.yml
-    # Copy the example secrets file
-    sudo -u git -H cp config/secrets.yml.example config/secrets.yml
-    sudo -u git -H chmod 0600 config/secrets.yml
-    # Make sure GitLab can write to the log/ and tmp/ directories
-    chown -R git log/ && chown -R git tmp/
-    chmod -R u+rwX,go-w log/ && chmod -R u+rwX tmp/
-    # Make sure GitLab can write to the tmp/pids/ and tmp/sockets/ directories
-    chmod -R u+rwX tmp/pids/ && chmod -R u+rwX tmp/sockets/
-    # Create the public/uploads/ directory
-    sudo -u git -H mkdir public/uploads/
-    # Make sure only the GitLab user has access to the public/uploads/ directory
-    # now that files in public/uploads are served by gitlab-workhorse
-    chmod 0700 public/uploads
-    # Change the permissions of the directory where CI build traces are stored
-    chmod -R u+rwX builds/
-    # Change the permissions of the directory where CI artifacts are stored
-    chmod -R u+rwX shared/artifacts/
-    # Change the permissions of the directory where GitLab Pages are stored
-    chmod -R ug+rwX shared/pages/
-    # Copy the example Unicorn config
-    sudo -u git -H cp config/unicorn.rb.example config/unicorn.rb
-    worker_num=$(nproc)
-    sed -i "s@^worker_processes.*@ worker_processes  $worker_num@" config/unicorn.rb
-    # Copy the example Rack attack config
-    sudo -u git -H cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb
-    # Configure Git global settings for git user
-    # 'autocrlf' is needed for the web editor
-    sudo -u git -H git config --global core.autocrlf input
-    # Disable 'git gc --auto' because GitLab already runs 'git gc' when needed
-    sudo -u git -H git config --global gc.auto 0
-    # Enable packfile bitmaps
-    sudo -u git -H git config --global repack.writeBitmaps true
-    # Enable push options
-    sudo -u git -H git config --global receive.advertisePushOptions true
-    #Configure Redis connection settings
-    sudo -u git -H cp config/resque.yml.example config/resque.yml
-    # Change the Redis socket path if you are not using the default Debian / Ubuntu configuration
-    sed -i '/^production:/,+3s/\(.*\)/#&/' config/resque.yml
-    cat >> config/resque.yml <<EOF
+    if [ -d /home/git/gitlab ]; then
+        INFO_MSG "[ Configuration file and directory permissions ......]"
+        cd /home/git/gitlab
+        sudo -u git -H cp config/gitlab.yml.example config/gitlab.yml
+        # Copy the example secrets file
+        sudo -u git -H cp config/secrets.yml.example config/secrets.yml
+        sudo -u git -H chmod 0600 config/secrets.yml
+        # Make sure GitLab can write to the log/ and tmp/ directories
+        chown -R git log/ && chown -R git tmp/
+        chmod -R u+rwX,go-w log/ && chmod -R u+rwX tmp/
+        # Make sure GitLab can write to the tmp/pids/ and tmp/sockets/ directories
+        chmod -R u+rwX tmp/pids/ && chmod -R u+rwX tmp/sockets/
+        # Create the public/uploads/ directory
+        sudo -u git -H mkdir public/uploads/
+        # Make sure only the GitLab user has access to the public/uploads/ directory
+        # now that files in public/uploads are served by gitlab-workhorse
+        chmod 0700 public/uploads
+        # Change the permissions of the directory where CI build traces are stored
+        chmod -R u+rwX builds/
+        # Change the permissions of the directory where CI artifacts are stored
+        chmod -R u+rwX shared/artifacts/
+        # Change the permissions of the directory where GitLab Pages are stored
+        chmod -R ug+rwX shared/pages/
+        # Copy the example Unicorn config
+        sudo -u git -H cp config/unicorn.rb.example config/unicorn.rb
+        worker_num=$(nproc)
+        sed -i "s@^worker_processes.*@ worker_processes  $worker_num@" config/unicorn.rb
+        # Copy the example Rack attack config
+        sudo -u git -H cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb
+        # Configure Git global settings for git user
+        # 'autocrlf' is needed for the web editor
+        sudo -u git -H git config --global core.autocrlf input
+        # Disable 'git gc --auto' because GitLab already runs 'git gc' when needed
+        sudo -u git -H git config --global gc.auto 0
+        # Enable packfile bitmaps
+        sudo -u git -H git config --global repack.writeBitmaps true
+        # Enable push options
+        sudo -u git -H git config --global receive.advertisePushOptions true
+        #Configure Redis connection settings
+        sudo -u git -H cp config/resque.yml.example config/resque.yml
+        # Change the Redis socket path if you are not using the default Debian / Ubuntu configuration
+        sed -i '/^production:/,+3s/\(.*\)/#&/' config/resque.yml
+        cat >> config/resque.yml <<EOF
 
 production:
  url: unix:${redissock:?}
  password: ${redispass:?}
 EOF
-    INFO_MSG "[Configure GitLab DB Settings ......]"
-    sudo -u git cp config/database.yml.postgresql config/database.yml
-    # 注释默认的数据库配置
-    sed -i '/^production:/,+8s/\(.*\)/#&/' config/database.yml
-    cat >> config/database.yml <<EOF
+        INFO_MSG "[Configure GitLab DB Settings ......]"
+        sudo -u git cp config/database.yml.postgresql config/database.yml
+        # 注释默认的数据库配置
+        sed -i '/^production:/,+8s/\(.*\)/#&/' config/database.yml
+        cat >> config/database.yml <<EOF
 
 production:
   adapter: postgresql
@@ -201,28 +202,31 @@ production:
   password: "$gitlab_pass"
   host: $PgsqlHost
 EOF
-    sudo -u git -H chmod o-rwx config/database.yml
-    INFO_MSG "[Install Gems ......]"
-    cd /home/git/gitlab
-    sudo -u git -H bundle config mirror.https://rubygems.org https://gems.ruby-china.org/
-    #sudo -u git -H bundle config build.pg --with-pg-config=/usr/local/bin/pg_config
-    sudo -u git -H bundle install --deployment --without development  test mysql aws kerberos --path /home/git/.gem
-    INFO_MSG "[Install GitLab shell ......]"
-    sudo -u git -H bundle exec rake gitlab:shell:install REDIS_URL=unix:${redissock:?} \
-        RAILS_ENV=production SKIP_STORAGE_VALIDATION=true
-    INFO_MSG "[Install gitlab-workhorse ......]"
-    sudo -u git -H bundle exec rake "gitlab:workhorse:install[/home/git/gitlab-workhorse]" RAILS_ENV=production
+        sudo -u git -H chmod o-rwx config/database.yml
+        INFO_MSG "[Install Gems ......]"
+        cd /home/git/gitlab
+        sudo -u git -H bundle config mirror.https://rubygems.org https://gems.ruby-china.org/
+        #sudo -u git -H bundle config build.pg --with-pg-config=/usr/local/bin/pg_config
+        sudo -u git -H bundle install --deployment --without development  test mysql aws kerberos --path /home/git/.gem
+        INFO_MSG "[Install GitLab shell ......]"
+        sudo -u git -H bundle exec rake gitlab:shell:install REDIS_URL=unix:${redissock:?} \
+            RAILS_ENV=production SKIP_STORAGE_VALIDATION=true
+        INFO_MSG "[Install gitlab-workhorse ......]"
+        sudo -u git -H bundle exec rake "gitlab:workhorse:install[/home/git/gitlab-workhorse]" RAILS_ENV=production
 
-    INFO_MSG "[Initialize Database and Activate Advanced Features ......]"
-    sudo -u git -H bundle exec rake gitlab:setup RAILS_ENV=production force='yes'
-
+        INFO_MSG "[Initialize Database and Activate Advanced Features ......]"
+        sudo -u git -H bundle exec rake gitlab:setup RAILS_ENV=production force='yes'
+    else
+        FAILURE_MSG "[ GitLab-v$gitlab_verson Download failed !!!!!!]"
+        exit 1
+    fi
 }
 
 Config_GitLab() {
-
+    if [ -d /home/git/gitlab ]; then
     INFO_MSG "[Install Init Script ......]"
     cd /home/git/gitlab
-    [ -f /etc/init.d/gitlab ] rm -rf /etc/init.d/gitlab]
+[ -f /etc/init.d/gitlab ] rm -rf /etc/init.d/gitlab]
     cp lib/support/init.d/gitlab /etc/init.d/gitlab
     cp lib/support/init.d/gitlab.default.example /etc/default/gitlab
     # if you installed GitLab in another directory or as a user other than the default
@@ -252,6 +256,10 @@ Config_GitLab() {
 
     INFO_MSG "[Start GitLab service ......]"
     service gitlab start
+else
+    FAILURE_MSG "[ GitLab-v$gitlab_verson Install failed !!!!!!]"
+    exit 1
+fi
 }
 
 Gitlab_Install_Main() {
