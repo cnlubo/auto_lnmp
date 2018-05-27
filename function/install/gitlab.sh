@@ -221,43 +221,32 @@ EOF
 }
 
 Config_GitLab() {
+
     if [ -d /home/git/gitlab ]; then
-    INFO_MSG "[Install Init Script ......]"
-    cd /home/git/gitlab
-[ -f /etc/init.d/gitlab ] rm -rf /etc/init.d/gitlab]
-    cp lib/support/init.d/gitlab /etc/init.d/gitlab
-    cp lib/support/init.d/gitlab.default.example /etc/default/gitlab
-    # if you installed GitLab in another directory or as a user other than the default
-    # you should change these settings in /etc/default/gitlab. Do not edit /etc/init.d/gitlab
-    # as it will be changed on upgrade.
-    chkconfig --add gitlab
-    INFO_MSG "[Install Gitaly ......]"
-    # Fetch Gitaly source with Git and compile with Go
-    sudo -u git -H bundle exec rake "gitlab:gitaly:install[/home/git/gitaly]" RAILS_ENV=production
-    # Restrict Gitaly socket access
-    chmod 0700 /home/git/gitlab/tmp/sockets/private && chown git /home/git/gitlab/tmp/sockets/private
-
-    INFO_MSG INFO_MSG "[Set up logrotate ......]"
-    cp lib/support/logrotate/gitlab /etc/logrotate.d/gitlab
-
-    INFO_MSG "[Check Application Status ......]"
-    sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
-
-    INFO_MSG "[Compile GetText PO files ......]"
-    sudo -u git -H bundle exec rake gettext:compile RAILS_ENV=production
-
-    INFO_MSG "[Compile Assets .....]"
-    sudo -u git -H yarn install --production --pure-lockfile
-    sudo -u git -H bundle exec rake gitlab:assets:compile RAILS_ENV=production NODE_ENV=production
-    # sudo -u git -H yarn install --production --pure-lockfile
-    # sudo -u git -H bundle exec rake gitlab:assets:compile RAILS_ENV=production NODE_ENV=production
-
-    INFO_MSG "[Start GitLab service ......]"
-    service gitlab start
-else
-    FAILURE_MSG "[ GitLab-v$gitlab_verson Install failed !!!!!!]"
-    exit 1
-fi
+        INFO_MSG "[Install Init Script ......]"
+        cd /home/git/gitlab
+        [ -f /etc/init.d/gitlab ] rm -rf /etc/init.d/gitlab]
+        cp lib/support/init.d/gitlab /etc/init.d/gitlab
+        cp lib/support/init.d/gitlab.default.example /etc/default/gitlab
+        chkconfig --add gitlab
+        INFO_MSG "[Install Gitaly ......]"
+        sudo -u git -H bundle exec rake "gitlab:gitaly:install[/home/git/gitaly]" RAILS_ENV=production
+        chmod 0700 /home/git/gitlab/tmp/sockets/private && chown git /home/git/gitlab/tmp/sockets/private
+        INFO_MSG INFO_MSG "[Set up logrotate ......]"
+        cp lib/support/logrotate/gitlab /etc/logrotate.d/gitlab
+        INFO_MSG "[Check Application Status ......]"
+        sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
+        INFO_MSG "[Compile GetText PO files ......]"
+        sudo -u git -H bundle exec rake gettext:compile RAILS_ENV=production
+        INFO_MSG "[Compile Assets .....]"
+        sudo -u git -H yarn install --production --pure-lockfile
+        sudo -u git -H bundle exec rake gitlab:assets:compile RAILS_ENV=production NODE_ENV=production
+        INFO_MSG "[Start GitLab service ......]"
+        service gitlab start
+    else
+        FAILURE_MSG "[ GitLab-v$gitlab_verson Install failed !!!!!!]"
+        exit 1
+    fi
 }
 
 Gitlab_Install_Main() {
