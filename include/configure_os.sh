@@ -78,7 +78,7 @@ system_user_setup()
         default_pass=`mkpasswd -l 8`
         echo ${default_pass:?} | passwd $system_user --stdin  &>/dev/null
         echo
-        echo "${CRED}[system user $system_user passwd:${default_pass:?} !!!!! ] ****>>${CEND}"
+        echo "${CRED}[system user $system_user passwd:${default_pass:?} !!!!! ] ****>>${CEND}" | tee ${script_dir:?}/logs/pp.log
         #| tee ${script_dir:?}/logs/pp.log
         echo
         # sudo 权限
