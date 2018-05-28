@@ -226,14 +226,14 @@ Config_GitLab() {
     #if [ -d /home/git/gitlab ]; then
     INFO_MSG "[Install Init Script ......]"
     cd /home/git/gitlab
-    [ -f /etc/init.d/gitlab ] rm -rf /etc/init.d/gitlab
+    [ -f /etc/init.d/gitlab ] && rm -rf /etc/init.d/gitlab
     cp lib/support/init.d/gitlab /etc/init.d/gitlab
     cp lib/support/init.d/gitlab.default.example /etc/default/gitlab
     chkconfig --add gitlab
     INFO_MSG "[Install Gitaly ......]"
     sudo -u git -H bundle exec rake "gitlab:gitaly:install[/home/git/gitaly]" RAILS_ENV=production
     chmod 0700 /home/git/gitlab/tmp/sockets/private && chown git /home/git/gitlab/tmp/sockets/private
-    INFO_MSG INFO_MSG "[Set up logrotate ......]"
+    INFO_MSG "[Set up logrotate ......]"
     cp lib/support/logrotate/gitlab /etc/logrotate.d/gitlab
     INFO_MSG "[Check Application Status ......]"
     sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
