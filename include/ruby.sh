@@ -61,7 +61,7 @@ Install_RubyGems() {
     cd ${script_dir:?}/src
     # shellcheck disable=SC2034
     src_url=https://rubygems.org/rubygems/rubygems-${rubygems_version:?}.tgz
-    [ -f rubygems-${rubygems_version:?}.tgz ] && Download_src
+    [ ! -f rubygems-${rubygems_version:?}.tgz ] && Download_src
     [ -d rubygems-${rubygems_version:?} ] && rm -rf rubygems-${rubygems_version:?}
     tar xf  rubygems-${rubygems_version:?}.tgz && cd rubygems-${rubygems_version:?}
     ruby setup.rb

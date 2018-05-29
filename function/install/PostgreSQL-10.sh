@@ -76,6 +76,8 @@ Init_PostgreSQL(){
     sed -i 's@^local.*@#&@g' $PgsqlOptPath/data/pg_hba.conf
     echo -e '\nlocal   all             all                                     md5' >> $PgsqlOptPath/data/pg_hba.conf
     echo 'host    all             all             0.0.0.0/0               md5' >> $PgsqlOptPath/data/pg_hba.conf
+    ehco '# IPv6 local connections: ' >> $PgsqlOptPath/data/pg_hba.conf
+    echo 'host    all             all             ::1/128                 md5' >> $PgsqlOptPath/data/pg_hba.conf
     sudo -u ${pgsql_user:?} -H ${PgsqlBasePath:?}/bin/pg_ctl -D ${PgsqlOptPath:?}/data -l ${PgsqlOptPath:?}/logs/alert.log stop
 
 }
