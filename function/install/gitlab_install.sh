@@ -24,6 +24,29 @@ GitLab_Var() {
     fi
 }
 
+Nginx_GitLab_Conf() {
+    check_app_status "Redis"
+    if [ $? -eq 0 ]; then
+        if [ -f /home/git/gitlab/lib/support/nginx/gitlab ]; then
+            cp home/git/gitlab/lib/support/nginx/gitlab ${nginx_install_dir:?}/conf.d/gitlab.conf
+            sed -i 's@^listen [::]:80 default_server.*@#&@g' ${nginx_install_dir:?}/conf.d/gitlab.conf
+            sed -i 's@^server_name.*@server_name localhost;@g' ${nginx_install_dir:?}/conf.d/gitlab.conf
+            sed -i "s@^access_log.*@access_log  ${nginx_install_dir:?}/logs/gitlab_access.log gitlab_access;@g" ${nginx_install_dir:?}/conf.d/gitlab.conf
+            sed -i "s@^error_log.*@error_log   ${nginx_install_dir:?}/logs/gitlab_error.log;@g" ${nginx_install_dir:?}/conf.d/gitlab.conf
+            systemctl stop nginx.service
+            systemctl start nginx.service
+            sleep 2s
+
+        else
+            WARNING_MSG "[Gitlab is not Install !!!!]"
+            exit 1
+        fi
+    else
+        WARNING_MSG "[Redis is not Install !!!!]"
+        exit 1
+    fi
+}
+
 Install_Redis() {
 
     SOURCE_SCRIPT ${FunctionPath:?}/install/Redis_install.sh
@@ -61,7 +84,7 @@ select_gitlab_install(){
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     cat << EOF
 *  `echo -e "$CMAGENTA  1) Gitlab-${gitlab_verson:?}   "`
-*  `echo -e "$CMAGENTA  2) Nginx-${nginx_mainline_version:?} with Passenger"`
+*  `echo -e "$CMAGENTA  2) Nginx-${nginx_mainline_version:?}"`
 *  `echo -e "$CMAGENTA  3) Upgrade Gitlab "`
 *  `echo -e "$CMAGENTA  4) Back             "`
 *  `echo -e "$CMAGENTA  5) Quit             "`
@@ -75,6 +98,18 @@ EOF
             select_gitlab_install
             ;;
         2)
+            SOURCE_SCRIPT ${FunctionPath:?}/install/nginx_install.sh
+            SOURCE_SCRIPT ${FunctionPath:?}/install/Nginx.sh
+            # shellcheck disable=SC2034
+            nginx_install_version=${nginx_mainline_version:?}
+            # shellcheck disable=SC2034
+            Nginx_install='Nginx'
+            # shellcheck disable=SC2034
+            lua_install='n'
+            # shellcheck disable=SC2034
+            Passenger_install='n'
+            Nginx_Var && Nginx_Base_Dep_Install && Install_Nginx
+            Nginx_GitLab_Conf
             select_devops_install
             ;;
         3)

@@ -182,8 +182,8 @@ Install_GitLab (){
         cat >> config/resque.yml <<EOF
 
 production:
- url: unix:${redissock:?}
- password: ${redispass:?}
+  url: unix:${redissock:?}
+  password: ${redispass:?}
 EOF
         INFO_MSG "[Configure GitLab DB Settings ......]"
         sudo -u git cp config/database.yml.postgresql config/database.yml
@@ -242,8 +242,15 @@ Config_GitLab() {
     INFO_MSG "[Compile Assets .....]"
     sudo -u git -H yarn install --production --pure-lockfile
     sudo -u git -H bundle exec rake gitlab:assets:compile RAILS_ENV=production NODE_ENV=production
+    INFO_MSG "[Fix Repo paths access ......]"
+    chmod -R ug+rwX,o-rwx /home/git/repositories
+    chmod -R ug-s /home/git/repositories
+    find /home/git/repositories -type d -print0 | xargs -0 chmod g+s
     INFO_MSG "[Start GitLab service ......]"
     service gitlab start
+    sleep 5s
+    INFO_MSG "[Check Install and Run State ......]"
+    sudo -u git -H bundle exec rake gitlab:check RAILS_ENV=production
     # else
     #     FAILURE_MSG "[ GitLab-v$gitlab_verson Install failed !!!!!!]"
     #     exit 1
