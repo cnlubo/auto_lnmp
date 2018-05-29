@@ -46,6 +46,7 @@ GitLab_Dep_Install(){
     INFO_MSG "[ Golang Installing.........]"
     SOURCE_SCRIPT ${script_dir:?}/include/golang.sh
     install_golang
+    INFO_MSG "[ Redis Installing.........]"
     Install_Redis
     INFO_MSG "[ Node.js v8.x Installing.........]"
     curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
