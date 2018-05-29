@@ -28,7 +28,7 @@ Nginx_GitLab_Conf() {
     check_app_status "Redis"
     if [ $? -eq 0 ]; then
         if [ -f /home/git/gitlab/lib/support/nginx/gitlab ]; then
-            cp home/git/gitlab/lib/support/nginx/gitlab ${nginx_install_dir:?}/conf.d/gitlab.conf
+            cp /home/git/gitlab/lib/support/nginx/gitlab ${nginx_install_dir:?}/conf.d/gitlab.conf
             sed -i 's@^listen [::]:80 default_server.*@#&@g' ${nginx_install_dir:?}/conf.d/gitlab.conf
             sed -i 's@^server_name.*@server_name localhost;@g' ${nginx_install_dir:?}/conf.d/gitlab.conf
             sed -i "s@^access_log.*@access_log  ${nginx_install_dir:?}/logs/gitlab_access.log gitlab_access;@g" ${nginx_install_dir:?}/conf.d/gitlab.conf
