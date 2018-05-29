@@ -131,6 +131,7 @@ Install_GitLab (){
     else
         WARNING_MSG "[ user Redis not exists !!!]"
     fi
+    chmod o+x /home/git && chmod g+xr /home/git
     INFO_MSG "[ Create GitLab Database .........]"
     Setup_DataBase
     INFO_MSG "[ Download GitLab-${gitlab_verson:?}.........]"
@@ -249,8 +250,8 @@ Config_GitLab() {
     INFO_MSG "[Start GitLab service ......]"
     service gitlab start
     sleep 5s
-    INFO_MSG "[Check Install and Run State ......]"
-    sudo -u git -H bundle exec rake gitlab:check RAILS_ENV=production
+    #INFO_MSG "[Check Install and Run State ......]"
+    #sudo -u git -H bundle exec rake gitlab:check RAILS_ENV=production
     # else
     #     FAILURE_MSG "[ GitLab-v$gitlab_verson Install failed !!!!!!]"
     #     exit 1

@@ -35,9 +35,12 @@ Nginx_GitLab_Conf() {
             sed -i 's@server_name.*@server_name localhost;@g' ${nginx_install_dir:?}/conf.d/gitlab.conf
             sed -i "s@access_log.*@access_log  ${nginx_install_dir:?}/logs/gitlab_access.log gitlab_access;@g" ${nginx_install_dir:?}/conf.d/gitlab.conf
             sed -i "s@error_log.*@error_log   ${nginx_install_dir:?}/logs/gitlab_error.log;@g" ${nginx_install_dir:?}/conf.d/gitlab.conf
+            [ -f ${nginx_install_dir:?}/conf.d/default.conf ] && rm -rf ${nginx_install_dir:?}/conf.d/default.conf
             systemctl stop nginx.service
             systemctl start nginx.service
             sleep 2s
+            INFO_MSG "[Check Install and Run State ......]"
+            sudo -u git -H bundle exec rake gitlab:check RAILS_ENV=production
 
         else
             WARNING_MSG "[Gitlab is not Install !!!!]"
@@ -115,7 +118,6 @@ EOF
             select_devops_install
             ;;
         3)
-
             select_devops_install
             ;;
         4)

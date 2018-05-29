@@ -8,6 +8,7 @@
 #----------------------------------------------------------------------------
 
 Nginx_Var() {
+    
     check_app_status "Nginx"
     if [ $? -eq 0 ]; then
         WARNING_MSG "[nginx or Tengine is running please stop !!!!]" && exit 0
