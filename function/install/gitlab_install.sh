@@ -25,9 +25,11 @@ GitLab_Var() {
 }
 
 Nginx_GitLab_Conf() {
-    check_app_status "Redis"
+
+    check_app_status "Nginx"
     if [ $? -eq 0 ]; then
         if [ -f /home/git/gitlab/lib/support/nginx/gitlab ]; then
+            INFO_MSG "[ Config Nginx for GitLab.........]"
             cp /home/git/gitlab/lib/support/nginx/gitlab ${nginx_install_dir:?}/conf.d/gitlab.conf
             sed -i 's@listen[[:space:]]\[::\]:80.*@#&@g' ${nginx_install_dir:?}/conf.d/gitlab.conf
             sed -i 's@server_name.*@server_name localhost;@g' ${nginx_install_dir:?}/conf.d/gitlab.conf
@@ -42,7 +44,7 @@ Nginx_GitLab_Conf() {
             exit 1
         fi
     else
-        WARNING_MSG "[Redis is not Install !!!!]"
+        WARNING_MSG "[Nginx is not Install !!!!]"
         exit 1
     fi
 }
