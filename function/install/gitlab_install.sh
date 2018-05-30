@@ -38,7 +38,6 @@ Nginx_GitLab_Conf() {
             [ -f ${nginx_install_dir:?}/conf.d/default.conf ] && rm -rf ${nginx_install_dir:?}/conf.d/default.conf
             systemctl stop nginx.service
             systemctl start nginx.service
-            sleep 2s
             INFO_MSG "[Check Install and Run State ......]"
             cd /home/git/gitlab
             sudo -u git -H bundle exec rake gitlab:check RAILS_ENV=production

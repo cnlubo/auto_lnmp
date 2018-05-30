@@ -248,7 +248,8 @@ Config_GitLab() {
     chmod -R ug-s /home/git/repositories
     find /home/git/repositories -type d -print0 | xargs -0 chmod g+s
     INFO_MSG "[Start GitLab service ......]"
-    service gitlab start
+    #service gitlab start
+    systemctl start gitlab
     sleep 5s
     #INFO_MSG "[Check Install and Run State ......]"
     #sudo -u git -H bundle exec rake gitlab:check RAILS_ENV=production
