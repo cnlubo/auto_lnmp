@@ -90,7 +90,6 @@ Setup_DataBase() {
                     SUCCESS_MSG "[ GitLab DataBase Create SUCCESS !!!!]"
                     WARNING_MSG "[ User git passwd:$gitlab_pass !!!!!!!]"
                 else
-                    # ruh-roh
                     # $? is 1
                     FAILURE_MSG "[ GitLab DataBase Create failure  !!!]"
                     unset PGUSER PGPASSWORD PGDATABASE PGHOST
@@ -212,10 +211,8 @@ EOF
             RAILS_ENV=production SKIP_STORAGE_VALIDATION=true
         INFO_MSG "[Install gitlab-workhorse ......]"
         sudo -u git -H bundle exec rake "gitlab:workhorse:install[/home/git/gitlab-workhorse]" RAILS_ENV=production
-
         INFO_MSG "[Initialize Database and Activate Advanced Features ......]"
         sudo -u git -H bundle exec rake gitlab:setup RAILS_ENV=production force='yes'
-        Config_GitLab
     else
         FAILURE_MSG "[ GitLab-v$gitlab_verson Download failed !!!!!!]"
         exit 0
@@ -224,43 +221,43 @@ EOF
 
 Config_GitLab() {
 
-    #if [ -d /home/git/gitlab ]; then
-    INFO_MSG "[Install Init Script ......]"
-    cd /home/git/gitlab
-    [ -f /etc/init.d/gitlab ] && rm -rf /etc/init.d/gitlab
-    cp lib/support/init.d/gitlab /etc/init.d/gitlab
-    cp lib/support/init.d/gitlab.default.example /etc/default/gitlab
-    chkconfig --add gitlab
-    INFO_MSG "[Install Gitaly ......]"
-    sudo -u git -H bundle exec rake "gitlab:gitaly:install[/home/git/gitaly]" RAILS_ENV=production
-    chmod 0700 /home/git/gitlab/tmp/sockets/private && chown git /home/git/gitlab/tmp/sockets/private
-    INFO_MSG "[Set up logrotate ......]"
-    cp lib/support/logrotate/gitlab /etc/logrotate.d/gitlab
-    INFO_MSG "[Check Application Status ......]"
-    sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
-    INFO_MSG "[Compile GetText PO files ......]"
-    sudo -u git -H bundle exec rake gettext:compile RAILS_ENV=production
-    INFO_MSG "[Compile Assets .....]"
-    sudo -u git -H yarn install --production --pure-lockfile
-    sudo -u git -H bundle exec rake gitlab:assets:compile RAILS_ENV=production NODE_ENV=production
-    INFO_MSG "[Fix Repo paths access ......]"
-    chmod -R ug+rwX,o-rwx /home/git/repositories
-    chmod -R ug-s /home/git/repositories
-    find /home/git/repositories -type d -print0 | xargs -0 chmod g+s
-    INFO_MSG "[Start GitLab service ......]"
-    #service gitlab start
-    systemctl start gitlab
-    sleep 5s
-    #INFO_MSG "[Check Install and Run State ......]"
-    #sudo -u git -H bundle exec rake gitlab:check RAILS_ENV=production
-    # else
-    #     FAILURE_MSG "[ GitLab-v$gitlab_verson Install failed !!!!!!]"
-    #     exit 1
-    # fi
+    if [ -d /home/git/gitlab ]; then
+        INFO_MSG "[Install Init Script ......]"
+        cd /home/git/gitlab
+        [ -f /etc/init.d/gitlab ] && rm -rf /etc/init.d/gitlab
+        cp lib/support/init.d/gitlab /etc/init.d/gitlab
+        cp lib/support/init.d/gitlab.default.example /etc/default/gitlab
+        chkconfig --add gitlab
+        INFO_MSG "[Install Gitaly ......]"
+        sudo -u git -H bundle exec rake "gitlab:gitaly:install[/home/git/gitaly]" RAILS_ENV=production
+        chmod 0700 /home/git/gitlab/tmp/sockets/private && chown git /home/git/gitlab/tmp/sockets/private
+        INFO_MSG "[Set up logrotate ......]"
+        cp lib/support/logrotate/gitlab /etc/logrotate.d/gitlab
+        INFO_MSG "[Check Application Status ......]"
+        sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
+        INFO_MSG "[Compile GetText PO files ......]"
+        sudo -u git -H bundle exec rake gettext:compile RAILS_ENV=production
+        INFO_MSG "[Compile Assets .....]"
+        sudo -u git -H yarn install --production --pure-lockfile
+        sudo -u git -H bundle exec rake gitlab:assets:compile RAILS_ENV=production NODE_ENV=production
+        INFO_MSG "[Fix Repo paths access ......]"
+        chmod -R ug+rwX,o-rwx /home/git/repositories
+        chmod -R ug-s /home/git/repositories
+        find /home/git/repositories -type d -print0 | xargs -0 chmod g+s
+        INFO_MSG "[Start GitLab service ......]"
+        #service gitlab start
+        systemctl start gitlab
+        sleep 5s
+        #INFO_MSG "[Check Install and Run State ......]"
+        #sudo -u git -H bundle exec rake gitlab:check RAILS_ENV=production
+    else
+        FAILURE_MSG "[ GitLab-v$gitlab_verson Install failed !!!!!!]"
+        exit 1
+    fi
 }
 
 Gitlab_Install_Main() {
 
-    GitLab_Var && GitLab_Dep_Install && Install_GitLab
+    GitLab_Var && GitLab_Dep_Install && Install_GitLab && Config_GitLab
 
 }

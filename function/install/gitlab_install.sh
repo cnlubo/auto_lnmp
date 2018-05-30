@@ -15,12 +15,12 @@ GitLab_Var() {
     check_app_status ${gitlab_dbtype:?}
     if [ $? -eq 1 ]; then
         WARNING_MSG "[DataBase ${gitlab_dbtype:?} is not running or install  !!!!]"
-        exit 1
+        kill -9 $$
     fi
     check_app_status "Redis"
     if [ $? -eq 0 ]; then
         WARNING_MSG "[Redis is running Please stop and remove it !!!!]"
-        exit 1
+        kill -9 $$
     fi
 }
 
@@ -36,7 +36,7 @@ Nginx_GitLab_Conf() {
             sed -i "s@access_log.*@access_log  ${nginx_install_dir:?}/logs/gitlab_access.log gitlab_access;@g" ${nginx_install_dir:?}/conf.d/gitlab.conf
             sed -i "s@error_log.*@error_log   ${nginx_install_dir:?}/logs/gitlab_error.log;@g" ${nginx_install_dir:?}/conf.d/gitlab.conf
             [ -f ${nginx_install_dir:?}/conf.d/default.conf ] && rm -rf ${nginx_install_dir:?}/conf.d/default.conf
-            systemctl restart nginx.service
+            systemctl restart nginx
             INFO_MSG "[Check Install and Run State ......]"
             cd /home/git/gitlab
             sudo -u git -H bundle exec rake gitlab:check RAILS_ENV=production
@@ -99,7 +99,7 @@ EOF
         1)
             SOURCE_SCRIPT ${FunctionPath:?}/install/gitlab.sh
             Gitlab_Install_Main 2>&1 | tee -a $script_dir/logs/Install_GitLab.log
-            select_gitlab_install
+            #select_gitlab_install
             ;;
         2)
             SOURCE_SCRIPT ${FunctionPath:?}/install/nginx_install.sh
@@ -114,7 +114,7 @@ EOF
             Passenger_install='n'
             Nginx_Var && Nginx_Base_Dep_Install && Install_Nginx
             Nginx_GitLab_Conf
-            select_devops_install
+            select_gitlab_install
             ;;
         3)
             select_devops_install
