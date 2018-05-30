@@ -23,15 +23,14 @@ do
         mv $file ${file:?}_bk
     fi
 done
-sed -i '/^# End of file/,$d' /etc/security/limits.conf
+#sed -i '/^# End of file/,$d' /etc/security/limits.conf
 cat >> /etc/security/limits.conf <<EOF
-# End of file
+
 * soft nproc 65535
 * hard nproc 65535
 * soft nofile 65535
 * hard nofile 65535
 EOF
-
 # /etc/hosts
 # [ "$(hostname -i | awk '{print $1}')" != "127.0.0.1" ] && sed -i "s@127.0.0.1.*localhost@&\n127.0.0.1 $(hostname)@g" /etc/hosts
 
