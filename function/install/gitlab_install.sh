@@ -91,7 +91,9 @@ select_gitlab_install(){
 *  `echo -e "$CMAGENTA  4) Back             "`
 *  `echo -e "$CMAGENTA  5) Quit             "`
 EOF
-    read -p "${CBLUE}Which function1 are you want to select:${CEND} " num3
+    exec 3<&0 </dev/null
+    #read -r var <&3
+    read -p "${CBLUE}Which function1 are you want to select:${CEND} " num3 <&3
 
     case $num3 in
         1)
