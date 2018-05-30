@@ -97,7 +97,7 @@ EOF
         1)
             SOURCE_SCRIPT ${FunctionPath:?}/install/gitlab.sh
             Gitlab_Install_Main 2>&1 | tee -a $script_dir/logs/Install_GitLab.log
-            #select_gitlab_install
+            select_gitlab_install
             ;;
         2)
             SOURCE_SCRIPT ${FunctionPath:?}/install/nginx_install.sh
