@@ -57,6 +57,7 @@ Setup_DataBase() {
                     while :; do
                         read -n1 -p "GitLab Db and User exists Do You Want to Delete? [y/n]: " del_yn
                         if [[ ! ${del_yn} =~ ^[y,n]$ ]]; then
+                            echo
                             WARNING_MSG "[input error! Please only input 'y' or 'n' ....]"
                         else
                             if [ "${del_yn}" == 'y' ]; then
@@ -244,10 +245,11 @@ Config_GitLab() {
         chmod -R ug+rwX,o-rwx /home/git/repositories
         chmod -R ug-s /home/git/repositories
         find /home/git/repositories -type d -print0 | xargs -0 chmod g+s
-        INFO_MSG "[Start GitLab service ......]"
+        #INFO_MSG "[Start GitLab service ......]"
         #service gitlab start
-        systemctl start gitlab
-        sleep 5s
+        #systemctl start gitlab
+        #sleep 5s
+        #INFO_MSG "[Start GitLab service ok ......]"
         #INFO_MSG "[Check Install and Run State ......]"
         #sudo -u git -H bundle exec rake gitlab:check RAILS_ENV=production
     else
