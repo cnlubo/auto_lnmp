@@ -241,12 +241,12 @@ Config_GitLab() {
         INFO_MSG "[Compile Assets .....]"
         sudo -u git -H yarn install --production --pure-lockfile
         # output1=`sudo -u git -H bundle exec rake gitlab:assets:compile RAILS_ENV=production NODE_ENV=production`
-        output1=`sudo -u git -H bundle exec rake yarn:install gitlab:assets:clean gitlab:assets:compile RAILS_ENV=production NODE_ENV=production`
-        INFO_MSG "[Compile Assets finish .....]"
-        # INFO_MSG "[Fix Repo paths access ......]"
-        # chmod -R ug+rwX,o-rwx /home/git/repositories
-        # chmod -R ug-s /home/git/repositories
-        # find /home/git/repositories -type d -print0 | xargs -0 chmod g+s
+        #output1=`sudo -u git -H bundle exec rake yarn:install gitlab:assets:clean gitlab:assets:compile RAILS_ENV=production NODE_ENV=production`
+        #INFO_MSG "[Compile Assets finish .....]"
+        INFO_MSG "[Fix Repo paths access ......]"
+        chmod -R ug+rwX,o-rwx /home/git/repositories
+        chmod -R ug-s /home/git/repositories
+        find /home/git/repositories -type d -print0 | xargs -0 chmod g+s
 
         #INFO_MSG "[Start GitLab service ......]"
         #service gitlab start

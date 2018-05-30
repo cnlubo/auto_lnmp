@@ -18,10 +18,10 @@ sed -i 's/^SELINUX=.*$/SELINUX=disabled/' /etc/selinux/config
 #[ -e /etc/security/limits.d/*nproc.conf ] && rename nproc.conf nproc.conf_bk /etc/security/limits.d/*nproc.conf
 for file in /etc/security/limits.d/*nproc.conf
 do
-  if [ -e "$file" ]
-  then
-    mv $file ${file:?}_bk
-  fi
+    if [ -e "$file" ]
+    then
+        mv $file ${file:?}_bk
+    fi
 done
 sed -i '/^# End of file/,$d' /etc/security/limits.conf
 cat >> /etc/security/limits.conf <<EOF
@@ -160,7 +160,7 @@ ntpdate pool.ntp.org
 #     chkconfig --level 3 iptables on
 #     service iptables restart
 # fi
- service rsyslog restart
- service sshd restart
+service rsyslog restart
+service sshd restart
 #
 # . /etc/profile
