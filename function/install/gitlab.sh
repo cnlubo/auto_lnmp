@@ -239,8 +239,8 @@ Config_GitLab() {
         INFO_MSG "[Compile GetText PO files ......]"
         sudo -u git -H bundle exec rake gettext:compile RAILS_ENV=production
         INFO_MSG "[Compile Assets .....]"
-        sudo -u git -H yarn install --production --pure-lockfile
-        sudo -u git -H bundle exec rake gitlab:assets:compile RAILS_ENV=production NODE_ENV=production
+        output=`sudo -u git -H yarn install --production --pure-lockfile`
+        output1=`sudo -u git -H bundle exec rake gitlab:assets:compile RAILS_ENV=production NODE_ENV=production`
         INFO_MSG "[Fix Repo paths access ......]"
         chmod -R ug+rwX,o-rwx /home/git/repositories
         chmod -R ug-s /home/git/repositories

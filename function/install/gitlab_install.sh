@@ -18,7 +18,7 @@ GitLab_Var() {
     fi
     check_app_status "Redis"
     if [ $? -eq 0 ]; then
-        WARNING_MSG "[Redis is running Please stop and remove it !!!!]" && exit 0
+        WARNING_MSG "[Redis12 is running Please stop and remove it !!!!]" && exit 0
     fi
 }
 
@@ -97,7 +97,7 @@ EOF
         1)
             SOURCE_SCRIPT ${FunctionPath:?}/install/gitlab.sh
             Gitlab_Install_Main 2>&1 | tee -a $script_dir/logs/Install_GitLab.log
-            echo 
+            echo
             select_gitlab_install
             ;;
         2)
