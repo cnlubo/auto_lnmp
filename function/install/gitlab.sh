@@ -140,10 +140,13 @@ Install_GitLab (){
     if [ ! -d ${script_dir:?}/src/gitlab-ce ]; then
         sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b v$gitlab_verson gitlab
     else
-        cd ${script_dir:?}/src/gitlab-ce && git pull
+        cd ${script_dir:?}/src/gitlab-ce
+        git fetch --all --prune
+        git checkout -- db/schema.rb # local changes will be restored automatically
+        git checkout -- locale
         cp -r ${script_dir:?}/src/gitlab-ce /home/git/gitlab
-        cd /home/git/gitlab && git checkout origin/${gitlab_branch:?}
         chown -Rf git:git /home/git/gitlab
+        cd /home/git/gitlab && sudo -u git -H git checkout ${gitlab_branch:?}
     fi
     if [ -d /home/git/gitlab ]; then
         INFO_MSG "[ Configuration file and directory permissions ......]"
@@ -219,9 +222,6 @@ EOF
             RAILS_ENV=production SKIP_STORAGE_VALIDATION=true
         INFO_MSG "[Install gitlab-workhorse ......]"
         sudo -u git -H bundle exec rake "gitlab:workhorse:install[/home/git/gitlab-workhorse]" RAILS_ENV=production
-        INFO_MSG "[Install Gitaly ......]"
-        sudo -u git -H bundle exec rake "gitlab:gitaly:install[/home/git/gitaly]" RAILS_ENV=production
-        chmod 0700 /home/git/gitlab/tmp/sockets/private && chown git /home/git/gitlab/tmp/sockets/private
         INFO_MSG "[Initialize Database and Activate Advanced Features ......]"
         sudo -u git -H bundle exec rake gitlab:setup RAILS_ENV=production force='yes'
     else
@@ -239,6 +239,9 @@ Config_GitLab() {
         # cp lib/support/init.d/gitlab /etc/init.d/gitlab
         # cp lib/support/init.d/gitlab.default.example /etc/default/gitlab
         # chkconfig --add gitlab
+        INFO_MSG "[Install Gitaly ......]"
+        sudo -u git -H bundle exec rake "gitlab:gitaly:install[/home/git/gitaly]" RAILS_ENV=production
+        chmod 0700 /home/git/gitlab/tmp/sockets/private && chown git /home/git/gitlab/tmp/sockets/private
         # INFO_MSG "[Set up logrotate ......]"
         # cp lib/support/logrotate/gitlab /etc/logrotate.d/gitlab
         # INFO_MSG "[Check Application Status ......]"
