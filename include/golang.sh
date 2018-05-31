@@ -10,7 +10,7 @@
 install_golang(){
 
     if [ -f "${go_install_dir:?}/go/bin/go" ];then
-        WARNING_MSG "[ golang is already installed !!! ]"
+        SUCCESS_MSG "[ golang is already installed !!! ]"
     else
         # shellcheck disable=SC2034
         src_url=https://dl.google.com/go/go${go_version:?}.linux-amd64.tar.gz

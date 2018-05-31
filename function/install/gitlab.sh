@@ -137,7 +137,12 @@ Install_GitLab (){
     INFO_MSG "[ Download GitLab-${gitlab_verson:?}.........]"
     cd /home/git
     [ -d gitlab ] && rm -rf gitlab
-    sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b v$gitlab_verson gitlab
+    if [ ! -d ${script_dir:?}/src/gitlab-ce ]; then
+        sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b v$gitlab_verson gitlab
+    else
+        cd ${script_dir:?}/src/gitlab-ce && git pull
+        cp -r ${script_dir:?}/src/gitlab-ce /home/git/gitlab && cd /home/git/gitlab && git checkout origin/${gitlab_branch:?}
+    fi
     if [ -d /home/git/gitlab ]; then
         INFO_MSG "[ Configuration file and directory permissions ......]"
         cd /home/git/gitlab
@@ -264,7 +269,7 @@ Config_GitLab() {
 
 Gitlab_Install_Main() {
 
-    GitLab_Var && GitLab_Dep_Install && Install_GitLab 
+    GitLab_Var && GitLab_Dep_Install && Install_GitLab
     #Config_GitLab
 
 }

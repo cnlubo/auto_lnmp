@@ -9,7 +9,7 @@
 Install_LuaJIT() {
 
     if [ -d /usr/local/luajit ];then
-        echo -e "${CMSG}[ LuaJIT has been install !!! ] ****************************>>${CEND}\n"
+        SUCCESS_MSG "[ LuaJIT has been install ...... ]"
     else
         echo -e "${CMSG}[ LuaJIT-${LuaJIT_version:?} instal begin ] *********************>>${CEND}\n"
         cd ${script_dir:?}/src

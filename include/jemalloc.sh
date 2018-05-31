@@ -9,7 +9,7 @@
 Install_Jemalloc() {
 
     if [ -e "/usr/local/lib/libjemalloc.so" ];then
-        echo -e "${CMSG}[ jemalloc has been install !!! ] ****************************>>${CEND}\n"
+        SUCCESS_MSG "[ jemalloc has been install !!! ]"
     else
         # shellcheck disable=SC2034
         src_url=https://github.com/jemalloc/jemalloc/releases/download/${jemalloc_version:?}/jemalloc-$jemalloc_version.tar.bz2
