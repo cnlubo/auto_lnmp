@@ -141,7 +141,9 @@ Install_GitLab (){
         sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b v$gitlab_verson gitlab
     else
         cd ${script_dir:?}/src/gitlab-ce && git pull
-        cp -r ${script_dir:?}/src/gitlab-ce /home/git/gitlab && cd /home/git/gitlab && git checkout origin/${gitlab_branch:?}
+        cp -r ${script_dir:?}/src/gitlab-ce /home/git/gitlab
+        cd /home/git/gitlab && git checkout origin/${gitlab_branch:?}
+        chown -Rf git:git /home/git/gitlab
     fi
     if [ -d /home/git/gitlab ]; then
         INFO_MSG "[ Configuration file and directory permissions ......]"
