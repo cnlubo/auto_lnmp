@@ -59,7 +59,7 @@ Install_Redis() {
     # check redis status
     ERROR_MSG=`${redis_install_dir:?}/bin/redis-cli -a ${redispass:?} -s ${redissock:?} PING`
     if [ "$ERROR_MSG" != "PONG" ];then
-        FAILURE_MSG "[Redis Install failure,Please contact the author !!!]"
+        FAILURE_MSG "[Redis Install failure,Please contact the author !!!]" && exit 0
     fi
 }
 
@@ -74,9 +74,15 @@ GitLab_Dep_Install(){
     INFO_MSG "[ Redis Installing.........]"
     Install_Redis
     INFO_MSG "[ Node.js v8.x Installing.........]"
-    curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
-    yum -y install nodejs
-    npm install -g yarn
+    if [ ! -f /bin/node ]; then
+        curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
+        yum -y install nodejs
+        npm i -g npm
+        npm install -g yarn
+    else
+    INFO_MSG "[ Node.js v8.x is already installed ......]"
+    node --version
+    fi
     # other
     yum -y install libicu-devel re2-devel
 }

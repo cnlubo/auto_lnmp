@@ -129,7 +129,7 @@ Install_GitLab (){
         INFO_MSG "[ Add user git to the redis group......]"
         usermod -aG redis git
     else
-        WARNING_MSG "[ user Redis not exists !!!]"
+        ERROR_MSG "[ error user Redis not exists !!!]"
     fi
     chmod o+x /home/git && chmod g+xr /home/git
     INFO_MSG "[ Create GitLab Database .........]"
@@ -140,6 +140,7 @@ Install_GitLab (){
     if [ ! -d ${script_dir:?}/src/gitlab-ce ]; then
         sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b v$gitlab_verson gitlab
     else
+        # get latest code
         cd ${script_dir:?}/src/gitlab-ce
         git fetch --all --prune
         git checkout -- db/schema.rb # local changes will be restored automatically
