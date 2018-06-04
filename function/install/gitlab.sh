@@ -256,6 +256,7 @@ Config_GitLab() {
         sudo -u git -H bundle exec rake gitlab:assets:clean gitlab:assets:compile \
         RAILS_ENV=production NODE_ENV=production >>${script_dir:?}/logs/GitLab_Assets.log 2>&1
         #sudo -u git -H bundle exec rake gitlab:assets:clean gitlab:assets:compile RAILS_ENV=production NODE_ENV=production
+        wait
         INFO_MSG "[Compile Assets finish .....]"
         INFO_MSG "[Fix Repo paths access ......]"
         chmod -R ug+rwX,o-rwx /home/git/repositories
