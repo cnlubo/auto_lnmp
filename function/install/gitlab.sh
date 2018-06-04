@@ -234,31 +234,31 @@ EOF
 Config_GitLab() {
 
     if [ -d /home/git/gitlab ]; then
-        # INFO_MSG "[Install Init Script ......]"
+        INFO_MSG "[Install Init Script ......]"
         cd /home/git/gitlab
-        # [ -f /etc/init.d/gitlab ] && rm -rf /etc/init.d/gitlab
-        # cp lib/support/init.d/gitlab /etc/init.d/gitlab
-        # cp lib/support/init.d/gitlab.default.example /etc/default/gitlab
-        # chkconfig --add gitlab
+        [ -f /etc/init.d/gitlab ] && rm -rf /etc/init.d/gitlab
+        cp lib/support/init.d/gitlab /etc/init.d/gitlab
+        cp lib/support/init.d/gitlab.default.example /etc/default/gitlab
+        chkconfig --add gitlab
         INFO_MSG "[Install Gitaly ......]"
         sudo -u git -H bundle exec rake "gitlab:gitaly:install[/home/git/gitaly]" RAILS_ENV=production
         chmod 0700 /home/git/gitlab/tmp/sockets/private && chown git /home/git/gitlab/tmp/sockets/private
-        # INFO_MSG "[Set up logrotate ......]"
-        # cp lib/support/logrotate/gitlab /etc/logrotate.d/gitlab
-        # INFO_MSG "[Check Application Status ......]"
-        # sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
+        INFO_MSG "[Set up logrotate ......]"
+        cp lib/support/logrotate/gitlab /etc/logrotate.d/gitlab
+        INFO_MSG "[Check Application Status ......]"
+        sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
         INFO_MSG "[Compile GetText PO files ......]"
-        #sudo -u git -H bundle exec rake gettext:compile RAILS_ENV=production
+        sudo -u git -H bundle exec rake gettext:compile RAILS_ENV=production
         INFO_MSG "[Compile Assets .....]"
-        #sudo -u git -H yarn install --production --pure-lockfile
-        #sudo -u git -H bundle exec rake yarn:install gitlab:assets:clean gitlab:assets:compile RAILS_ENV=production NODE_ENV=production
+        sudo -u git -H yarn install --production --pure-lockfile
+        sudo -u git -H bundle exec rake gitlab:assets:clean gitlab:assets:compile RAILS_ENV=production NODE_ENV=production
         #sudo -u git -H bundle exec rake gitlab:assets:clean gitlab:assets:compile RAILS_ENV=production NODE_ENV=production
 
         INFO_MSG "[Compile Assets finish .....]"
-        # INFO_MSG "[Fix Repo paths access ......]"
-        # chmod -R ug+rwX,o-rwx /home/git/repositories
-        # chmod -R ug-s /home/git/repositories
-        # find /home/git/repositories -type d -print0 | xargs -0 chmod g+s
+        INFO_MSG "[Fix Repo paths access ......]"
+        chmod -R ug+rwX,o-rwx /home/git/repositories
+        chmod -R ug-s /home/git/repositories
+        find /home/git/repositories -type d -print0 | xargs -0 chmod g+s
         INFO_MSG "[GitLab install finish ......]"
         #INFO_MSG "[Start GitLab service ......]"
         #service gitlab start
@@ -275,7 +275,7 @@ Config_GitLab() {
 
 Gitlab_Install_Main() {
 
-    GitLab_Var && GitLab_Dep_Install && Install_GitLab
-    #Config_GitLab
+    #GitLab_Var && GitLab_Dep_Install && Install_GitLab
+    Config_GitLab
 
 }
