@@ -109,6 +109,7 @@ EOF
             # exec 3<&0 </dev/null
             SOURCE_SCRIPT ${FunctionPath:?}/install/gitlab.sh
             Gitlab_Install_Main 2>&1 | tee -a $script_dir/logs/Install_GitLab.log
+            wait
             select_devops_install
             ;;
         2)
