@@ -40,11 +40,11 @@ Nginx_GitLab_Conf() {
             sudo -u git -H bundle exec rake gitlab:check RAILS_ENV=production
 
         else
-            WARNING_MSG "[Gitlab is not Install !!!!]"
+            WARNING_MSG "[ Gitlab is not Install ......]"
             exit 1
         fi
     else
-        WARNING_MSG "[Nginx is not Install !!!!]"
+        WARNING_MSG "[ Nginx is not Install ......]"
         exit 1
     fi
 }
