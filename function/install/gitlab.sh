@@ -252,7 +252,7 @@ Config_GitLab() {
         INFO_MSG "[Compile Assets .....]"
         # shellcheck disable=SC2024
         #sudo -u git -H yarn install --production --pure-lockfile >${script_dir:?}/logs/GitLab_Assets.log 2>&1
-        sudo -u git -H yarn install --production --pure-lockfile
+        sudo -u git -H yarn install --production --pure-lockfile > /dev/null 2>&1
         # shellcheck disable=SC2024
         # #    RAILS_ENV=production NODE_ENV=production >>${script_dir:?}/logs/GitLab_Assets.log 2>&1
         sudo -u git -H bundle exec rake gitlab:assets:clean gitlab:assets:compile \
