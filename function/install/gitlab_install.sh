@@ -100,6 +100,7 @@ select_gitlab_install(){
 EOF
 
     #read -r var <&3
+    exec 3<&0 </dev/null
     read -p "${CBLUE}Which function1 are you want to select:${CEND} " num3 <&3
 
     case $num3 in
