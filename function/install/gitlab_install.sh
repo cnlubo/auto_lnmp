@@ -75,6 +75,7 @@ GitLab_Dep_Install(){
     Install_Redis
     INFO_MSG "[ Node.js v8.x Installing.........]"
     if [ ! -f /bin/node ]; then
+        yum clean all
         curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
         yum -y install nodejs
         npm i -g npm
