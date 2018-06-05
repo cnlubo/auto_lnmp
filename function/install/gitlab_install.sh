@@ -99,19 +99,13 @@ select_gitlab_install(){
 *  `echo -e "$CMAGENTA  5) Quit             "`
 EOF
 
-    #read -r var <&3
-    #exec 3<&0 0</dev/null
     read -p "${CBLUE}Which function1 are you want to select:${CEND} " -r num3
-    #0<&3
-    #<&3
 
     case $num3 in
         1)
-            # exec 3<&0 </dev/null
             SOURCE_SCRIPT ${FunctionPath:?}/install/gitlab.sh
             Gitlab_Install_Main 2>&1 | tee -a $script_dir/logs/Install_GitLab.log
-            wait
-            select_devops_install
+            select_gitlab_install
             ;;
         2)
             SOURCE_SCRIPT ${FunctionPath:?}/install/nginx_install.sh
