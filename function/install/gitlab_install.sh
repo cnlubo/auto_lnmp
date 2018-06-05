@@ -81,8 +81,8 @@ GitLab_Dep_Install(){
         npm i -g npm
         npm install -g yarn
     else
-    INFO_MSG "[ Node.js v8.x is already installed ......]"
-    node --version
+        INFO_MSG "[ Node.js v8.x is already installed ......]"
+        node --version
     fi
     # other
     yum -y install libicu-devel re2-devel
