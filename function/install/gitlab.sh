@@ -254,10 +254,9 @@ Config_GitLab() {
         #sudo -u git -H yarn install --production --pure-lockfile >${script_dir:?}/logs/GitLab_Assets.log 2>&1
         sudo -u git -H yarn install --production --pure-lockfile
         # shellcheck disable=SC2024
-        exec 3<&0 </dev/null
-        # sudo -u git -H bundle exec rake gitlab:assets:clean gitlab:assets:compile \
-        # RAILS_ENV=production NODE_ENV=production >>${script_dir:?}/logs/GitLab_Assets.log 2>&1
-        sudo -u git -H bundle exec rake gitlab:assets:clean gitlab:assets:compile RAILS_ENV=production NODE_ENV=production <&3
+        sudo -u git -H bundle exec rake gitlab:assets:clean gitlab:assets:compile \
+            RAILS_ENV=production NODE_ENV=production >>${script_dir:?}/logs/GitLab_Assets.log 2>&1
+        #sudo -u git -H bundle exec rake gitlab:assets:clean gitlab:assets:compile RAILS_ENV=production NODE_ENV=production
         INFO_MSG "[Compile Assets finish .....]"
         # INFO_MSG "[Fix Repo paths access ......]"
         # chmod -R ug+rwX,o-rwx /home/git/repositories
