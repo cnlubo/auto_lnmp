@@ -245,20 +245,13 @@ Config_GitLab() {
         chmod 0700 /home/git/gitlab/tmp/sockets/private && chown git /home/git/gitlab/tmp/sockets/private
         INFO_MSG "[Set up logrotate ......]"
         cp lib/support/logrotate/gitlab /etc/logrotate.d/gitlab
-        #INFO_MSG "[Check Application Status ......]"
-        #sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
         INFO_MSG "[Compile GetText PO files ......]"
         sudo -u git -H bundle exec rake gettext:compile RAILS_ENV=production
         INFO_MSG "[Compile Assets .....]"
-        # shellcheck disable=SC2024
         TTY=$(/usr/bin/tty)
-        #sudo -u git -H yarn install --production --pure-lockfile >${script_dir:?}/logs/GitLab_Assets.log 2>&1
-        sudo -u git -H yarn install --production --pure-lockfile < $TTY
-        # # shellcheck disable=SC2024
-        # sudo -u git -H bundle exec rake gitlab:assets:clean gitlab:assets:compile \
-            # RAILS_ENV=production NODE_ENV=production >>${script_dir:?}/logs/GitLab_Assets.log 2>&1
+        sudo -u git -H yarn install --production --pure-lockfile < $TTY | tee ${script_dir:?}/logs/GitLab_Assets.log 2>&1
         sudo -u git -H bundle exec rake gitlab:assets:clean gitlab:assets:compile \
-            RAILS_ENV=production NODE_ENV=production < $TTY
+            RAILS_ENV=production NODE_ENV=production < $TTY | tee -a ${script_dir:?}/logs/GitLab_Assets.log 2>&1
         INFO_MSG "[Compile Assets finish .....]"
         INFO_MSG "[Fix Repo paths access ......]"
         chmod -R ug+rwX,o-rwx /home/git/repositories
@@ -270,8 +263,9 @@ Config_GitLab() {
         #systemctl start gitlab
         sleep 5s
         INFO_MSG "[Start GitLab service ok ......]"
-        #INFO_MSG "[Check Install and Run State ......]"
-        #sudo -u git -H bundle exec rake gitlab:check RAILS_ENV=production
+        INFO_MSG "[Check Application Status ......]"
+        sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
+
     else
         FAILURE_MSG "[ GitLab-v$gitlab_verson Install failed !!!!!!]"
         exit 1
