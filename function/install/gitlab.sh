@@ -251,8 +251,6 @@ Config_GitLab() {
         TTY=$(/usr/bin/tty)
         # shellcheck disable=SC2024
         sudo -u git -H yarn install --production --pure-lockfile < $TTY > ${script_dir:?}/logs/GitLab_Assets.log 2>&1
-        # sudo -u git -H bundle exec rake gitlab:assets:clean gitlab:assets:compile \
-            #     RAILS_ENV=production NODE_ENV=production < $TTY | tee -a ${script_dir:?}/logs/GitLab_Assets.log 2>&1
         # shellcheck disable=SC2024
         sudo -u git -H bundle exec rake gitlab:assets:clean gitlab:assets:compile \
             RAILS_ENV=production NODE_ENV=production < $TTY >> ${script_dir:?}/logs/GitLab_Assets.log 2>&1
@@ -263,7 +261,6 @@ Config_GitLab() {
         find /home/git/repositories -type d -print0 | xargs -0 chmod g+s
         INFO_MSG "[GitLab install finish ......]"
         INFO_MSG "[Start GitLab service ......]"
-        # service gitlab start
         systemctl start gitlab
         sleep 5s
         INFO_MSG "[Start GitLab service ok ......]"
