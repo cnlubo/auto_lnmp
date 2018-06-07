@@ -99,6 +99,8 @@ Config_PostgreSQL(){
     fi
     [ -L /usr/local/bin/pg_config ] && rm -f /usr/local/bin/pg_config
     ln -s ${PgsqlBasePath:?}/bin/pg_config /usr/local/bin/pg_config
+    [ -L /usr/local/bin/pg_dump ] && rm -f /usr/local/bin/pg_dump
+    ln -s ${PgsqlBasePath:?}/bin/pg_dump /usr/local/bin/pg_dump
     # setting options.conf
     sed -i "s@^pgsqluser.*@pgsqluser=${pgsql_user:?}@" ${script_dir:?}/config/postgresql.conf
     sed -i "s@^pgsqlbasepath.*@pgsqlbasepath=${PgsqlBasePath:?}@" ${script_dir:?}/config/postgresql.conf
