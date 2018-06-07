@@ -99,7 +99,7 @@ select_gitlab_install(){
 *  `echo -e "$CMAGENTA  5) Quit             "`
 EOF
 
-    read -p "${CBLUE}Which function1 are you want to select:${CEND} " -r num3
+    read -p "${CBLUE}Which function are you want to select:${CEND} " -r num3
 
     case $num3 in
         1)
