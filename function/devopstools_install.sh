@@ -15,7 +15,7 @@ select_devops_install(){
 *  `echo -e "$CBLUE  1) GitLab-${gitlab_verson:?} "`
 *  `echo -e "$CBLUE  2) Gogs-${gogs_verson:?}     "`
 *  `echo -e "$CBLUE  3) Redmine-${redmine_verion:?} "`
-*  `echo -e "$CBLUE  4) Harbor-${redmine_verion:?} "`
+*  `echo -e "$CBLUE  4) Harbor-${harbor_version:?} "`
 *  `echo -e "$CBLUE  5) Back         "`
 *  `echo -e "$CBLUE  6) Quit         "`
 EOF
