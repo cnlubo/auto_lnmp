@@ -17,11 +17,8 @@ Install_Docker() {
     if [ $SHELL = '/usr/local/bin/zsh' ] || [ $SHELL = '/bin/zsh' ]; then
         [ ! -d ~/.zsh/completion ] && mkdir -p ~/.zsh/completion
         curl -L https://raw.githubusercontent.com/docker/compose/${docker_compose_version:?}/contrib/completion/zsh/_docker-compose > ~/.zsh/completion/_docker-compose
-        cat >> ~/.zshrc <<EOF
-
-fpath=(~/.zsh/completion $fpath)
-autoload -Uz compinit && compinit -i
-EOF
+        echo -e '\nfpath=(~/.zsh/completion $fpath)' >> ~/.zshrc
+        echo 'autoload -Uz compinit && compinit -i' >> ~/.zshrc
         docker-compose --version
         # reload shell
         exec $SHELL -l
