@@ -15,8 +15,9 @@ select_devops_install(){
 *  `echo -e "$CBLUE  1) GitLab-${gitlab_verson:?} "`
 *  `echo -e "$CBLUE  2) Gogs-${gogs_verson:?}     "`
 *  `echo -e "$CBLUE  3) Redmine-${redmine_verion:?} "`
-*  `echo -e "$CBLUE  4) Back         "`
-*  `echo -e "$CBLUE  5) Quit         "`
+*  `echo -e "$CBLUE  4) Harbor-${redmine_verion:?} "`
+*  `echo -e "$CBLUE  5) Back         "`
+*  `echo -e "$CBLUE  6) Quit         "`
 EOF
     read -p "${CBLUE}Which tools are you want to install:${CEND} " num3
 
@@ -34,10 +35,15 @@ EOF
             select_redmine_install
             ;;
         4)
+            SOURCE_SCRIPT ${FunctionPath:?}/install/harbor_install.sh
+            Harbor_Install_Main 2>&1 | tee -a ${script_dir:?}/logs/Install_Harbor.log
+            select_devops_install
+            ;;
+        5)
             clear
             select_main_menu
             ;;
-        5)
+        6)
             clear
             exit 0
             ;;
