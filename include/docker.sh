@@ -24,8 +24,10 @@ Install_Docker() {
 fpath=(~/.zsh/completion ${fpath:?})
 autoload -Uz compinit && compinit -i
 EOF
+        docker-compose --version
         # reload shell
         exec $SHELL -l
+
     fi
 
 
