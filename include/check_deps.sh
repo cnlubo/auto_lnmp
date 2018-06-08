@@ -203,7 +203,9 @@ installDepsBySrc() {
                         #sed -i "s@^#\!/usr/bin/python.*@#\!  /usr/bin/python2.7.5@" /usr/bin/yum
                         #sed -i "s@^#\!/usr/bin/python.*@#\!  /usr/bin/python2.7.5@" /usr/libexec/urlgrabber-ext-down
                         sed -i "1c #\!  /usr/bin/python2.7.5" /usr/bin/yum
+                        sed -i "1c #\!  /usr/bin/python2.7.5" /usr/bin/yum-config-manager
                         sed -i "1c #\!  /usr/bin/python2.7.5" /usr/libexec/urlgrabber-ext-down
+
                     fi
                     # python.h
                     [ ! -d /usr/include/python2.7 ] && mkdir -p /usr/include/python2.7

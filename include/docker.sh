@@ -10,21 +10,24 @@ Install_Docker() {
 
     INFO_MSG "[Uninstall old versions Docker ......]"
     yum remove -y docker \
-                  docker-client \
-                  docker-client-latest \
-                  docker-common \
-                  docker-latest \
-                  docker-latest-logrotate \
-                  docker-logrotate \
-                  docker-selinux \
-                  docker-engine-selinux \
-                  docker-engine
+        docker-client \
+        docker-client-latest \
+        docker-common \
+        docker-latest \
+        docker-latest-logrotate \
+        docker-logrotate \
+        docker-selinux \
+        docker-engine-selinux \
+        docker-engine
     INFO_MSG "[ Docker CE install ......]"
     yum install -y yum-utils device-mapper-persistent-data lvm2
     yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
     # Enable the edge and test repositories
     # yum-config-manager --enable docker-ce-edge
     # yum-config-manager --enable docker-ce-test
+    yum install -y docker-ce
+    INFO_MSG "[ Start Docker ......]"
+    systemctl start docker
     INFO_MSG "[ docker-compose V${docker_compose_version:?} install ......]"
     [ -f /usr/local/bin/docker-compose ] && mv /usr/local/bin/docker-compose /usr/local/bin/docker-compose.bak
     cd ${script_dir:?}/src
