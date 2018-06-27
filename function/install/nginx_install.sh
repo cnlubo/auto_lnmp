@@ -8,7 +8,7 @@
 #----------------------------------------------------------------------------
 
 Nginx_Var() {
-    
+
     check_app_status "Nginx"
     if [ $? -eq 0 ]; then
         WARNING_MSG "[nginx or Tengine is running please stop !!!!]" && exit 0
@@ -77,8 +77,9 @@ Nginx_Base_Dep_Install() {
         #cd ngx_brotli && git submodule update --init
         if  [ ! -d ngx_brotli ]; then
             git clone https://github.com/google/ngx_brotli.git
-            cd ngx_brotli && git submodule update --init
+            cd ngx_brotli && git submodule update --init && cd ${script_dir:?}/src
         fi
+        # https://github.com/grahamedgecombe/nginx-ct/archive/v1.3.2.tar.gz
         src_url=https://github.com/grahamedgecombe/nginx-ct/archive/v${ngx_ct_version:?}.tar.gz
         [ ! -f v${ngx_ct_version:?}.tar.gz ] && Download_src
         [ -d nginx-ct-${ngx_ct_version:?} ] && rm -rf nginx-ct-${ngx_ct_version:?}
