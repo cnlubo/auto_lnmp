@@ -8,7 +8,7 @@
 
 Install_Docker() {
 
-    INFO_MSG "[Uninstall old versions Docker ......]"
+    INFO_MSG "[ Uninstall old versions Docker ......]"
     yum remove -y docker \
         docker-client \
         docker-client-latest \
@@ -45,8 +45,11 @@ Install_Docker() {
         fi
 
     else
+
         SUCCESS_MSG "[ docker is already installed ......]"
     fi
     docker --version
     docker-compose --version
+    #docker volume create portainer_data
+    #docker run -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer
 }
