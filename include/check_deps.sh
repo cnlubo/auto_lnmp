@@ -491,7 +491,9 @@ installDepsBySrc() {
             # Install libevent first
             cd $script_dir/src
             # shellcheck disable=SC2034
-            src_url=https://github.com/libevent/libevent/releases/download/release-${libevent_version:?}/libevent-${libevent_version:?}.tar.gz
+            # https://github.com/libevent/libevent/archive/release-2.1.8-stable.tar.gz
+            src_url=https://github.com/libevent/libevent/releases/download/release-2.1.8-stable/libevent-2.1.8-stable.tar.gz
+            # src_url=https://github.com/libevent/libevent/releases/download/release-${libevent_version:?}/libevent-${libevent_version:?}.tar.gz
             [ ! -f libevent-$libevent_version.tar.gz ] && Download_src
             [ -d libevent-${libevent_version} ] && rm -rf libevent-${libevent_version}
             tar xzf libevent-${libevent_version}.tar.gz
