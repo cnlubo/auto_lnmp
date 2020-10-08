@@ -5,33 +5,37 @@
 # @desc    : common functions
 #--------------------------------------------
 
-EXIT_MSG(){
+EXIT_SCRIPT() {
+    kill -s TERM "$TOP_PID"
+}
+
+EXIT_MSG() {
     ExitMsg="$1"
     # echo -e "${CFAILURE}$(date +%Y-%m-%d-%H:%M) -Error $ExitMsg " |tee -a ${ErrLog:?} && exit 1
     echo -e "${CFAILURE}$(date +%Y-%m-%d-%H:%M) -Error $ExitMsg "
+    exit 1
 }
 
-INFO_MSG(){
+INFO_MSG() {
     InfoMsg="$1"
     # echo -e "$(date +%Y-%m-%d-%H:%M) -INFO $InfoMsg " |tee -a $InfoLog
     echo -e "${CMSG}$(date +%Y-%m-%d-%H:%M) -INFO $InfoMsg ${CEND}\n"
 }
-SUCCESS_MSG(){
+SUCCESS_MSG() {
     InfoMsg="$1"
     echo -e "${CSUCCESS}$(date +%Y-%m-%d-%H:%M) -SUCCESS $InfoMsg ${CEND}\n"
 }
-WARNING_MSG(){
+WARNING_MSG() {
     InfoMsg="$1"
     echo -e "${CWARNING}$(date +%Y-%m-%d-%H:%M) -WARNING $InfoMsg ${CEND}\n"
 }
-FAILURE_MSG()
-{
+FAILURE_MSG() {
     InfoMsg="$1"
     echo -e "${CFAILURE}$(date +%Y-%m-%d-%H:%M) -FAILURE $InfoMsg ${CEND}\n"
 }
 #check script exists and loading
-SOURCE_SCRIPT(){
-    for arg do
+SOURCE_SCRIPT() {
+    for arg; do
         if [ ! -f "$arg" ]; then
             EXIT_MSG "not exist $arg,so $0 can not be supported!"
         else
@@ -41,15 +45,15 @@ SOURCE_SCRIPT(){
         fi
     done
 }
-PASS_ENTER_TO_EXIT(){
+PASS_ENTER_TO_EXIT() {
     InfoMsg="input enter or wait 10s to continue"
     # shellcheck disable=SC2034
     read -p "$InfoMsg" -t 10 ok
     echo ""
 }
 
-TEST_FILE(){
-    if [[ ! -f $1 ]];then
+TEST_FILE() {
+    if [[ ! -f $1 ]]; then
         INFO_MSG "Not exist $1"
         PASS_ENTER_TO_EXIT
         return 1
@@ -58,9 +62,9 @@ TEST_FILE(){
         return 0
     fi
 }
-TEST_PROGRAMS(){
-    for arg do
-        if [[ -z $(which $arg) ]];then
+TEST_PROGRAMS() {
+    for arg; do
+        if [[ -z $(which $arg) ]]; then
             INFO_MSG "Your system do not have $arg"
             return 1
         else
@@ -69,8 +73,8 @@ TEST_PROGRAMS(){
         fi
     done
 }
-BACK_TO_INDEX(){
-    if [[ $? -gt 0 ]];then
+BACK_TO_INDEX() {
+    if [[ $? -gt 0 ]]; then
         INFO_MSG "Ready back to index"
         PASS_ENTER_TO_EXIT
         SELECT_RUN_SCRIPT
@@ -78,54 +82,50 @@ BACK_TO_INDEX(){
         INFO_MSG "succeed , continue ..."
     fi
 }
-INPUT_CHOOSE(){
+INPUT_CHOOSE() {
 
     VarTmp=
     select vars in "$@" "exit"; do
         case $vars in
-            $vars)
-                # shellcheck disable=SC2034
-                [[ "$vars" == "exit" ]] && VarTmp="" || VarTmp="$vars"
-                break ;;
+        $vars)
+            # shellcheck disable=SC2034
+            [[ "$vars" == "exit" ]] && VarTmp="" || VarTmp="$vars"
+            break
+            ;;
         esac
         INFO_MSG "Input again"
     done
 }
 
+INSTALL_BASE_PACKAGES() {
+    case $OS in
+    "CentOS")
+        {
+            cp /etc/yum.conf /etc/yum.conf.back
+            sed -i 's:exclude=.*:exclude=:g' /etc/yum.conf
+            for arg; do
+                # INFO_MSG "正在安装 ${arg} ....."
+                yum -y install $arg
+            done
+            mv -f /etc/yum.conf.back /etc/yum.conf
+        }
+        ;;
+    "Ubuntu")
+        {
+            [[ -z $SysCount ]] && apt-get update && SysCount="1"
+            apt-get -fy install
+            apt-get -y autoremove --purge
+            dpkg -l | grep ^rc | awk '{print $2}' | sudo xargs dpkg -P
+            for arg; do
+                INFO_MSG "正在安装 ${arg} ************************************************** >>" "[${arg} Installing] ************************************************** >>"
+                apt-get install -y $arg --force-yes
+            done
+        }
+        ;;
 
-INSTALL_BASE_PACKAGES(){
-    case   $OS in
-        "CentOS")
-            {
-                # echo '[yum-fastestmirror Installing] ************************************************** >>';
-                # [[ -z $SysCount ]] && yum -y install yum-fastestmirror && SysCount="1"
-                cp /etc/yum.conf /etc/yum.conf.back
-                sed -i 's:exclude=.*:exclude=:g' /etc/yum.conf
-                #echo '[set the Epel CentOS 6 repo] ****************************************>>';
-                #wget -c http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm -P /etc/yum.repos.d/rpm -Uvh /etc/yum.repos.d/epel-release-6-8.noarch.rpm
-                #yum repolist
-                echo '[Enable EPEL Repository in RHEL/CentOS 7/6/5] ************************************ >>';
-                for arg do
-                    INFO_MSG "正在安装 ${arg} ************************************************** >>" "[${arg} Installing] ************************************************** >>";
-                    yum -y install $arg;
-                done;
-                mv -f /etc/yum.conf.back /etc/yum.conf;
-            }
-            ;;
-        "Ubuntu")
-            {
-                [[ -z $SysCount ]] && apt-get update && SysCount="1"
-                apt-get -fy install;apt-get -y autoremove --purge;
-                dpkg -l |grep ^rc|awk '{print $2}' |sudo xargs dpkg -P
-                for arg do
-                    INFO_MSG "正在安装 ${arg} ************************************************** >>" "[${arg} Installing] ************************************************** >>";
-                    apt-get install -y $arg --force-yes;
-                done;
-            }
-            ;;
-
-        *)
-            echo "unknow System" ;;
+    *)
+        echo "unknow System"
+        ;;
     esac
     return 1
 }
@@ -163,11 +163,27 @@ INSTALL_BASE_PACKAGES(){
 # }
 
 Download_src() {
-    [ -s "${src_dir:?}/${src_url:?##*/}" ] && echo "[${CMSG}${src_url##*/}${CEND}] found" || wget -c -P $src_dir --no-check-certificate $src_url
-    if [ ! -e "$src_dir/${src_url##*/}" ];then
-        echo "${CFAILURE}${src_url##*/} download failed, Please contact the author! ${CEND}"
+
+    if [ ! -e "$(command -v wget)" ]; then
+        yum -y install wget
+    fi
+    cd "${src_dir:?}" || exit
+    if [ -s "${src_url##*/}" ]; then
+        INFO_MSG "[ ${src_url##*/} ] found"
+    else
+
+        {
+            # wget -c -P "$src_dir" --no-check-certificate "$src_url"
+            wget --tries=6 -c -P "$src_dir" --no-check-certificate "${src_url}"
+            sleep 1
+        }
+    fi
+
+    if [ ! -e "${src_url##*/}" ]; then
+        FAILURE_MSG "${src_url##*/} download failed, Please contact the author"
         kill -9 $$
     fi
+
 }
 #调正时钟
 #
@@ -181,16 +197,16 @@ Download_src() {
 #     [[ "$(grep $TimeCron /etc/crontab)" == "" ]] && echo "$TimeCron" >> /etc/crontab
 #     [ "$SysName" == 'centos' ] && /etc/init.d/crond restart || /etc/init.d/cron restart
 # }
-get_char(){
-    SAVEDSTTY=`stty -g`
+get_char() {
+    SAVEDSTTY=$(stty -g)
     stty -echo
     stty cbreak
-    dd if=/dev/tty bs=1 count=1 2> /dev/null
+    dd if=/dev/tty bs=1 count=1 2>/dev/null
     stty -raw
     stty echo
     stty $SAVEDSTTY
 }
-system_check(){
+system_check() {
 
     [[ "$OS" == '' ]] && echo "${CWARNING}[Error] Your system is not supported this script${CEND}" && exit
     [ ${RamTotal:?} -lt '1000' ] && echo -e "${CWARNING}[Error] Not enough memory install.\nThis script need memory more than 1G.\n${CEND}" && exit

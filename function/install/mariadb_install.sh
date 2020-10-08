@@ -3,12 +3,12 @@
 # @Author: cnak47
 # @Date: 2018-04-30 23:59:11
 # @LastEditors: cnak47
-# @LastEditTime: 2020-02-12 12:34:11
+# @LastEditTime: 2020-01-21 14:38:57
 # @Description:
 ###
 
 # shellcheck disable=SC2164
-MySQL_Var() {
+MariaDB_Var() {
 
     # 生成数据库root用户随机密码(8位长度包含字母数字和特殊字符)
     # shellcheck disable=SC2034
@@ -16,17 +16,38 @@ MySQL_Var() {
     # shellcheck disable=SC2162
     read -p "Please input Port(Default:3306):" MysqlPort
     MysqlPort="${MysqlPort:=3306}"
-    # shellcheck disable=SC2162
-    read -p "Please input MySQL BaseDirectory(default:/u01/mysql/$mysql_install_version)" MysqlBasePath
-    MysqlBasePath="${MysqlBasePath:=/u01/mysql/$mysql_install_version}"
-    # shellcheck disable=SC2162
-    read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort/mysql/$mysql_install_version)" MysqlOptPath
-    MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort/mysql/$mysql_install_version}"
-
+    case $DbType in
+    "MariaDB")
+        {
+            # shellcheck disable=SC2162
+            read -p "Please input MySQL BaseDirectory(default:/u01/mariadb/$mariadb_install_version)" MysqlBasePath
+            MysqlBasePath="${MysqlBasePath:=/u01/mariadb/$mariadb_install_version}"
+        }
+        ;;
+    "MySql")
+        {
+            # shellcheck disable=SC2162
+            read -p "Please input MySQL BaseDirectory(default:/u01/mysql/$mysql_install_version)" MysqlBasePath
+            MysqlBasePath="${MysqlBasePath:=/u01/mysql/$mysql_install_version}"
+        }
+        ;;
+    *)
+        WARNING_MSG "unknow Dbtype"
+        ;;
+    esac
+    if [ "$DbType" == 'MySql' ]; then
+        # shellcheck disable=SC2162
+        read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort/mysql/$mysql_install_version)" MysqlOptPath
+        MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort/mysql/$mysql_install_version}"
+    elif [ "$DbType" == 'MariaDB' ]; then
+        # shellcheck disable=SC2162
+        read -p "Please input MySQL Database Directory(default:/u01/mybase/my$MysqlPort/mariadb/$mariadb_install_version)" MysqlOptPath
+        MysqlOptPath="${MysqlOptPath:=/u01/mybase/my$MysqlPort/mariadb/$mariadb_install_version}"
+    fi
     # shellcheck disable=SC2003
     # shellcheck disable=SC2154
     # shellcheck disable=SC2086
-    def_innodb_buffer_pool_size=$(expr $RamTotal \* 75 / 102400)G
+    def_innodb_buffer_pool_size=$(expr $RamTotal \* 80 / 102400)G
     # shellcheck disable=SC2162
     read -p "Please input innodb_buffer_pool_size (default:${def_innodb_buffer_pool_size})" innodb_buffer_pool_size
     innodb_buffer_pool_size="${innodb_buffer_pool_size:=$def_innodb_buffer_pool_size}"
@@ -72,8 +93,11 @@ MySQL_Base_Packages_Install() {
             if [ "$dbinstallmethod" == '2' ]; then
                 BasePackages="wget gcc gcc-c++ autoconf libxml2-devel zlib-devel libjpeg-devel \
                     libpng-devel glibc-devel glibc-static glib2-devel  bzip2 bzip2-devel openssl-devel \
-                    ncurses-devel bison cmake3 make libaio-devel expect gnutls-devel"
-            elif [ "$dbinstallmethod" == '1' ]; then
+                    ncurses-devel bison cmake make libaio-devel expect gnutls-devel"
+                if [ "$DbType" == 'MariaDB' ]; then
+                    BasePackages=${BasePackages}" gnutls-devel"
+                fi
+            elif [ "$DbType" == 'MySql' ] && [ "$dbinstallmethod" == '1' ]; then
                 BasePackages="libaio libnuma"
                 OLDNCURSES_LIBS=$(rpm -qa | grep 'ncurses-libs' | head -n1)
                 if [ -n "$OLDNCURSES_LIBS" ]; then
@@ -96,39 +120,44 @@ MySQL_Base_Packages_Install() {
         WARNING_MSG "Not supported System !!! "
         ;;
     esac
-
     INSTALL_BASE_PACKAGES "$BasePackages"
     SOURCE_SCRIPT "${script_dir:?}"/include/jemalloc.sh
     Install_Jemalloc
 
-    if [ "$DbVersion" == '5.7' ] && [ "$dbinstallmethod" == '2' ]; then
-        boostVersion2=$(echo "${boost_oldversion:?}" | awk -F. '{print $1"_"$2"_"$3}')
+    if [ "$DbType" == 'MySql' ] && [ "$DbVersion" == '5.7' ] && [ "$dbinstallmethod" == '2' ]; then
+        # download boost 1.59.0
         # shellcheck disable=SC2034
-        src_url=https://sourceforge.net/projects/boost/files/boost/${boost_oldversion:?}/boost_${boostVersion2:?}.tar.gz/download
+        src_url=https://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz
         cd "$script_dir"/src
-        [ ! -f boost_"${boostVersion2:?}".tar.gz ] && Download_src && mv download boost_"${boostVersion2:?}".tar.gz
-        [ -d boost_"${boostVersion2:?}" ] && rm -rf boost_"${boostVersion2:?}"
-        tar xf boost_"${boostVersion2:?}".tar.gz
+        [ ! -f boost_1_59_0.tar.gz ] && Download_src
+        [ -d boost_1_59_0 ] && rm -rf boost_1_59_0
+        tar xf boost_1_59_0.tar.gz
         cd "$script_dir"
     fi
 
 }
-select_mysql_install() {
+select_mariadb_install() {
 
+    # system_check
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     cat <<EOF
 *  $(echo -e "$CMAGENTA  1) MySQL-${mysql_5_7_version:?} by binary package ")
 *  $(echo -e "$CMAGENTA  2) MySQL-${mysql_5_7_version:?} by source code ")
 *  $(echo -e "$CMAGENTA  3) MySQL-${mysql_8_0_version:?} by binary package ")
 *  $(echo -e "$CMAGENTA  4) MySQL-${mysql_8_0_version:?} by source code    ")
-*  $(echo -e "$CMAGENTA  5) Back             ")
-*  $(echo -e "$CMAGENTA  6) Quit             ")
+*  $(echo -e "$CMAGENTA  5) MariaDB-${mariadb_10_2_version:?} by binary package ")
+*  $(echo -e "$CMAGENTA  6) MariaDB-${mariadb_10_2_version:?} by source code ")
+*  $(echo -e "$CMAGENTA  7) MariaDB-${mariadb_10_1_version:?} by binary package ")
+*  $(echo -e "$CMAGENTA  8) MariaDB-${mariadb_10_1_version:?} by source code  ")
+*  $(echo -e "$CMAGENTA  9) Back             ")
+*  $(echo -e "$CMAGENTA  10) Quit             ")
 EOF
     # shellcheck disable=SC2162
     read -p "${CBLUE}Which Version MySQL are you want to install:${CEND} " num3
 
     case $num3 in
     1)
+        DbType="MySql"
         DbVersion="5.7"
         dbinstallmethod=1
         mysql_install_version=${mysql_5_7_version:?}
@@ -137,6 +166,7 @@ EOF
         select_mysql_install
         ;;
     2)
+        DbType="MySql"
         DbVersion="5.7"
         dbinstallmethod=2
         mysql_install_version=${mysql_5_7_version:?}
@@ -145,6 +175,7 @@ EOF
         select_mysql_install
         ;;
     3)
+        DbType="MySql"
         DbVersion="8.0"
         dbinstallmethod=1
         mysql_install_version=${mysql_8_0_version:?}
@@ -153,6 +184,7 @@ EOF
         select_mysql_install
         ;;
     4)
+        DbType="MySql"
         DbVersion="8.0"
         dbinstallmethod=2
         mysql_install_version=${mysql_8_0_version:?}
@@ -162,9 +194,46 @@ EOF
         ;;
 
     5)
-        select_database_install
+        DbType="MariaDB"
+        DbVersion="10.2"
+        dbinstallmethod=1
+        mariadb_install_version=${mariadb_10_2_version:?}
+        SOURCE_SCRIPT "$FunctionPath"/install/MariaDB-10.2.sh
+        MariaDB_10_2_Install_Main 2>&1 | tee "$script_dir"/logs/Install_MariaDB_10.2.log
+        select_mysql_install
         ;;
     6)
+        DbType="MariaDB"
+        DbVersion="10.2"
+        dbinstallmethod=2
+        mariadb_install_version=${mariadb_10_2_version:?}
+        SOURCE_SCRIPT "$FunctionPath"/install/MariaDB-10.2.sh
+        MariaDB_10_2_Install_Main 2>&1 | tee "$script_dir"/logs/Install_MariaDB_10.2.log
+        select_mysql_install
+        ;;
+    7)
+        DbType="MariaDB"
+        DbVersion="10.1"
+        dbinstallmethod=1
+        mariadb_install_version=${mariadb_10_2_version:?}
+        SOURCE_SCRIPT "$FunctionPath"/install/MariaDB-10.1.sh
+        MariaDB_10_1_Install_Main 2>&1 | tee "$script_dir"/logs/Install_MariaDB_10.1.log
+        select_mysql_install
+        ;;
+    8)
+        DbType="MariaDB"
+        DbVersion="10.1"
+        dbinstallmethod=2
+        mariadb_install_version=${mariadb_10_2_version:?}
+        SOURCE_SCRIPT "$FunctionPath"/install/MariaDB-10.1.sh
+        MariaDB_10_1_Install_Main 2>&1 | tee "$script_dir"/logs/Install_MariaDB_10.1.log
+        select_mysql_install
+        ;;
+
+    9)
+        select_database_install
+        ;;
+    10)
         clear
         exit 0
         ;;

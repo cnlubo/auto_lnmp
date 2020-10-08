@@ -1,9 +1,11 @@
 #!/bin/bash
-# -------------------------------------------
-# @Author  : cnlubo (454331202@qq.com)
-# @Link    :
-# @desc    :
-#--------------------------------------------
+# @Author: cnak47
+# @Date: 2018-04-30 23:59:11
+# @LastEditors: cnak47
+# @LastEditTime: 2019-12-30 11:03:54
+# @Description: 
+# #
+
 # shellcheck disable=SC2034
 echo="echo"
 for cmd in echo /bin/echo; do

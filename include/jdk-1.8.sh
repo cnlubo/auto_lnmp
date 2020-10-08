@@ -1,12 +1,12 @@
 #!/bin/bash
-# Author:  yeho <lj2007331 AT gmail.com>
-# BLOG:  https://blog.linuxeye.com
-#
-# Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
-#
-# Project home page:
-#       http://oneinstack.com
-#       https://github.com/lj2007331/oneinstack
+### 
+# @Author: cnak47
+ # @Date: 2018-04-30 23:59:11
+ # @LastEditors: cnak47
+ # @LastEditTime: 2019-12-08 16:55:46
+ # @Description: 
+ ###
+
 
 Install-JDK-1-8(){
 cd $oneinstack_dir/src

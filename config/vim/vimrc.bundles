@@ -162,7 +162,7 @@ Plug 'vim-scripts/darkburn'
 " nerdtree nerdtreetabs
 Plug 'scrooloose/nerdtree' | Plug 'jistr/vim-nerdtree-tabs'
 " ctrlspace
-Plug 'vim-ctrlspace/vim-ctrlspace'
+" Plug 'vim-ctrlspace/vim-ctrlspace'
 " tagbar
 Plug 'majutsushi/tagbar'
 

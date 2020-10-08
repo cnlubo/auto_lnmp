@@ -1,14 +1,10 @@
+#!/bin/bash
 # @Author: ak47
 # @Date:   2016-02-26 17:01:42
 # @Last Modified by:   卢波
 # @Last Modified time: 2016-03-11 15:49:29
-#!/bin/bash
-# ------------------------------------------------------------------------
-# @Author:          cnlubo (454331202@qq.com)
-# @Date:            2016-01-04 10:32:54
-# @Filename:        tomcat-7.sh
-# @desc    :        tomcat7 install
-#--------------------------------------------------------------------------
+
+
 
 Install_tomcat-7()
 {

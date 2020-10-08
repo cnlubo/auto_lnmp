@@ -11,7 +11,7 @@
 
 Create_Conf() {
 
-    cat > ${MysqlConfigPath:?}/my${MysqlPort:?}.cnf << EOF
+    cat > "${MysqlConfigPath:?}"/my"${MysqlPort:?}".cnf << EOF
 [mysql]
 ############## CLIENT #########################
 port                               = $MysqlPort

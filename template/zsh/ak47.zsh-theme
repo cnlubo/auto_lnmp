@@ -1,3 +1,10 @@
+#!/bin/bash
+# @Author: cnak47
+# @Date: 2018-04-30 23:59:11
+# @LastEditors: cnak47
+# @LastEditTime: 2020-01-08 10:56:38
+# @Description: 
+# #
 #local ret_status="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
 # make some aliases for the colours: (coud use normal escap.seq's too)
   for color in RED GREEN YELLOW BLUE MAGENTA CYAN WHITE; do
@@ -19,10 +26,6 @@ fi
   eval PR_HOST='${PR_GREEN}%M${PR_NO_COLOR}' # no SSH
   fi
 
-#PROMPT='${ret_status} %{$fg[cyan]%}%c%{$reset_color%} $(git_prompt_info)'
-#%{$fg[magenta]%}%n%{$reset_color%} at %{$fg[yellow]%}%m%{$reset_color%}
-#PROMPT='%{$fg[cyan]%}[{$fg[magenta]%}%n%{$reset_color%} @ %{$fg[yellow]%}%m%%{$fg_bold[red]%}➜ %{$fg_bold[green]%}%p%{$fg[cyan]%}%d %{$fg_bold[blue]%}$(git_prompt_info)%{$fg_bold[blue]%}% %{$reset_color%}'
-#PROMPT='%{$fg[cyan]%}[{$fg[magenta]%}%n%{$reset_color%} @ %{$fg[yellow]%}%m%%{$fg_bold[red]%}➜ %{$fg_bold[green]%}%p%{$fg[cyan]%}%d %{$fg_bold[blue]%}$(git_prompt_info)%{$fg_bold[blue]%}% %{$reset_color%}'
 PROMPT=$'${PR_CYAN}[${PR_USER}${PR_CYAN}@${PR_HOST}${PR_CYAN}][${PR_BLUE}%~${PR_CYAN}] $(git_prompt_info)${PR_USER_OP} '
 ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}git:(%{$fg[red]%}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%} "
