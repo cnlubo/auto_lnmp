@@ -2,7 +2,7 @@
 # @Author: cnak47
 # @Date: 2018-04-30 23:59:11
 # @LastEditors: cnak47
-# @LastEditTime: 2020-01-19 14:48:00
+# @LastEditTime: 2020-10-08 19:53:59
 # @Description:
 # #
 
@@ -33,15 +33,16 @@ EOF
 centos_setup() {
 
     INFO_MSG "syncing system time ..... "
-    systemctl stop ntpd && systemctl disable ntpd && ntpdate pool.ntp.org
-    # every 20 minute run ntpdate
-    # [ ! -e "/var/spool/cron/root" -o -z "$(grep 'ntpdate' /var/spool/cron/root)" ] && { echo "*/20 * * * * $(which ntpdate) pool.ntp.org > /dev/null 2>&1" >> /var/spool/cron/root;chmod 600 /var/spool/cron/root; }
-    # shellcheck disable=SC2143
-    # shellcheck disable=SC2230
-    [ ! -e "/var/spool/cron/root" ] || [ -z "$(grep 'ntpdate' /var/spool/cron/root)" ] && {
-        echo "*/20 * * * * $(which ntpdate) pool.ntp.org > /dev/null 2>&1" >>/var/spool/cron/root
-        chmod 600 /var/spool/cron/root
-    }
+    systemctl stop ntpd && systemctl disable ntpd && systemctl enable chronyd
+    # systemctl stop ntpd && systemctl disable ntpd && ntpdate pool.ntp.org
+    # # every 20 minute run ntpdate
+    # # [ ! -e "/var/spool/cron/root" -o -z "$(grep 'ntpdate' /var/spool/cron/root)" ] && { echo "*/20 * * * * $(which ntpdate) pool.ntp.org > /dev/null 2>&1" >> /var/spool/cron/root;chmod 600 /var/spool/cron/root; }
+    # # shellcheck disable=SC2143
+    # # shellcheck disable=SC2230
+    # [ ! -e "/var/spool/cron/root" ] || [ -z "$(grep 'ntpdate' /var/spool/cron/root)" ] && {
+    #     echo "*/20 * * * * $(which ntpdate) pool.ntp.org > /dev/null 2>&1" >>/var/spool/cron/root
+    #     chmod 600 /var/spool/cron/root
+    # }
 }
 system_user_setup() {
     system_user="$1"

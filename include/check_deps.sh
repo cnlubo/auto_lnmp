@@ -2,7 +2,7 @@
 # @Author: cnak47
 # @Date: 2018-04-30 23:59:11
 # @LastEditors: cnak47
-# @LastEditTime: 2020-01-11 17:16:22
+# @LastEditTime: 2020-10-08 19:51:01
 # @Description:
 # #
 
@@ -23,10 +23,8 @@ installDepsCentOS() {
         dnf -y --enablerepo=PowerTools install chrony oniguruma-devel rpcgen
         systemctl enable chronyd
     elif [ "${CentOS_RHEL_version}" == '7' ]; then
-
         yum -y groupremove "Basic Web Server" "MySQL Database server" "MySQL Database client" "File and Print Server"
         systemctl mask firewalld.service
-
         INFO_MSG "Check for existing mariadb packages ..... "
         OLDMYSQLSERVER=$(rpm -qa | grep 'mariadb-server' | head -n1)
         if [ -n "$OLDMYSQLSERVER" ]; then
@@ -60,7 +58,7 @@ installDepsCentOS() {
     pkgList="deltarpm gcc gcc-c++ make cmake autoconf glibc glibc-devel glib2 glib2-devel \
         bzip2-devel bzip2 curl libcurl-devel net-tools e2fsprogs e2fsprogs-devel krb5-devel \
         openssl openssl-devel python3 python3-devel \
-        libidn libidn-devel bison pcre pcre-devel zip unzip ntpdate sqlite-devel \
+        libidn libidn-devel bison pcre pcre-devel zip unzip chrony sqlite-devel \
         patch bc expect expat-devel rsyslog lsof wget mkpasswd"
 
     for Package in ${pkgList}; do

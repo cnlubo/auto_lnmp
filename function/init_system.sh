@@ -2,7 +2,7 @@
 # @Author: cnak47
 # @Date: 2018-04-30 23:59:11
 # @LastEditors: cnak47
-# @LastEditTime: 2020-05-14 18:51:18
+# @LastEditTime: 2020-10-08 18:38:18
 # @Description:
 # #
 
@@ -55,7 +55,7 @@ select_system_setup_function() {
     # 安装必要的依赖和初始化系统
     case "${OS}" in
     "CentOS")
-         2>&1 | tee "$script_dir"/logs/deps_install.log
+        installDepsCentOS 2>&1 | tee "$script_dir"/logs/deps_install.log
         common_setup 2>&1 | tee "$script_dir"/logs/init_centos.log
         centos_setup 2>&1 | tee -a "$script_dir"/logs/init_centos.log
         ;;
