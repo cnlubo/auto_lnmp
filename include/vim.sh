@@ -2,11 +2,11 @@
 # @Author: cnak47
 # @Date: 2020-01-03 10:23:49
 # @LastEditors: cnak47
-# @LastEditTime: 2020-01-19 14:47:21
+# @LastEditTime: 2020-11-04 22:20:31
 # @Description:
 # #
 install_vim() {
-    set -ex
+    #set -ex
     # remove old vim
     OLDVIM=$(rpm -qa | grep 'vim' | head -n1)
     if [ -n "$OLDVIM" ]; then
@@ -84,7 +84,7 @@ install_vim_plugin() {
         system_shell=$SHELL
         export SHELL="/bin/sh"
         # sudo -u "${default_user:?}" -H curl -fLo "$home_path"/.vim/autoload/plug.vim --create-dirs \
-                #     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        #     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
         # sudo -u "${default_user:?}" -H wget -c -P "$home_path"/.vim/autoload/ --no-check-certificate https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
         vim -u /root/.vimrc.bundles +PlugUpgrade! +PlugInstall! +PlugClean! +qall
