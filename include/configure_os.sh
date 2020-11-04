@@ -2,7 +2,7 @@
 # @Author: cnak47
 # @Date: 2018-04-30 23:59:11
 # @LastEditors: cnak47
-# @LastEditTime: 2020-10-08 19:53:59
+# @LastEditTime: 2020-10-24 12:28:12
 # @Description:
 # #
 
@@ -17,13 +17,13 @@ common_setup() {
     done
     sed -i '/^# End of file/,$d' /etc/security/limits.conf
     cat >>/etc/security/limits.conf <<EOF
-    # End of file
-    * soft nproc   524288
-    * hard nproc   524288
-    * soft nofile  524288
-    * hard nofile  524288
-    * hard memlock unlimited
-    * soft memlock unlimited
+# End of file
+* soft nproc   524288
+* hard nproc   524288
+* soft nofile  524288
+* hard nofile  524288
+* hard memlock unlimited
+* soft memlock unlimited
 EOF
     INFO_MSG "Setting timezone ....."
     rm -rf /etc/localtime
