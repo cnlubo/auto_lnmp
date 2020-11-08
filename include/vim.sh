@@ -2,11 +2,10 @@
 # @Author: cnak47
 # @Date: 2020-01-03 10:23:49
 # @LastEditors: cnak47
-# @LastEditTime: 2020-11-04 22:20:31
+# @LastEditTime: 2020-11-07 21:20:36
 # @Description:
 # #
 install_vim() {
-    #set -ex
     # remove old vim
     OLDVIM=$(rpm -qa | grep 'vim' | head -n1)
     if [ -n "$OLDVIM" ]; then

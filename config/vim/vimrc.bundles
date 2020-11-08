@@ -54,7 +54,8 @@ Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
 " Plug 'Valloric/YouCompleteMe'
 
 " 自动补全单引号，双引号等
-Plug 'Raimondi/delimitMate'
+" Plug 'Raimondi/delimitMate'
+Plugin 'jiangmiao/auto-pairs'
 
 " 自动补全html/xml标签
 Plug 'docunext/closetag.vim', { 'for': ['html', 'xml'] }
