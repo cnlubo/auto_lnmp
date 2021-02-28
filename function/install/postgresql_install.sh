@@ -3,7 +3,7 @@
 # @Author: cnak47
 # @Date: 2018-04-30 23:59:11
 # @LastEditors: cnak47
-# @LastEditTime: 2019-12-25 14:56:30
+# @LastEditTime: 2021-02-13 10:17:56
 # @Description:
 ###
 
@@ -78,8 +78,8 @@ select_postgresql_install() {
     # system_check
     echo "${CMSG}-----------------------------------------------------------------------${CEND}"
     cat <<EOF
-*  $(echo -e "$CMAGENTA  1) PostgreSQL-${PostgreSQL_12_version:?}        ")
-*  $(echo -e "$CMAGENTA  2) PostgreSQL-${PostgreSQL_11_version:?}        ")
+*  $(echo -e "$CMAGENTA  1) PostgreSQL-${PostgreSQL_13_version:?}        ")
+*  $(echo -e "$CMAGENTA  2) PostgreSQL-${PostgreSQL_12_version:?}        ")
 *  $(echo -e "$CMAGENTA  3) Back             ")
 *  $(echo -e "$CMAGENTA  4) Quit             ")
 EOF
@@ -88,15 +88,15 @@ EOF
 
     case $num3 in
     1)
-        postgresql_install_version=${PostgreSQL_12_version:?}
-        SOURCE_SCRIPT "${FunctionPath:?}"/install/PostgreSQL-12.sh
-        PostgreSQL_12_Install_Main 2>&1 | tee "$script_dir"/logs/Install_PostgreSQL12.log
+        postgresql_install_version=${PostgreSQL_13_version:?}
+        SOURCE_SCRIPT "${FunctionPath:?}"/install/PostgreSQL-13.sh
+        PostgreSQL_13_Install_Main 2>&1 | tee "$script_dir"/logs/Install_PostgreSQL13.log
         select_postgresql_install
         ;;
     2)
-        postgresql_install_version=${PostgreSQL_11_version:?}
-        SOURCE_SCRIPT "${FunctionPath:?}"/install/PostgreSQL-11.sh
-        PostgreSQL_11_Install_Main 2>&1 | tee "$script_dir"/logs/Install_PostgreSQL11.log
+        postgresql_install_version=${PostgreSQL_12_version:?}
+        SOURCE_SCRIPT "${FunctionPath:?}"/install/PostgreSQL-12.sh
+        PostgreSQL_12_Install_Main 2>&1 | tee "$script_dir"/logs/Install_PostgreSQL12.log
         select_postgresql_install
         ;;
     3)
