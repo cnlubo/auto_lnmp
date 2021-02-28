@@ -2,7 +2,7 @@
 # @Author: cnak47
 # @Date: 2020-01-03 11:20:00
 # @LastEditors: cnak47
-# @LastEditTime: 2020-01-03 12:10:28
+# @LastEditTime: 2021-02-28 10:22:34
 # @Description:
 # #
 
@@ -42,9 +42,11 @@ install_tmux() {
     if [ "${OS_BIT}" == "64" ]; then
         [ -h /usr/lib64/libevent-2.1.so.7 ] && rm -rf /usr/lib64/libevent-2.1.so.7
         ln -s /usr/local/lib/libevent-2.1.so.7 /usr/lib64/libevent-2.1.so.7
+        ln -s /usr/local/lib/libevent_core-2.1.so.7 /usr/lib64/libevent_core-2.1.so.7
     else
         [ -h /usr/lib64/libevent-2.1.so.7 ] && rm -rf /usr/lib64/libevent-2.1.so.7
         ln -s /usr/local/lib/libevent-2.1.so.7 /usr/lib/libevent-2.1.so.7
+        ln -s /usr/local/lib/libevent_core-2.1.so.7 /usr/lib/libevent_core-2.1.so.7
     fi
 
 }
